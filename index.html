@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Offert accepterad — Ampy</title>
   <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -26,44 +27,18 @@
           <path class="oa__tick" d="M118.582 66.3379L76.862 108.207L57.8984 89.1754" stroke="#00A991" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"></path>
         </svg>
       </div>
-      <h1 class="oa__title">Tack, <span data-oa="kund.fornamn">Anna</span> — din offert är accepterad</h1>
+      <h1 class="oa__title">Din offert är nu accepterad!</h1>
       <span class="oa__ref">Offert <span data-oa="offert.referens">#2026-0142</span></span>
-      <p class="oa__sub">Din accept är registrerad. En bekräftelse är skickad till <strong data-oa="kund.epost">anna@exempel.se</strong>.</p>
-      <span class="oa__reassure">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>
-        Priset står fast — ingenting tillkommer
-      </span>
     </section>
 
-    <!-- 2 · order summary + price -->
+    <!-- 2 · what happens next -->
     <section class="oa__section">
-      <h2 class="oa__eyebrow">Din beställning</h2>
-      <p class="oa__order-service" data-oa="offert.tjanst">Laddbox: Zaptec Go, installerad</p>
-      <p class="oa__order-scope" data-oa="offert.arbete">Zaptec Go 22 kW med lastbalansering och jordfelsbrytare. Material, montering och driftsättning ingår.</p>
-      <div class="oa__price">
-        <div class="oa__price-row">
-          <span class="l">Arbete och material</span>
-          <span class="v" data-oa="pris.delsumma">12 980 kr</span>
-        </div>
-        <div class="oa__price-row oa__price-row--deduct">
-          <span class="l" data-oa="pris.avdrag_label">Grön teknik-avdrag (50%)</span>
-          <span class="v" data-oa="pris.avdrag">−6 490 kr</span>
-        </div>
-        <div class="oa__price-total">
-          <span class="l"><span class="t">Att betala</span><span class="s">Fast pris inkl. moms</span></span>
-          <span class="v" data-oa="pris.att_betala">6 490 kr</span>
-        </div>
-      </div>
-      <p class="oa__caveat">Skattereduktionen är preliminär och förutsätter att du har rätt till avdraget (äger bostaden, har skatt att dra av och inte nått taket på 50 000 kr/år). Ampy drar av det direkt på fakturan.</p>
-    </section>
-
-    <!-- 3 · what happens next -->
-    <section class="oa__section">
+      <div class="oa__next">
       <h2 class="oa__eyebrow">Så här går vi vidare</h2>
       <ol class="oa__steps">
         <li class="oa__step">
           <span class="oa__node" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>
-          <span class="oa__step-text">Vi bekräftar din accept<small>Klart — vi har tagit emot din offert</small></span>
+          <span class="oa__step-text">Acceptera offert<small>Klart — vi har tagit emot ditt godkännande.</small></span>
         </li>
         <li class="oa__step">
           <span class="oa__node" aria-hidden="true"><span>2</span></span>
@@ -71,18 +46,17 @@
         </li>
         <li class="oa__step">
           <span class="oa__node" aria-hidden="true"><span>3</span></span>
-          <span class="oa__step-text">Behörig elektriker utför arbetet<small>På avtalad tid, utan överraskningar</small></span>
+          <span class="oa__step-text">Ampys behöriga elektriker utför arbetet<small>På avtalad tid, utan överraskningar</small></span>
         </li>
       </ol>
+      </div>
     </section>
 
-    <!-- 4 · trust + contact -->
+    <!-- 3 · trust + contact + close -->
     <section class="oa__section">
-      <div class="oa__trust" aria-label="Trygghet">
-        <span class="oa__trust-item"><svg class="chk" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>Behöriga, egna elektriker</span>
-        <span class="oa__trust-item"><svg class="chk" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>14 dagars ångerrätt</span>
+      <div class="oa__trust">
         <span class="oa__trust-item">
-          <span class="oa__stars" role="img" aria-label="5 av 5 i betyg på Google">
+          <span class="oa__stars" aria-hidden="true">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.784 1.401 8.166L12 18.896l-7.335 3.864 1.401-8.166L.132 9.21l8.2-1.192z"/></svg>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.784 1.401 8.166L12 18.896l-7.335 3.864 1.401-8.166L.132 9.21l8.2-1.192z"/></svg>
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.784 1.401 8.166L12 18.896l-7.335 3.864 1.401-8.166L.132 9.21l8.2-1.192z"/></svg>
@@ -93,18 +67,9 @@
         </span>
       </div>
       <p class="oa__contact">Frågor innan vi hör av oss? Ring <a href="tel:+46102657979">010-265 79 79</a></p>
+      <p class="oa__legal">Genom att acceptera har du ingått avtal enligt våra <a href="https://ampy.se/kopvillkor/" data-oa-href="offert.villkor_url">köpvillkor</a>. <!-- ⚑ ångerrätts-info togs bort på ägardirektiv (v3). OBS: distansavtalslagen kräver normalt ångerrätts-info + blankett — jurist-sign-off före skarp drift, se docs/research.md §5 --></p>
     </section>
-
-    <!-- footer -->
-    <div class="oa__foot">
-      <a class="oa__cta" href="#" data-oa-href="offert.pdf_url" target="_blank" rel="noopener">Se hela offerten
-        <svg class="doc" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-      </a>
-      <p class="oa__legal">Genom att acceptera har du ingått avtal enligt våra <a href="#" data-oa-href="offert.villkor_url">köpvillkor</a>. Du har 14 dagars ångerrätt enligt distansavtalslagen. <!-- ⚑ exakt juridisk formulering + ångerblankett: jurist-sign-off (se docs/research.md §5) --></p>
-    </div>
   </main>
-
-  <a class="oa__ghost" href="https://ampy.se/">Till startsidan</a>
 </div>
 <script src="script.js"></script>
 </body>

@@ -66,17 +66,17 @@
 .oa__next{ width:fit-content; max-width:100%; margin-inline:auto; }
 .oa__eyebrow{ margin:0 0 16px; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.14em; color:var(--teal-deep); }
 .oa__steps{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:30px; }
-.oa__step{ position:relative; display:flex; align-items:flex-start; gap:18px; }
-/* connector runs from just below this node to the next node */
-.oa__step:not(:last-child)::after{ content:""; position:absolute; left:20px; top:50px; width:2px;
-  height:calc(100% - 20px); background:linear-gradient(180deg, rgba(0,169,145,.42), rgba(0,169,145,.12)); }
+.oa__step{ position:relative; display:flex; align-items:center; gap:18px; }
 .oa__node{ position:relative; z-index:1; flex:0 0 auto; width:42px; height:42px; border-radius:50%;
   display:grid; place-items:center; background:linear-gradient(145deg,#00c2a6,#018271);
   box-shadow:0 6px 16px rgba(0,169,145,.34), inset 0 0 0 3px rgba(255,255,255,.9); }
+/* connector is anchored to the node, so it tracks the node whatever the text height */
+.oa__step:not(:last-child) .oa__node::after{ content:""; position:absolute; left:50%; top:100%;
+  transform:translateX(-50%); width:2px; height:60px;
+  background:linear-gradient(180deg, rgba(0,169,145,.42), rgba(0,169,145,.12)); }
 .oa__node span{ font-size:16px; font-weight:600; color:#fff; line-height:1; }
 .oa__node svg{ width:18px; height:18px; fill:none; stroke:#fff; stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; }
-/* push text down so the title's first line optically centres on the node */
-.oa__step-text{ padding-top:8px; font-size:17px; line-height:1.35; font-weight:600; color:var(--ink); }
+.oa__step-text{ font-size:17px; line-height:1.35; font-weight:600; color:var(--ink); }
 .oa__step-text small{ display:block; font-size:14px; font-weight:400; color:var(--ink-soft); line-height:1.4; margin-top:4px; }
 
 /* --- trust + contact + close --- */

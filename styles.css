@@ -91,7 +91,9 @@
    i stället för att flyta mitt i textblocket. */
 .oa__step{ position:relative; display:flex; align-items:flex-start; gap:18px; }
 .oa__node{ position:relative; z-index:1; flex:0 0 auto; width:42px; height:42px; border-radius:50%;
-  display:grid; place-items:center; background:linear-gradient(145deg,#00c2a6,#018271);
+  display:grid; place-items:center; /* Vit text mot den ljusa änden av gradienten mätte 2,87:1. Mörkare släkte,
+     samma familj, med variablerna så färgerna inte kan glida isär igen. */
+  background:linear-gradient(145deg,var(--teal-deep),var(--teal-ink));
   box-shadow:0 6px 16px rgba(0,169,145,.34), inset 0 0 0 3px rgba(255,255,255,.9); }
 .oa__step:not(:last-child)::after{ content:""; position:absolute; z-index:0;
   left:21px; margin-left:-1px; width:2px; top:42px; height:calc(100% - 12px);

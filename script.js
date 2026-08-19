@@ -7,9 +7,14 @@
    ---------------------------------------------------------------------------
    Expected AMPY_OFFER shape (all optional; server fills from the CRM):
      {
-       "offert.referens": "#2026-0142",
+       "offert.referens": "#2026-0187",
+       "offert.giltig_till": "16 september 2026",
+       "offert.url": "https://ampy.se/offert/<token>/",
        "offert.villkor_url": "https://ampy.se/kopvillkor/"
      }
+   SERVERREGEL: saknas giltig_till renderas meningen UTAN datum, och saknas
+   offert.url utelämnas hela länken. Aldrig en platshållare, aldrig ett gissat
+   datum, aldrig ett tomt href.
    (Name / e-post / price fields exist in the CRM but are not shown on this
    lean confirmation — kept off the page on purpose.)
    ========================================================================= */

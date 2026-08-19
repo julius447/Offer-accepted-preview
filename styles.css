@@ -1,3 +1,19 @@
+/* Outfit självhostad. Sidan hämtade typsnittet från Google: enda sidan i hela
+   flödet som gjorde det, och därmed enda sidan som bytte till systemtypsnitt
+   när requesten inte gick fram (uppmätt: document.fonts.size === 0 och h1
+   renderad i system-ui när fonts.gstatic.com blockerades). Filerna är
+   samma produktionssubset som offertsidan använder. */
+@font-face {
+  font-family: 'Outfit'; font-style: normal; font-weight: 300 700; font-display: swap;
+  src: url(fonts/Outfit-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Outfit'; font-style: normal; font-weight: 300 700; font-display: swap;
+  src: url(fonts/Outfit-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 /* =========================================================================
    Ampy offert-accepterad-sida — styles  (scoped to .oa, all px, no deps)
    Same design language as the locked tack-sida (aurora + glass card + teal +
@@ -66,13 +82,19 @@
 .oa__next{ width:fit-content; max-width:100%; margin-inline:auto; }
 .oa__eyebrow{ margin:0 0 16px; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.14em; color:var(--teal-deep); }
 .oa__steps{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:30px; }
-.oa__step{ position:relative; display:flex; align-items:center; gap:18px; }
+/* FYND: kopplingslinjen hade fast height:60px medan nod-till-nod-avståndet
+   varierar med radbrytningen. Uppmätt vid 390px: avstånden är 66px och 77px,
+   alltså synliga glapp på 6px och 17px, medan de vid 560px och uppåt är 35px
+   och linjen i stället sköt 25px förbi. Ankras nu i steget och sträcks från
+   nodens underkant till nästa nods överkant, vilket är exakt vid varje
+   texthöjd. align-items:flex-start ger noden samma linje som stegrubriken
+   i stället för att flyta mitt i textblocket. */
+.oa__step{ position:relative; display:flex; align-items:flex-start; gap:18px; }
 .oa__node{ position:relative; z-index:1; flex:0 0 auto; width:42px; height:42px; border-radius:50%;
   display:grid; place-items:center; background:linear-gradient(145deg,#00c2a6,#018271);
   box-shadow:0 6px 16px rgba(0,169,145,.34), inset 0 0 0 3px rgba(255,255,255,.9); }
-/* connector is anchored to the node, so it tracks the node whatever the text height */
-.oa__step:not(:last-child) .oa__node::after{ content:""; position:absolute; left:50%; top:100%;
-  transform:translateX(-50%); width:2px; height:60px;
+.oa__step:not(:last-child)::after{ content:""; position:absolute; z-index:0;
+  left:21px; margin-left:-1px; width:2px; top:42px; height:calc(100% - 12px);
   background:linear-gradient(180deg, rgba(0,169,145,.42), rgba(0,169,145,.12)); }
 .oa__node span{ font-size:16px; font-weight:600; color:#fff; line-height:1; }
 .oa__node svg{ width:18px; height:18px; fill:none; stroke:#fff; stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; }
@@ -85,9 +107,17 @@
 .oa__stars{ display:inline-flex; gap:2px; }
 .oa__stars svg{ width:14px; height:14px; fill:var(--gold); }
 .oa__contact{ margin:16px 0 0; text-align:center; font-size:14px; color:var(--ink-soft); }
-.oa__contact a{ color:var(--teal-deep); font-weight:600; text-decoration:none; white-space:nowrap; }
+/* Sidans enda kontroll mätte 89x18 px på alla bredder, mot kravet 44x44.
+   De negativa marginalerna håller radhöjden oförändrad. Understrykning gör
+   att länken inte skiljs från brödtexten med enbart färg. */
+.oa__contact a{ display:inline-flex; align-items:center; justify-content:center;
+  min-height:44px; padding:0 10px; margin:0 -6px;
+  color:var(--teal-deep); font-weight:600; white-space:nowrap;
+  text-decoration:underline; text-underline-offset:3px; }
 
-.oa a:focus-visible{ outline:3px solid var(--teal); outline-offset:3px; border-radius:12px; }
+/* Fokusringen i teal mätte 2,91:1 mot kortytan. Navy är samma ring som
+   offertsidan använder (shared.css) och mäter långt över 3:1. */
+.oa a:focus-visible{ outline:3px solid #090b32; outline-offset:3px; border-radius:12px; }
 
 /* mobile */
 @media (max-width:560px){

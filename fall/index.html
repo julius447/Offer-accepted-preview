@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orderbekräftelsen, fem fall</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    /* GRANSKNINGSSIDA, inte en produktyta. Den finns bara för att de fem
+       fallen ska gå att öppna och titta på. Egna regler, inga .oa-klasser,
+       så den aldrig kan påverka orderbekräftelsen. */
+    body{margin:0;background:#f5f9ff;color:#0b1030;
+      font-family:"Outfit",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+      -webkit-font-smoothing:antialiased;}
+    .f{max-width:640px;margin:0 auto;padding:clamp(28px,5vw,64px) clamp(16px,4vw,28px);}
+    h1{margin:0 0 6px;font-size:clamp(24px,1.1vw+21px,32px);font-weight:600;letter-spacing:-.02em;}
+    .ing{margin:0 0 28px;font-size:15px;line-height:1.5;color:rgba(11,16,48,.62);}
+    ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px;}
+    li{background:#fff;border:1px solid rgba(11,16,48,.09);border-radius:14px;overflow:hidden;}
+    li a{display:block;padding:14px 18px 16px;text-decoration:none;color:inherit;}
+    li a:hover .n{text-decoration:underline;text-underline-offset:3px;}
+    .rad{display:flex;align-items:baseline;justify-content:space-between;gap:16px;}
+    .n{font-size:17px;font-weight:600;color:#016a5d;}
+    .t{flex:0 0 auto;font-size:15px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;}
+    li p{margin:6px 0 0;font-size:13.5px;line-height:1.45;color:rgba(11,16,48,.62);}
+    .fot{margin:28px 0 0;font-size:13px;line-height:1.55;color:rgba(11,16,48,.62);}
+    .fot a{color:#018271;font-weight:600;text-underline-offset:3px;}
+    a:focus-visible{outline:3px solid #090b32;outline-offset:3px;border-radius:12px;}
+  </style>
+</head>
+<body>
+  <main class="f">
+    <h1>Orderbekräftelsen, fem fall</h1>
+    <p class="ing">En sida för fem offertmallar. Varje fall är renderat ur sitt kontrakt och
+    sparat som statisk markup: ingen JavaScript, inget kontrakt kvar i sidan. Alla belopp är
+    netto, efter avdrag och inklusive moms.</p>
+    <ul>
+    <li><a href="laddbox.html"><span class="rad"><span class="n">Laddbox</span><span class="t">14 345 kr</span></span><p>Ett paket, valt tillägg, mellanskillnad på en längdvariant, blandade potter, en intresseanmälan och en kvitterad grannrabatt.</p></a></li>
+    <li><a href="elcentral.html"><span class="rad"><span class="n">Elcentral</span><span class="t">8 190 kr</span></span><p>En storlek, två tillägg, ROT. Inget avdragsbelopp någonstans.</p></a></li>
+    <li><a href="batteri.html"><span class="rad"><span class="n">Batterilagring</span><span class="t">94 063 kr</span></span><p>En lagringsstorlek, ö-drift som tillägg, grön teknik.</p></a></li>
+    <li><a href="service.html"><span class="rad"><span class="n">Service</span><span class="t">9 900 kr</span></span><p>Inget paket, ingen produktbild, en punktlista ”allt som ingår” och ett pris.</p></a></li>
+    <li><a href="tillagg.html"><span class="rad"><span class="n">Tilläggsoffert</span><span class="t">5 020 kr</span></span><p>Inget paket, en artikellista, moderreferens till offerten tillägget hör till. Steg 2 utbytt, steg 3 borttaget.</p></a></li>
+    </ul>
+    <p class="fot">Kontraktet står fält för fält i
+    <a href="https://github.com/julius447/Offer-accepted-preview/blob/main/KONTRAKT.md">KONTRAKT.md</a>.
+    Produktionssidan utan kontrakt ligger på
+    <a href="../index.html">../index.html</a> och visar då inte ett enda tal.</p>
+  </main>
+</body>
+</html>

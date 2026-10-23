@@ -8,7 +8,7 @@
     "ingar": "Fyra jobbrader ur offerter/service/jobb.json jobb.rader, sedan etiketten 'Det här ingår alltid' (offerter/service/offert.py rad 89) och tre grundrader. Grundraderna är ORDAGRANT flyttade ur redan ägargodkända listor i laddbox- och elcentralmallen; generatorns orakel rad 232 till 236 stoppar bygget om en grundrad inte står ordagrant i en godkänd lista.",
     "total": "9900 = 7400 + 2500. Samma väg som motorn: summa = PRIS + tid.",
     "bokare": "Rasmus, offerter/service/jobb.json rad 31 ('Rasmus L'). Fornamnet är samma som laddboxmallens och batterimallens.",
-    "referens": "2026-0642, offerter/service/jobb.json rad 29. KOLLISION: batteriofferten bär samma nummer (offerter/batteri/innehall.json rad 21). Båda är platshållare och CRM:et sätter de riktiga, men två mallar med samma nummer är ett [GAP] någon måste stänga.",
+    "referens": "2026-0643, offerter/service/jobb.json. Kollisionen med batteriofferten är STÄNGD 2026-10-23: serviceofferten flyttades till 0643, och ett generiskt orakel i offertrepot läser nu ALLA offertnummer på en sida, inte bara det första, så en sida som visar två nummer stoppar bygget.",
     "steg_2": "Express är ett TIDSFÖNSTER, inte en bokad tid: 24 till 72 timmar. Samtalet ska alltså fortfarande komma, och underraden namnger fönstret kunden betalat för. Meningen är ordagrant den motorn själv skriver, offerter/service/skript.js rad 81.",
     "akut": "[GAP] Är servicemallen planerat flöde eller akut eljour? Styr steg 2 och 3. Är den akutflödet lovar steg 3 ett lugnt schema till någon som har strömavbrott."
   },
@@ -19,7 +19,7 @@
   "priser_ar": "netto",
 
   "offert": {
-    "referens": "2026-0642",
+    "referens": "2026-0643",
     "mall": "service",
     "titel": null,
     "ar_tillagg": false,

@@ -8,7 +8,7 @@
     "odrift_avdrag": "[GAP] Ägarfråga 12 i batteri-förarbetet: räknas ö-driften som grön teknik? Byggd som grön teknik efter principen i ägarbeslut 11 (15 okt). Är den brutto utan avdrag ändras EN rad här till avdrag: 'inget'.",
     "total": "94063 = 64063 + 30000. Samma väg som motorn: netto = gt + rot, där rot är 0 här.",
     "bokare": "Rasmus, offerter/batteri/innehall.json bokare. [GAP] Batterisäljarna säljer också; namn är en parameter per offert.",
-    "referens": "2026-0642, offerter/batteri/innehall.json offertnr. [GAP] Platshållare; CRM:et sätter det riktiga. KOLLISION: serviceofferten bär samma nummer (offerter/service/jobb.json rad 29).",
+    "referens": "2026-0642, offerter/batteri/innehall.json offertnr. Platshållare; CRM:et sätter det riktiga vid utskick. Kollisionen med serviceofferten är STÄNGD 2026-10-23: service flyttades till 0643.",
     "giltig_till_lang": "[GAP] Inget giltighetsdatum är beslutat för batteriofferten. null tar bort datumet i stället för att hitta på ett."
   },
 

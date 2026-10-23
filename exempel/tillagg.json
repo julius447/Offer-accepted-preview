@@ -1,0 +1,94 @@
+{
+  "_not": "FALL 5, TILLÄGGSOFFERT. Inget paket, en artikellista, en moderreferens till den offert tillägget hör till. Elektrikern är hos kunden och skickar ett tillägg till en offert kunden redan accepterat.",
+  "_kallor": {
+    "artiklar": "offerter/tillagg/urval.json artiklar, upplösta mot katalog/tillval.json av offerter/tillagg/offert.py artikel(). Namnen och specerna är exakt de strängar den funktionen bygger.",
+    "perific": "2650 = varianten 'Perific Max, passar alla elmätare', katalog/tillval.json rad 62. Namnet delas på kommat: 'Perific lastbalansering, Perific Max' och specen 'passar alla elmätare' (offert.py rad 115 till 117).",
+    "zaptec-chill": "495, katalog/tillval.json rad 94. Spec 'kabelhållare', samma fil rad 93.",
+    "rfid": "175 = 5-pack, katalog/tillval.json rad 194.",
+    "arbetstimme": "850 per styck gånger 2 = 1700, katalog/tillval.json rad 209. Specen '2 stycken, 850 kr per styck' är den offert.py rad 129 till 132 bygger. ROT enligt samma katalogfil rad 213.",
+    "total": "5020 = 2650 + 495 + 175 + 1700.",
+    "potter": "BLANDADE: tre rader är grön teknik, arbetstimmen är ROT. Då märks VARJE rad, precis som tilläggsmallens eget orakel kräver (offerter/tillagg/offert.py rad 287 till 292).",
+    "moderreferens": "2026-0640, offerter/tillagg/urval.json moder.referens, laddboxrepots eget exempelnummer för laddboxofferten. Brickan säger 'Tillägg till offert #2026-0640', samma formulering som offert.py rad 226 till 227 bygger.",
+    "egen_referens": "[GAP] Tillägget har inget eget offertnummer i repot. urval.json _kallor.moder: inget ägarbeslut om formen, eget nummer eller moderns. null tills CRM:et ger det, och då visas moderns.",
+    "godkant_pris": "[GAP] urval.json moder.godkant_pris är null: det pris kunden accepterade i moderofferten finns inte i repot. Därför står ingen mening om det här.",
+    "titel": "'Ditt tillägg är nu accepterat!', ordagrant det byte generatorn redan gör, offerter/tillagg/offert.py rad 228.",
+    "steg_2": "'Elektrikern tar det härifrån' / 'Du behöver inte göra något mer.', ordagrant offerter/tillagg/offert.py rad 230 till 232. Här HÅLLER premissen: elektrikern står hos kunden, så 'ringer och bokar tid' lovar ett samtal som inte kommer.",
+    "steg_3": "Taget bort. Generatorn tar bort samma steg av samma skäl (offert.py rad 233 till 240): elektrikern står redan hos kunden, så 'på avtalad tid' är ett löfte ingen gett.",
+    "bokare": "INGEN. Tillägget skickas av elektrikern på plats, och generatorns orakel rad 310 till 312 stoppar bygget om Rasmus eller Felix står på sidan. [GAP] Elektrikerns namn finns inte i repot.",
+    "giltig_till": "Inget. Generatorns orakel rad 306 till 307 stoppar bygget om ett giltighetsdatum står på sidan, för inget är beslutat."
+  },
+
+  "_kalla_villkor": "https://ampy.se/kopvillkor. Alla fem mallarna länkar dit med texten 'Läs våra köpvillkor' (offerter/laddbox/body.html rad 566, elcentral rad 264, batteri rad 160, service/offert.py rad 155). Kontrollerat 19 okt enligt noten i tillagg.html rad 71.",
+
+  "kontrakt_version": 1,
+  "priser_ar": "netto",
+
+  "offert": {
+    "referens": null,
+    "mall": "tillagg",
+    "titel": "Ditt tillägg är nu accepterat!",
+    "ar_tillagg": true,
+    "moderreferens": "2026-0640",
+    "modertyp": "laddbox",
+    "giltig_till_lang": null,
+    "villkor_url": "https://ampy.se/kopvillkor"
+  },
+
+  "bokare": {},
+
+  "steg": [
+    null,
+    { "rubrik": "Elektrikern tar det härifrån", "under": "Du behöver inte göra något mer." },
+    { "ta_bort": true }
+  ],
+
+  "order": {
+    "rubrik": null,
+    "underrubrik": null,
+    "etikett": "Att betala",
+    "total": 5020,
+    "paket": null,
+    "rader": [
+      {
+        "typ": "tillagg",
+        "namn": "Perific lastbalansering",
+        "variant": "Perific Max",
+        "spec": "passar alla elmätare",
+        "antal": 1,
+        "styckpris": null,
+        "belopp": 2650,
+        "avdrag": "gron-teknik"
+      },
+      {
+        "typ": "tillagg",
+        "namn": "Zaptec Chill",
+        "variant": null,
+        "spec": "kabelhållare",
+        "antal": 1,
+        "styckpris": null,
+        "belopp": 495,
+        "avdrag": "gron-teknik"
+      },
+      {
+        "typ": "tillagg",
+        "namn": "RFID-taggar",
+        "variant": "5-pack",
+        "antal": 1,
+        "styckpris": null,
+        "belopp": 175,
+        "avdrag": "gron-teknik"
+      },
+      {
+        "typ": "tillagg",
+        "namn": "Extra arbetstimme på plats",
+        "variant": null,
+        "antal": 2,
+        "styckpris": 850,
+        "belopp": 1700,
+        "avdrag": "rot"
+      }
+    ],
+    "ingar": [],
+    "utestaende": []
+  }
+}

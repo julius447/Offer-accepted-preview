@@ -1,0 +1,96 @@
+{
+  "_not": "FALL 1, LADDBOX. Ett paket, valda tillägg, mellanskillnad på en längdvariant, blandade potter: grön teknik på laddpunkten, ROT på spotlightsen. Varje tal är hämtat ur laddboxrepot, inget är skrivet här.",
+  "_kallor": {
+    "paket.belopp": "9170 = BAS 4450 (offerter/laddbox/skript.js rad 5) + paketnyckeln 4720 för Premium (offerter/laddbox/paket.json).",
+    "paket.spec": "'22 kW med Perific Max', ordagrant ur offerter/laddbox/paket.json nyckel 4720.",
+    "kabel22": "Mellanskillnad 200 = 10 meter 1850 minus 5 meter 1650, katalog/tillval.json rad 133 till 139. kabel22 ligger i Premiums ingar, så mellanskillnadsregeln gäller (offerter/laddbox/skript.js rad 207 till 220).",
+    "rfid": "175 = katalogpris för 5-pack, katalog/tillval.json rad 194. [ÄGARFRÅGA] katalogen rad 7: 175/300/600 står i sidan men saknas i prislistan.",
+    "spotlight": "4800 = styckpris 800 gånger 6, katalog/tillval.json rad 245. ROT enligt samma fil rad 264.",
+    "batteri-saj": "Intresseanmälan: katalogen bär 'fran': true och inget pris, avdrag 'inget' (rad 289 till 297). Priset går inte att sätta utan att se taket och förbrukningen.",
+    "total": "14345 = 9170 + 200 + 175 + 4800. Samma väg som motorn: sum = paketpris + deltan + valda rader, mitt = sum, calcNet = kr(mitt). Motorn drar aldrig ROT ur mitt (offerter/laddbox/skript.js rad 243 till 294).",
+    "grannrabatt": "Texterna är ordagrant motorns egna, offerter/laddbox/skript.js rad 358 till 360.",
+    "bokare": "Rasmus, laddboxmallens bokare (gemensamt/block/skarm-accept.html rad 40).",
+    "giltig_till_lang": "Fylls av CRM:et. Saknas den renderas ingen mening om datum. Ingen hårdkodning finns i den här sidan."
+  },
+
+  "_kalla_villkor": "https://ampy.se/kopvillkor. Alla fem mallarna länkar dit med texten 'Läs våra köpvillkor' (offerter/laddbox/body.html rad 566, elcentral rad 264, batteri rad 160, service/offert.py rad 155). Kontrollerat 19 okt enligt noten i tillagg.html rad 71.",
+
+  "kontrakt_version": 1,
+  "priser_ar": "netto",
+
+  "offert": {
+    "referens": "2026-0640",
+    "mall": "laddbox",
+    "titel": null,
+    "ar_tillagg": false,
+    "moderreferens": null,
+    "modertyp": null,
+    "giltig_till_lang": null,
+    "villkor_url": "https://ampy.se/kopvillkor"
+  },
+
+  "bokare": { "fornamn": "Rasmus" },
+
+  "steg": [],
+
+  "order": {
+    "rubrik": "Zaptec Go",
+    "underrubrik": "22 kW med Perific Max",
+    "etikett": "Att betala",
+    "total": 14345,
+    "paket": {
+      "namn": "Paket Premium",
+      "spec": null,
+      "belopp": 9170,
+      "avdrag": "gron-teknik"
+    },
+    "rader": [
+      {
+        "typ": "mellanskillnad",
+        "namn": "Laddkabel 22 kW",
+        "variant": "10 meter",
+        "i_stallet_for": "5 meter",
+        "antal": 1,
+        "styckpris": null,
+        "belopp": 200,
+        "avdrag": "gron-teknik"
+      },
+      {
+        "typ": "tillagg",
+        "namn": "RFID-taggar",
+        "variant": "5-pack",
+        "antal": 1,
+        "styckpris": null,
+        "belopp": 175,
+        "avdrag": "gron-teknik"
+      },
+      {
+        "typ": "tillagg",
+        "namn": "Spotlights",
+        "variant": null,
+        "antal": 6,
+        "styckpris": 800,
+        "belopp": 4800,
+        "avdrag": "rot"
+      },
+      {
+        "typ": "intresseanmalan",
+        "namn": "Solcellsbatteri SAJ HS3",
+        "variant": null,
+        "antal": null,
+        "styckpris": null,
+        "belopp": null,
+        "avdrag": "inget",
+        "notis": "ingen kostnad nu"
+      }
+    ],
+    "ingar": [],
+    "utestaende": [
+      {
+        "text": "Grannrabatt, 3 grannar inbjudna",
+        "ord": "dras när de beställt",
+        "not": "Upp till 1 500 kr av, 500 kr för varje granne som beställer. Ditt pris här ändras inte förrän det hänt."
+      }
+    ]
+  }
+}

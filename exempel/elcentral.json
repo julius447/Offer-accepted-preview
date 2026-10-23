@@ -1,0 +1,72 @@
+{
+  "_not": "FALL 2, ELCENTRAL. En storlek, två tillägg, ROT. Inget ROT-BELOPP står någonstans: ägardirektiv 2026-10-23, bara totalsumman som är priset efter ROT inkl moms.",
+  "_kallor": {
+    "paket.belopp": "5990 = storleken Liten, offerter/elcentral/paket.json nyckel 5990. ÄGARLÅST, beslut C4 19 okt. Talet är NETTO: ägarbesked 22 okt, 'Elcentral och installation för 5 990 är inklusive moms efter ROT-avdrag.' Elcentralmotorn drar därför inget avdrag längre (offerter/elcentral/skript.js rad 125 till 137).",
+    "rubrik": "'Elcentral + installation', ägarbesked 19 okt, ordagrant ur offerter/elcentral/skript.js rad 109.",
+    "underrubrik": "passar-texten för Liten, ordagrant ur offerter/elcentral/paket.json.",
+    "overspanning": "1200, offerter/elcentral/paket.json _tillagg. Ägarbesked 19 okt (F3): överspänningsskyddet är ALLTID tillägg, även på Stor.",
+    "dvargbrytare": "500 per styck, offerter/elcentral/paket.json _tillagg. 2 stycken ger 1000.",
+    "avdrag": "Elcentralen och tilläggen är ROT, aldrig grön teknik. offerter/elcentral/paket.json _kallor.avdrag, ampy-foretagsdata.md §3.5. Elcentralmarkupen skriver data-avdrag='rot' eller 'gt'; 'gt' MÅSTE mappas till 'gron-teknik' av den som fyller kontraktet.",
+    "total": "8190 = 5990 + 1200 + 1000. Samma väg som motorn: summa = bas + tid + raderna, netto = summa.",
+    "bokare": "Felix, elcentralmallens bokare. EL_BOKARE_FORNAMN = 'Felix', offerter/elcentral/offert.py rad 56.",
+    "referens": "2026-0641, EL_OFFERTNR i offerter/elcentral/offert.py.",
+    "ARBETSANDEL": "[GAP] 0,8 står som öppet gap i offerter/elcentral/paket.json med Felix som ägare. Den har INGEN konsument längre: ingenting i det här kontraktet härleds ur den, eftersom inget avdrag räknas eller visas."
+  },
+
+  "_kalla_villkor": "https://ampy.se/kopvillkor. Alla fem mallarna länkar dit med texten 'Läs våra köpvillkor' (offerter/laddbox/body.html rad 566, elcentral rad 264, batteri rad 160, service/offert.py rad 155). Kontrollerat 19 okt enligt noten i tillagg.html rad 71.",
+
+  "kontrakt_version": 1,
+  "priser_ar": "netto",
+
+  "offert": {
+    "referens": "2026-0641",
+    "mall": "elcentral",
+    "titel": null,
+    "ar_tillagg": false,
+    "moderreferens": null,
+    "modertyp": null,
+    "giltig_till_lang": null,
+    "villkor_url": "https://ampy.se/kopvillkor"
+  },
+
+  "bokare": { "fornamn": "Felix" },
+
+  "steg": [],
+
+  "order": {
+    "rubrik": "Elcentral + installation",
+    "underrubrik": "Passar till lägenheter eller mindre hus, där centralen matar det som redan finns.",
+    "etikett": "Att betala",
+    "total": 8190,
+    "paket": {
+      "namn": "Liten",
+      "spec": null,
+      "belopp": 5990,
+      "avdrag": "rot"
+    },
+    "rader": [
+      {
+        "typ": "tillagg",
+        "namn": "Överspänningsskydd",
+        "variant": null,
+        "spec": "typ 2, i centralen",
+        "antal": 1,
+        "styckpris": null,
+        "belopp": 1200,
+        "avdrag": "rot"
+      },
+      {
+        "typ": "tillagg",
+        "namn": "Extra dvärgbrytare",
+        "variant": null,
+        "spec": "utöver det som ingår",
+        "antal": 2,
+        "styckpris": 500,
+        "belopp": 1000,
+        "avdrag": "rot"
+      }
+    ],
+    "ingar": [],
+    "utestaende": []
+  }
+}

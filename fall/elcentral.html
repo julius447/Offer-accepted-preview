@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<!-- BYGGD FIL, ÄNDRA INTE FÖR HAND.
+     Källa: index.html + exempel/elcentral.json, renderad av script.js i headless Chrome
+     och sparad som statisk markup. Bygg om med: python3 bygg.py elcentral
+     Ingen JavaScript, inget kontrakt kvar i sidan: det här är vad
+     serversidan ska skicka. -->
+<html lang="sv"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offert accepterad, Ampy</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <!-- Utan preload upptäcks fonten först när styles.css är parsad. På mobilnät
+       hinner den inte före första målningen, och när den landar flyttas hela
+       kortet 8 px (justify-content:center) — uppmätt CLS 0,125. -->
+  <link rel="preload" href="../fonts/Outfit-latin.woff2" as="font" type="font/woff2" crossorigin="">
+  <link rel="stylesheet" href="../styles.css">
+  <style>html,body{margin:0;padding:0;}</style>
+</head>
+<body>
+<div class="oa">
+  <svg class="oa__aurora oa__aurora--top" xmlns="http://www.w3.org/2000/svg" width="399" height="308" viewBox="0 0 399 308" fill="none" aria-hidden="true"><path opacity="0.55" d="M398.501 19.1624V307.416C377.203 307.609 355.83 302.624 342.317 293.968C312.351 274.723 324.249 243.073 290.832 225.49C271.296 215.211 241.478 212.776 213.863 212.505C186.248 212.274 157.751 213.588 131.605 208.757C82.3243 199.637 54.8562 166.596 75.5674 141.361C85.1886 129.652 102.742 120.339 116.035 109.712C129.329 99.0458 138.436 85.3657 128.668 73.6951C108.838 50.0062 34.0715 54.798 7.77845 32.9254C-4.04606 23.1097 -1.54896 10.2412 9.61455 0.0390625H391.001L398.501 19.1624Z" fill="url(#at_p0t)"></path><path opacity="0.6" d="M398.499 0V241.34C355.859 222.68 321.444 193.856 302.503 160.131C293.654 144.379 284.851 125.261 262.485 120.588C244.078 116.765 225.536 124.967 208.24 130.948C190.9 136.928 167.201 139.967 155.151 129.052C133.764 109.64 178.361 77.2222 157.196 57.6797C143.857 45.3595 116.646 50.4248 97.2152 43.8562C76.1396 36.6993 69.2478 15.8497 77.9626 0H398.499Z" fill="url(#at_p1t)"></path><defs><radialGradient id="at_p0t" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(322.819 40.5771) scale(663.35 349.037)"><stop offset="0.5" stop-color="#b6f2ff"></stop><stop offset="1" stop-color="#f5f9ff"></stop></radialGradient><radialGradient id="at_p1t" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(372.244 23.8562) scale(378.832 278.434)"><stop stop-color="#5cc5b6"></stop><stop offset="0.5" stop-color="#00a991"></stop><stop offset="0.87" stop-color="#5cc5b6"></stop></radialGradient></defs></svg>
+  <svg class="oa__aurora oa__aurora--bottom" xmlns="http://www.w3.org/2000/svg" width="270" height="226" viewBox="0 0 270 226" fill="none" aria-hidden="true"><path opacity="0.55" d="M1.26485e-06 210.532L1.96698e-05 0.00397235C14.4308 -0.137147 28.9113 3.50376 38.0674 9.82597C58.37 23.8816 50.3087 46.9971 72.95 59.8391C86.1865 67.3467 106.39 69.1248 125.1 69.3224C143.81 69.4917 163.117 68.5321 180.832 72.0602C214.222 78.7211 232.833 102.853 218.8 121.283C212.281 129.835 200.389 136.637 191.382 144.399C182.375 152.188 176.205 162.18 182.823 170.703C196.258 188.005 246.915 184.505 264.73 200.48C272.741 207.649 271.05 217.047 263.486 224.499L14.5 225L1.26485e-06 210.532Z" fill="url(#at_p0b)"></path><path opacity="0.6" d="M3.05544e-05 225.579L3.06452e-05 50C28.9339 63.6081 52.2862 84.628 65.139 109.223C71.143 120.71 77.1168 134.652 92.2928 138.06C104.784 140.848 117.365 134.866 129.101 130.505C140.868 126.144 156.949 123.927 165.125 131.887C179.638 146.043 149.376 169.685 163.737 183.936C172.789 192.921 191.253 189.227 204.438 194.017C218.739 199.237 223.416 214.441 217.502 226L3.05544e-05 225.579Z" fill="url(#at_p1b)"></path><defs><radialGradient id="at_p0b" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(51.2778 194.892) rotate(-180) scale(449.445 254.921)"><stop offset="0.5" stop-color="#a0fbc9"></stop><stop offset="1" stop-color="#f5f9ff"></stop></radialGradient><radialGradient id="at_p1b" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(17.8152 208.603) rotate(-180) scale(257.059 203.052)"><stop stop-color="#5cc5b6"></stop><stop offset="0.5" stop-color="#00a991"></stop><stop offset="0.87" stop-color="#5cc5b6"></stop></radialGradient></defs></svg>
+
+  <main class="oa__card">
+    <!-- 1 · confirmation -->
+    <section class="oa__section oa__head">
+      <div class="oa__check" aria-hidden="true">
+        <span class="oa__halo"></span>
+        <svg class="oa__check-svg" width="100" height="100" viewBox="0 0 174 174" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect class="oa__disc" x="12" y="12" width="150" height="150" rx="75" fill="#55FF9A" fill-opacity="0.2" stroke="#ffffff" stroke-opacity="0.18" stroke-width="24"></rect>
+          <path class="oa__tick" d="M118.582 66.3379L76.862 108.207L57.8984 89.1754" stroke="#00A991" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </div>
+      <h1 class="oa__title" id="oaTitel">Din offert är nu accepterad!</h1>
+      <span class="oa__ref" id="oaRef"><span id="oaRefEtikett">Offert</span> #<span id="oaRefNr" data-oa="offert.referens">2026-0641</span></span>
+      <!-- KVITTOT. Sidan visade noll forekomster av "kr": kunden tryckte
+           acceptera pa ett belopp och fick tillbaka en bock utan tal.
+           Formen ar laddboxrepots egen, gemensamt/block/skarm-accept.html
+           rad 23 till 26, sa de tva kopiorna av skarmen inte drar isar.
+           Ett tal, inte ett kort: raderna star i sin egen sektion under. -->
+      <p class="oa__kvitto" id="oaKvitto">
+        <span class="oa__kvitto-rad"><span id="oaPaket">Att betala</span><b class="kr" id="oaTotal">8&nbsp;190 kr</b></span>
+        <span class="oa__kvitto-not" id="oaKvittoNot">inkl. moms, efter ROT-avdrag</span>
+      </p>
+    </section>
+
+    <!-- 2 · det kunden faktiskt accepterade -->
+    <section class="oa__section oa__order" id="oaOrder">
+      <h2 class="oa__eyebrow">Det här accepterade du</h2>
+      <p class="oa__prod" id="oaProd"><b id="oaProdRubrik">Elcentral + installation</b><span id="oaProdUnder">Passar till lägenheter eller mindre hus, där centralen matar det som redan finns.</span></p>
+      <ul class="oa__rader" id="oaRader"><li class="oa__rad oa__rad--huvud"><span class="oa__rad-text">Liten</span><span class="oa__rad-pris kr">5&nbsp;990 kr</span></li><li class="oa__rad"><span class="oa__rad-text">Överspänningsskydd<small>typ 2, i centralen</small></span><span class="oa__rad-pris kr">1&nbsp;200 kr</span></li><li class="oa__rad"><span class="oa__rad-text">Extra dvärgbrytare<small>2 stycken, 500 kr per styck, utöver det som ingår</small></span><span class="oa__rad-pris kr">1&nbsp;000 kr</span></li></ul>
+      <p class="oa__not" id="oaNot" hidden=""></p>
+      <h3 class="oa__ingar-rubrik" id="oaIngarRubrik" hidden="">Allt som ingår</h3>
+      <ul class="oa__ingar" id="oaIngar" hidden=""></ul>
+      <p class="oa__fin" id="oaFin">inkl. moms, efter ROT-avdrag. Avdraget dras direkt på fakturan. ROT förutsätter att du har avdragsutrymme kvar. <a href="https://ampy.se/kopvillkor" target="_blank" rel="noopener">Läs våra köpvillkor</a></p>
+    </section>
+
+    <!-- 3 · what happens next -->
+    <section class="oa__section">
+      <div class="oa__next">
+      <h2 class="oa__eyebrow">Så här går vi vidare</h2>
+      <ol class="oa__steps" id="oaSteps">
+        <li class="oa__step">
+          <span class="oa__node" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"></path></svg></span>
+          <span class="oa__step-text"><span data-oa-steg="1">Din accept är registrerad</span><small data-oa-steg-under="1">Klart, vi har tagit emot ditt godkännande.</small></span>
+        </li>
+        <li class="oa__step">
+          <span class="oa__node" aria-hidden="true"><span>2</span></span>
+          <span class="oa__step-text"><span data-oa-steg="2">Felix ringer och bokar tid</span><small data-oa-steg-under="2">Ni kommer överens om en tid som passar dig.</small></span>
+        </li>
+        <li class="oa__step">
+          <span class="oa__node" aria-hidden="true"><span>3</span></span>
+          <span class="oa__step-text"><span data-oa-steg="3">Ampys behöriga elektriker utför arbetet</span><small data-oa-steg-under="3">På avtalad tid, utan överraskningar</small></span>
+        </li>
+      </ol>
+      </div>
+    </section>
+
+    <!-- 4 · trust + contact + close -->
+    <section class="oa__section">
+      <div class="oa__trust">
+        <span class="oa__trust-item">
+          <span class="oa__stars" aria-hidden="true">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.784 1.401 8.166L12 18.896l-7.335 3.864 1.401-8.166L.132 9.21l8.2-1.192z"></path></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.784 1.401 8.166L12 18.896l-7.335 3.864 1.401-8.166L.132 9.21l8.2-1.192z"></path></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.784 1.401 8.166L12 18.896l-7.335 3.864 1.401-8.166L.132 9.21l8.2-1.192z"></path></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.784 1.401 8.166L12 18.896l-7.335 3.864 1.401-8.166L.132 9.21l8.2-1.192z"></path></svg>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.784 1.401 8.166L12 18.896l-7.335 3.864 1.401-8.166L.132 9.21l8.2-1.192z"></path></svg>
+          </span>
+          5 av 5 i betyg på Google
+        </span>
+      </div>
+      <p class="oa__contact">Frågor innan vi hör av oss? Ring <a href="tel:+46102657979">010-265 79 79</a></p>
+    </section>
+  </main>
+</div>
+</body></html>

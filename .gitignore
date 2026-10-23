@@ -1,1 +1,11 @@
 .DS_Store
+.tmp/
+_bygg-*.html
+_skarm-*.html
+_matt-*.html
+_yttre-*.html
+_k-*.html
+_cr-*/
+_utskrift.pdf
+exempel/_prov.json
+__pycache__/

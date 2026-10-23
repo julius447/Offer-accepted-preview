@@ -78,6 +78,82 @@
   color:var(--teal-ink); background:rgba(0,169,145,.08); border:1px solid rgba(0,169,145,.16);
   padding:6px 13px; border-radius:999px; }
 
+/* --- kvittot i huvudet -------------------------------------------------
+   Ett tal, inte ett kort: sidan ar en bekraftelse och inte en andra offert.
+   Formen ar porterad ordagrant ur laddboxrepots gemensamt/system.css
+   rad 1371 till 1377, dar den bor bakom #skarmAccept. Tva skillnader, bada
+   avsiktliga: align-self:stretch gor rutan till en riktig ruta i stallet for
+   att krympa till sitt innehall i den centrerade kolumnen, och noten fylls
+   ur kontraktet i stallet for att sta som fast text. */
+/* UPPMATT: rutan blev 228 px bred i en 295 px bred spalt. align-self:stretch
+   ar utslaget sa fort marginalerna ar auto i tvarriktningen, for auto-
+   marginaler ater upp det fria utrymmet fore justeringen. width:100% loser
+   bredden mot behallaren oavsett align-items:center i .oa__head. */
+.oa__kvitto{ width:100%; display:flex; flex-direction:column; gap:4px;
+  margin:14px auto 0; max-width:440px; padding:12px 16px; text-align:left;
+  background:#fff; border:1px solid #d5d9e4; border-radius:10px; }
+.oa__kvitto-rad{ display:flex; justify-content:space-between; align-items:baseline; gap:16px;
+  font-size:15px; font-weight:600; color:#0b1030; }
+.oa__kvitto-rad > span:first-child{ min-width:0; overflow-wrap:break-word; }
+.oa__kvitto-rad b{ flex:0 0 auto; font-size:19px; font-weight:800;
+  font-variant-numeric:tabular-nums; white-space:nowrap; }
+.oa__kvitto-not{ font-size:12px; font-weight:400; color:#5b6480; }
+
+/* --- ordersektionen ----------------------------------------------------
+   Samma .oa__section-grammatik som de tre sektioner som redan fanns: samma
+   padding, samma harline over, samma eyebrow. Inga nya farger, ingen ny
+   radie, ingen ny skugga. Raderna ar laddboxrepots .o-sumrow i den har
+   sidans skala. */
+.oa__prod{ margin:0 0 14px; font-size:17px; line-height:1.35; font-weight:600; color:var(--ink); }
+.oa__prod span{ display:block; font-size:14px; font-weight:400; color:var(--ink-soft); margin-top:3px; }
+.oa__rader{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; }
+.oa__rader:empty{ display:none; }
+.oa__rad{ display:flex; align-items:baseline; justify-content:space-between; gap:14px;
+  padding:9px 0; border-top:1px solid var(--line); font-size:15px; line-height:1.35; }
+.oa__rad:first-child{ border-top:0; padding-top:0; }
+.oa__rad--huvud{ font-weight:600; }
+.oa__rad-text{ min-width:0; overflow-wrap:break-word; }
+.oa__rad-text small{ display:block; font-size:13px; font-weight:400; color:var(--ink-soft);
+  line-height:1.4; margin-top:2px; }
+/* Pottmarkningen ar INTE radens spec: den sager vilket avdrag raden hor till
+   och star bara nar ordern har tva potter. Samma behandling som
+   tillaggsmallens .o-art__pott (offerter/tillagg/stil.css rad 23): mindre,
+   ljusare, lite bredare satt, sa den laser som en etikett och inte som mer
+   text om produkten. */
+/* RAKNAT: rgba(11,16,48,.5) mot kortytan mater omkring 3,3:1, alltsa under
+   4,5:1 for brodtext i 11 px. --ink-soft (.62) ar den ljusaste ton sidan redan
+   anvander och mater over 4,5:1. Etiketten skiljs darfor med storlek och
+   sparrning, inte med annu ljusare gratt. */
+.oa__rad-pott{ font-size:11px !important; letter-spacing:.02em;
+  color:var(--ink-soft) !important; margin-top:3px !important; }
+.oa__rad-pris{ flex:0 0 auto; font-weight:600; font-variant-numeric:tabular-nums; white-space:nowrap; }
+/* "ingen kostnad nu" och "dras nar de bestallt" ar ord, inte tal. De far
+   darfor inte brodtextens vikt eller sifferbredden: en intresseanmalan som
+   ser ut som en prisrad laser som nagot kunden har kopt. */
+.oa__rad-pris--ord{ font-weight:400; font-size:13px; color:var(--ink-soft); white-space:normal; text-align:right; }
+.oa__not{ margin:10px 0 0; font-size:12.5px; line-height:1.45; color:var(--ink-soft); }
+.oa__ingar-rubrik{ margin:18px 0 10px; font-size:13px; font-weight:600; color:var(--ink); }
+.oa__ingar{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:9px; font-size:15px; }
+.oa__ingar li{ display:flex; align-items:flex-start; gap:10px; line-height:1.35; }
+.oa__ingar li > span span{ display:block; font-size:13px; color:var(--ink-soft); line-height:1.4; margin-top:1px; }
+/* EN BOCK, INTE TVA. Samma vektor som varje punktlista i offerten,
+   gemensamt/bitar.py rad 10 till 11, sa listan pa bekraftelsen och listan i
+   offerten bar samma symbol. Brickan ritas i CSS, inte i svg: border-radius
+   ger en rund cirkel vid varje storlek. */
+.oa__bock{ flex:0 0 auto; width:18px; height:18px; margin-top:2px; border-radius:50%;
+  background:rgba(0,169,145,.12); display:grid; place-items:center; }
+.oa__bock svg{ width:11px; height:11px; fill:none; stroke:var(--teal-ink);
+  stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
+/* Finstilten. Villkoret star EN gang, har, och inte en gang per rad:
+   hedging-direktivet 2026-08-15. */
+.oa__fin{ margin:16px 0 0; font-size:12.5px; line-height:1.5; color:var(--ink-soft); }
+/* UPPMATT: lanken ar sidans enda kontroll utover telefonnumret och maste
+   ha 44 px traffyta. Inline i finstilten slog de 44 pixlarna ut radavstandet
+   i det stycke den stod i. Egen rad, egen traffyta, oforandrad brodtext. */
+.oa__fin a{ display:flex; align-items:center; width:fit-content; min-height:44px;
+  padding:0 8px; margin:2px 0 -6px -8px;
+  color:var(--teal-deep); font-weight:600; text-decoration:underline; text-underline-offset:3px; }
+
 /* --- next-steps: centred group, internally left-aligned --- */
 .oa__next{ width:fit-content; max-width:100%; margin-inline:auto; }
 .oa__eyebrow{ margin:0 0 16px; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.14em; color:var(--teal-deep); }
@@ -125,6 +201,9 @@
 @media (max-width:560px){
   .oa__trust-item{ font-size:14px; }
   .oa__title{ font-size:clamp(27px,6.5vw,31px); }
+  .oa__rad{ gap:10px; font-size:14.5px; }
+  .oa__ingar{ font-size:14.5px; }
+  .oa__kvitto-rad{ gap:10px; }
 }
 
 /* motion safety */
@@ -141,4 +220,11 @@
     background:#fff; -webkit-backdrop-filter:none; backdrop-filter:none; }
   .oa__tick{ stroke-dashoffset:0 !important; animation:none !important; }
   .oa__disc{ animation:none !important; opacity:1 !important; transform:none !important; }
+  .oa__kvitto, .oa__order, .oa__rad, .oa__ingar li{ break-inside:avoid; }
+  /* Lasbart pa papper: .62 och #5b6480 mot vitt ar for ljust i tryck. */
+  .oa__fin, .oa__not, .oa__kvitto-not, .oa__rad-text small,
+  .oa__ingar li > span span, .oa__prod span{ color:#3b4256 !important; }
+  /* En understruken lank utan adress ar inget villkor pa papper. */
+  .oa__fin a{ display:inline; min-height:0; padding:0; margin:0; }
+  .oa__fin a::after{ content:" (" attr(href) ")"; font-weight:400; text-decoration:none; }
 }

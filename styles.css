@@ -15,7 +15,13 @@
 }
 
 /* =========================================================================
-   Ampy offert-accepterad-sida — styles  (scoped to .oa, all px, no deps)
+   Ampy offert-accepterad-sida, styles. Scopad till .oa, inga beroenden.
+   VARJE langd kommer ur husets skalor i tokenblocket nedan. Undantagen ar
+   namngivna och bara dessa: kortets max-width 540, aurorans egna bredder,
+   harlinjer och ramar (1 px, 2 px), skuggor och blur, fokusringen (3 px),
+   understrykningens avstand (3 px), pillrets 999px och cirklarnas 50%,
+   samt bockens glyf pa 10 px, som ar husets eget matt i .o-bock svg.
+   verktyg/skala.py raknar dem at dig.
    Same design language as the locked tack-sida (aurora + glass card + teal +
    Outfit + pale-mint check). Register: calm / serious / reassuring.
    v4 — first-principles review pass (composition · typography · a11y).
@@ -24,10 +30,40 @@
   --ink:#0b1030; --ink-soft:rgba(11,16,48,.62);
   --teal:#00a991; --teal-deep:#018271; --teal-ink:#016a5d; --gold:#f6b53d; --line:rgba(11,16,48,.09);
   --ease:cubic-bezier(.16,.84,.44,1); --ease-soft:cubic-bezier(.33,1,.68,1);
+
+  /* ---- HUSETS SKALOR, ORDAGRANT UR gemensamt/system.css RAD 19 TILL 42 ----
+     Fore det har passet hade sidan 11 renderade typstorlekar (uppmatt i
+     Chrome vid 390 px: 27, 19, 17, 16, 15, 14.5, 14, 13, 12.5, 12, 11) dar
+     huset har SJU, och 18 langder utanfor avstandsskalan (3, 6, 7, 9, 10,
+     13, 14, 18, 28, 30, 34, 40). Ett varde utanfor skalan ar en bugg, inte
+     en smaksak (gemensamt/FALLOR.md, "Rytm och luft").
+
+     SPACING. Enda tillatna varden for gap, padding och margin. */
+  --s0:2px; --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px; --s8:64px;
+  /* RYTM. Fyra nivaer, allt vertikalt avstand kommer harifran. */
+  --rytm-sektion:var(--s7);  /* 48, mellan kapitel */
+  --rytm-grupp:var(--s5);    /* 24, mellan grupper i ett kapitel */
+  --rytm-block:var(--s4);    /* 16, mellan block i en grupp */
+  --rytm-rad:var(--s2);      /* 8, mellan rader i en lista */
+  --rytm-nara:var(--s3);     /* 12, rubrik till sitt eget innehall */
+  /* STORLEKAR. Komponenters egna matt, aldrig spacing. 44 ar traffytans golv. */
+  --z1:16px; --z2:20px; --z3:24px; --z4:32px; --z5:44px; --z6:48px;
+  /* SJU TYPSTORLEKAR, inte fler. Brodtext ar 17 eller 15. */
+  --t1:30px; --t2:24px; --t3:20px; --t4:17px; --t5:15px; --t6:13px; --t7:11px;
+  /* RADIER. Husets fyra, plus 999px for pillret och 50% for cirklarna. */
+  --r1:10px; --r2:14px; --r3:20px; --r4:28px;
+  /* Bocken och noden ar komponentmatt. Noden ar z5, alltsa traffytans golv:
+     den ar inte klickbar, men 44 ar talet huset redan har for "sa stor ska
+     en rund kontroll vara", och kopplingslinjen raknas ur den. */
+  --nod:var(--z5);
+  --steg-gap:var(--rytm-grupp);
+  /* Bocken i hjalten ar sidans ENDA signaturfigur och har sitt eget matt. */
+  --check:80px;
+
   position:relative; z-index:0;
   min-height:100vh; min-height:100dvh;
   display:flex; flex-direction:column; align-items:center; justify-content:center;
-  gap:16px; padding:clamp(32px,5vw,64px) clamp(16px,1.25vw + 12px,28px);
+  gap:var(--s4); padding:clamp(var(--s6),5vw,var(--s8)) clamp(var(--s4),calc(1.25vw + var(--s3)),var(--s5));
   overflow:hidden; box-sizing:border-box;
   font-family:"Outfit", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   color:var(--ink);
@@ -51,19 +87,19 @@
   display:flex; flex-direction:column;
   background:rgba(255,255,255,.74);
   border:1px solid rgba(255,255,255,.9);
-  border-radius:clamp(24px,0.83vw + 21px,32px);
+  border-radius:var(--r4);
   box-shadow:0 30px 70px rgba(9,11,50,.12), inset 0 1px 0 rgba(255,255,255,.6);
   -webkit-backdrop-filter:blur(16px) saturate(1.1); backdrop-filter:blur(16px) saturate(1.1);
   overflow:hidden;
 }
-.oa__section{ padding:clamp(24px,3vw,34px) clamp(24px,4vw,48px); }
+.oa__section{ padding:clamp(var(--s5),3vw,var(--s6)) clamp(var(--s5),4vw,var(--s7)); }
 .oa__section + .oa__section{ border-top:1px solid var(--line); }
 
 /* --- confirmation head --- */
-.oa__head{ display:flex; flex-direction:column; align-items:center; text-align:center; gap:14px;
-  padding-top:clamp(28px,3.4vw,40px); padding-bottom:clamp(24px,3vw,34px); }
-.oa__check{ position:relative; width:clamp(72px,8.4vw,86px); height:clamp(72px,8.4vw,86px); display:grid; place-items:center;
-  margin-bottom:2px; }
+.oa__head{ display:flex; flex-direction:column; align-items:center; text-align:center; gap:var(--s3);
+  padding-top:clamp(var(--s6),3.4vw,var(--s7)); padding-bottom:clamp(var(--s5),3vw,var(--s6)); }
+.oa__check{ position:relative; width:var(--check); height:var(--check); display:grid; place-items:center;
+  margin-bottom:var(--s0); }
 .oa__check-svg{ position:relative; z-index:2; width:100%; height:100%; overflow:visible; }
 .oa__halo{ position:absolute; inset:6%; z-index:1; border-radius:50%;
   background:radial-gradient(circle, rgba(85,255,154,.30) 0%, rgba(85,255,154,0) 72%); animation:oa-halo 4s var(--ease-soft) infinite; }
@@ -73,10 +109,14 @@
 @keyframes oa-tick{ to{ stroke-dashoffset:0; } }
 @keyframes oa-halo{ 0%{ transform:scale(.8); opacity:0; } 34%{ opacity:.8; } 100%{ transform:scale(1.4); opacity:0; } }
 
-.oa__title{ margin:0; font-size:clamp(26px,1.1vw + 23px,36px); line-height:1.16; font-weight:600; letter-spacing:-.02em; color:var(--ink); text-wrap:balance; }
-.oa__ref{ display:inline-block; font-size:13px; font-weight:600; letter-spacing:.01em;
+/* UPPMATT: clampen landade pa 27 px vid 390 och 35,98 vid 1180, alltsa pa
+   ingen av husets sju storlekar och over toppsteget 30. Flat --t1, och
+   --t2 under 560 (bada husets egna steg). Husets .t-display ar ocksa flat
+   30 px, inte fluid. */
+.oa__title{ margin:0; font-size:var(--t1); line-height:1.16; font-weight:600; letter-spacing:-.02em; color:var(--ink); text-wrap:balance; }
+.oa__ref{ display:inline-block; font-size:var(--t6); font-weight:600; letter-spacing:.01em;
   color:var(--teal-ink); background:rgba(0,169,145,.08); border:1px solid rgba(0,169,145,.16);
-  padding:6px 13px; border-radius:999px; }
+  padding:var(--s2) var(--s3); border-radius:999px; }
 
 /* --- kvittot i huvudet -------------------------------------------------
    Ett tal, inte ett kort: sidan ar en bekraftelse och inte en andra offert.
@@ -89,32 +129,39 @@
    ar utslaget sa fort marginalerna ar auto i tvarriktningen, for auto-
    marginaler ater upp det fria utrymmet fore justeringen. width:100% loser
    bredden mot behallaren oavsett align-items:center i .oa__head. */
-.oa__kvitto{ width:100%; display:flex; flex-direction:column; gap:4px;
-  margin:14px auto 0; max-width:440px; padding:12px 16px; text-align:left;
-  background:#fff; border:1px solid #d5d9e4; border-radius:10px; }
-.oa__kvitto-rad{ display:flex; justify-content:space-between; align-items:baseline; gap:16px;
-  font-size:15px; font-weight:600; color:#0b1030; }
+/* UPPMATT 2026-10-24, fore och efter i Chrome: max-width:440px holl kvittot
+   smalare an raderna i sektionen under sa fort sektionens innermatt kom
+   over 440 px, alltsa fran omkring 590 px fonsterbredd och uppat. Vid
+   1180 matte kvittots hogerkant 810,0 och radernas 811,8: 1,8 px isar.
+   Talen staplas under varandra och ska vara lodratt i linje. Bredden styrs
+   nu av sektionens innermatt, som ar samma matt raderna far. Efter: 811,8
+   mot 811,8 vid 1180 och 348,1 mot 348,1 vid 390. */
+.oa__kvitto{ width:100%; display:flex; flex-direction:column; gap:var(--s1);
+  margin:var(--s3) auto 0; padding:var(--s3) var(--s4); text-align:left;
+  background:#fff; border:1px solid #d5d9e4; border-radius:var(--r1); }
+.oa__kvitto-rad{ display:flex; justify-content:space-between; align-items:baseline; gap:var(--s4);
+  font-size:var(--t5); font-weight:600; color:#0b1030; }
 .oa__kvitto-rad > span:first-child{ min-width:0; overflow-wrap:break-word; }
-.oa__kvitto-rad b{ flex:0 0 auto; font-size:19px; font-weight:800;
+.oa__kvitto-rad b{ flex:0 0 auto; font-size:var(--t3); font-weight:800;
   font-variant-numeric:tabular-nums; white-space:nowrap; }
-.oa__kvitto-not{ font-size:12px; font-weight:400; color:#5b6480; }
+.oa__kvitto-not{ font-size:var(--t6); font-weight:400; color:#5b6480; }
 
 /* --- ordersektionen ----------------------------------------------------
    Samma .oa__section-grammatik som de tre sektioner som redan fanns: samma
    padding, samma harline over, samma eyebrow. Inga nya farger, ingen ny
    radie, ingen ny skugga. Raderna ar laddboxrepots .o-sumrow i den har
    sidans skala. */
-.oa__prod{ margin:0 0 14px; font-size:17px; line-height:1.35; font-weight:600; color:var(--ink); }
-.oa__prod span{ display:block; font-size:14px; font-weight:400; color:var(--ink-soft); margin-top:3px; }
+.oa__prod{ margin:0 0 var(--s3); font-size:var(--t4); line-height:1.35; font-weight:600; color:var(--ink); }
+.oa__prod span{ display:block; font-size:var(--t6); font-weight:400; color:var(--ink-soft); margin-top:var(--s1); }
 .oa__rader{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; }
 .oa__rader:empty{ display:none; }
-.oa__rad{ display:flex; align-items:baseline; justify-content:space-between; gap:14px;
-  padding:9px 0; border-top:1px solid var(--line); font-size:15px; line-height:1.35; }
+.oa__rad{ display:flex; align-items:baseline; justify-content:space-between; gap:var(--s3);
+  padding:var(--rytm-rad) 0; border-top:1px solid var(--line); font-size:var(--t5); line-height:1.35; }
 .oa__rad:first-child{ border-top:0; padding-top:0; }
 .oa__rad--huvud{ font-weight:600; }
 .oa__rad-text{ min-width:0; overflow-wrap:break-word; }
-.oa__rad-text small{ display:block; font-size:13px; font-weight:400; color:var(--ink-soft);
-  line-height:1.4; margin-top:2px; }
+.oa__rad-text small{ display:block; font-size:var(--t6); font-weight:400; color:var(--ink-soft);
+  line-height:1.4; margin-top:var(--s0); }
 /* Pottmarkningen ar INTE radens spec: den sager vilket avdrag raden hor till
    och star bara nar ordern har tva potter. Samma behandling som
    tillaggsmallens .o-art__pott (offerter/tillagg/stil.css rad 23): mindre,
@@ -124,86 +171,104 @@
    4,5:1 for brodtext i 11 px. --ink-soft (.62) ar den ljusaste ton sidan redan
    anvander och mater over 4,5:1. Etiketten skiljs darfor med storlek och
    sparrning, inte med annu ljusare gratt. */
-.oa__rad-pott{ font-size:11px !important; letter-spacing:.02em;
-  color:var(--ink-soft) !important; margin-top:3px !important; }
+.oa__rad-pott{ font-size:var(--t7) !important; letter-spacing:.02em;
+  color:var(--ink-soft) !important; margin-top:var(--s0) !important; }
 .oa__rad-pris{ flex:0 0 auto; font-weight:600; font-variant-numeric:tabular-nums; white-space:nowrap; }
 /* "ingen kostnad nu" och "dras nar de bestallt" ar ord, inte tal. De far
    darfor inte brodtextens vikt eller sifferbredden: en intresseanmalan som
    ser ut som en prisrad laser som nagot kunden har kopt. */
-.oa__rad-pris--ord{ font-weight:400; font-size:13px; color:var(--ink-soft); white-space:normal; text-align:right; }
-.oa__not{ margin:10px 0 0; font-size:12.5px; line-height:1.45; color:var(--ink-soft); }
-.oa__ingar-rubrik{ margin:18px 0 10px; font-size:13px; font-weight:600; color:var(--ink); }
-.oa__ingar{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:9px; font-size:15px; }
-.oa__ingar li{ display:flex; align-items:flex-start; gap:10px; line-height:1.35; }
-.oa__ingar li > span span{ display:block; font-size:13px; color:var(--ink-soft); line-height:1.4; margin-top:1px; }
+.oa__rad-pris--ord{ font-weight:400; font-size:var(--t6); color:var(--ink-soft); white-space:normal; text-align:right; }
+.oa__not{ margin:var(--s3) 0 0; font-size:var(--t6); line-height:1.45; color:var(--ink-soft); }
+/* UPPMATT: rubriken stod i 13 px over en lista i 15, alltsa mindre an det
+   den rubricerar. Nu samma steg som raderna, med vikten som skillnad.
+   INTE ett steg UPP: pa servicebekraftelsen ar listan en jamlike till
+   jobbraden over den ("Byte av strombrytare och uttag", 15/600), och en
+   17 har hade gjort listan till sektionens huvudrubrik. */
+.oa__ingar-rubrik{ margin:var(--rytm-grupp) 0 var(--rytm-nara); font-size:var(--t5); font-weight:600; color:var(--ink); }
+/* Husets .o-ingar ar 13 px, men dar ar listan en detalj i ett valkort med
+   priset som hjalte. Pa servicebekraftelsen AR listan ordern: kunden har
+   inget annat att lasa. Darfor brodtextens 15. */
+.oa__ingar{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:var(--s3); font-size:var(--t5); }
+.oa__ingar li{ display:flex; align-items:flex-start; gap:var(--s3); line-height:1.35; }
+.oa__ingar li > span span{ display:block; font-size:var(--t6); color:var(--ink-soft); line-height:1.4; margin-top:var(--s0); }
 /* EN BOCK, INTE TVA. Samma vektor som varje punktlista i offerten,
    gemensamt/bitar.py rad 10 till 11, sa listan pa bekraftelsen och listan i
    offerten bar samma symbol. Brickan ritas i CSS, inte i svg: border-radius
    ger en rund cirkel vid varje storlek. */
-.oa__bock{ flex:0 0 auto; width:18px; height:18px; margin-top:2px; border-radius:50%;
+.oa__bock{ flex:0 0 auto; width:var(--z1); height:var(--z1); margin-top:var(--s0); border-radius:50%;
   background:rgba(0,169,145,.12); display:grid; place-items:center; }
-.oa__bock svg{ width:11px; height:11px; fill:none; stroke:var(--teal-ink);
+.oa__bock svg{ width:10px; height:10px; fill:none; stroke:var(--teal-ink);
   stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
 /* Finstilten. Villkoret star EN gang, har, och inte en gang per rad:
    hedging-direktivet 2026-08-15. */
-.oa__fin{ margin:16px 0 0; font-size:12.5px; line-height:1.5; color:var(--ink-soft); }
+.oa__fin{ margin:var(--rytm-block) 0 0; font-size:var(--t6); line-height:1.5; color:var(--ink-soft); }
 /* UPPMATT: lanken ar sidans enda kontroll utover telefonnumret och maste
    ha 44 px traffyta. Inline i finstilten slog de 44 pixlarna ut radavstandet
    i det stycke den stod i. Egen rad, egen traffyta, oforandrad brodtext. */
-.oa__fin a{ display:flex; align-items:center; width:fit-content; min-height:44px;
-  padding:0 8px; margin:2px 0 -6px -8px;
+.oa__fin a{ display:flex; align-items:center; width:fit-content; min-height:var(--z5);
+  padding:0 var(--s2); margin:var(--s0) 0 calc(var(--s2) * -1) calc(var(--s2) * -1);
   color:var(--teal-deep); font-weight:600; text-decoration:underline; text-underline-offset:3px; }
 
 /* --- next-steps: centred group, internally left-aligned --- */
 .oa__next{ width:fit-content; max-width:100%; margin-inline:auto; }
-.oa__eyebrow{ margin:0 0 16px; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:.14em; color:var(--teal-deep); }
-.oa__steps{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:30px; }
+.oa__eyebrow{ margin:0 0 var(--rytm-block); font-size:var(--t7); font-weight:600; text-transform:uppercase; letter-spacing:.14em; color:var(--teal-deep); }
+.oa__steps{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:var(--steg-gap); }
 /* FYND: kopplingslinjen hade fast height:60px medan nod-till-nod-avståndet
    varierar med radbrytningen. Uppmätt vid 390px: avstånden är 66px och 77px,
    alltså synliga glapp på 6px och 17px, medan de vid 560px och uppåt är 35px
    och linjen i stället sköt 25px förbi. Ankras nu i steget och sträcks från
    nodens underkant till nästa nods överkant, vilket är exakt vid varje
    texthöjd. align-items:flex-start ger noden samma linje som stegrubriken
-   i stället för att flyta mitt i textblocket. */
-.oa__step{ position:relative; display:flex; align-items:flex-start; gap:18px; }
-.oa__node{ position:relative; z-index:1; flex:0 0 auto; width:42px; height:42px; border-radius:50%;
+   i stället för att flyta mitt i textblocket. Rakningen star vid ::after
+   nedan och gors nu ur --nod och --steg-gap. */
+.oa__step{ position:relative; display:flex; align-items:flex-start; gap:var(--s4); }
+.oa__node{ position:relative; z-index:1; flex:0 0 auto; width:var(--nod); height:var(--nod); border-radius:50%;
   display:grid; place-items:center; /* Vit text mot den ljusa änden av gradienten mätte 2,87:1. Mörkare släkte,
      samma familj, med variablerna så färgerna inte kan glida isär igen. */
   background:linear-gradient(145deg,var(--teal-deep),var(--teal-ink));
   box-shadow:0 6px 16px rgba(0,169,145,.34), inset 0 0 0 3px rgba(255,255,255,.9); }
+/* KLASSEN, INTE INSTANSEN. Hojden var calc(100% - 12px) med top:42px, och
+   de tolv pixlarna var 42 minus luckan 30: tva matt bakade in i ett tredje.
+   Andrades luckan eller nodens storlek slutade linjen mota nasta nod, och
+   det ar precis vad som hande nar luckan gick fran 30 till --rytm-grupp.
+   Nu raknas linjen ur nodmattet och luckan, sa den ar exakt vid varje
+   kombination. */
 .oa__step:not(:last-child)::after{ content:""; position:absolute; z-index:0;
-  left:21px; margin-left:-1px; width:2px; top:42px; height:calc(100% - 12px);
+  left:calc(var(--nod) / 2); margin-left:-1px; width:2px; top:var(--nod);
+  height:calc(100% - var(--nod) + var(--steg-gap));
   background:linear-gradient(180deg, rgba(0,169,145,.42), rgba(0,169,145,.12)); }
-.oa__node span{ font-size:16px; font-weight:600; color:#fff; line-height:1; }
-.oa__node svg{ width:18px; height:18px; fill:none; stroke:#fff; stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; }
-.oa__step-text{ font-size:17px; line-height:1.35; font-weight:600; color:var(--ink); }
-.oa__step-text small{ display:block; font-size:14px; font-weight:400; color:var(--ink-soft); line-height:1.4; margin-top:4px; }
+.oa__node span{ font-size:var(--t5); font-weight:600; color:#fff; line-height:1; }
+.oa__node svg{ width:var(--z2); height:var(--z2); fill:none; stroke:#fff; stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; }
+.oa__step-text{ font-size:var(--t4); line-height:1.35; font-weight:600; color:var(--ink); }
+.oa__step-text small{ display:block; font-size:var(--t5); font-weight:400; color:var(--ink-soft); line-height:1.4; margin-top:var(--s1); }
 
 /* --- trust + contact + close --- */
-.oa__trust{ display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:10px 18px; text-align:center; }
-.oa__trust-item{ display:inline-flex; align-items:center; gap:7px; font-size:13.5px; color:var(--ink-soft); }
-.oa__stars{ display:inline-flex; gap:2px; }
-.oa__stars svg{ width:14px; height:14px; fill:var(--gold); }
-.oa__contact{ margin:16px 0 0; text-align:center; font-size:14px; color:var(--ink-soft); }
+.oa__trust{ display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:var(--s3) var(--s4); text-align:center; }
+.oa__trust-item{ display:inline-flex; align-items:center; gap:var(--s2); font-size:var(--t6); color:var(--ink-soft); }
+.oa__stars{ display:inline-flex; gap:var(--s0); }
+.oa__stars svg{ width:var(--z1); height:var(--z1); fill:var(--gold); }
+.oa__contact{ margin:var(--rytm-block) 0 0; text-align:center; font-size:var(--t5); color:var(--ink-soft); }
 /* Sidans enda kontroll mätte 89x18 px på alla bredder, mot kravet 44x44.
    De negativa marginalerna håller radhöjden oförändrad. Understrykning gör
    att länken inte skiljs från brödtexten med enbart färg. */
 .oa__contact a{ display:inline-flex; align-items:center; justify-content:center;
-  min-height:44px; padding:0 10px; margin:0 -6px;
+  min-height:var(--z5); padding:0 var(--s2); margin:0 calc(var(--s2) * -1);
   color:var(--teal-deep); font-weight:600; white-space:nowrap;
   text-decoration:underline; text-underline-offset:3px; }
 
 /* Fokusringen i teal mätte 2,91:1 mot kortytan. Navy är samma ring som
    offertsidan använder (shared.css) och mäter långt över 3:1. */
-.oa a:focus-visible{ outline:3px solid #090b32; outline-offset:3px; border-radius:12px; }
+.oa a:focus-visible{ outline:3px solid #090b32; outline-offset:3px; border-radius:var(--r1); }
 
 /* mobile */
+/* MOBIL. Efter skalpasset behover fragan bara andra TVA saker: rubriken
+   gar ett steg ner, och de tva rader som har ett tal till hoger far en
+   smalare lucka sa namnet far plats. Typstorlekarna 14,5 och 13,5 som stod
+   har forut var inte mobilanpassning, de var tva storlekar till. */
 @media (max-width:560px){
-  .oa__trust-item{ font-size:14px; }
-  .oa__title{ font-size:clamp(27px,6.5vw,31px); }
-  .oa__rad{ gap:10px; font-size:14.5px; }
-  .oa__ingar{ font-size:14.5px; }
-  .oa__kvitto-rad{ gap:10px; }
+  .oa__title{ font-size:var(--t2); }
+  .oa__rad{ gap:var(--s2); }
+  .oa__kvitto-rad{ gap:var(--s2); }
 }
 
 /* motion safety */
@@ -216,7 +281,7 @@
 @media print{
   .oa{ min-height:auto; padding:0; background:#fff !important; display:block; }
   .oa__aurora, .oa__halo{ display:none !important; }
-  .oa__card{ max-width:100%; box-shadow:none; border:1px solid #d5d9e4; border-radius:8px;
+  .oa__card{ max-width:100%; box-shadow:none; border:1px solid #d5d9e4; border-radius:var(--r1);
     background:#fff; -webkit-backdrop-filter:none; backdrop-filter:none; }
   .oa__tick{ stroke-dashoffset:0 !important; animation:none !important; }
   .oa__disc{ animation:none !important; opacity:1 !important; transform:none !important; }

@@ -51,14 +51,19 @@ def tal_i(s):
 
 
 def pottrad(potter):
+    """Ägarens lydelse D3, 24 oktober, ordagrant samma som offertrepots
+    offerter/tillagg/offert.py:pottrad. Oraklet skriver den SJÄLVT i stället
+    för att läsa sidans, annars provar det bara att sidan är lika med sig
+    själv. Ändras lydelsen ändras två ställen, och det är meningen."""
     gt, rot = "gron-teknik" in potter, "rot" in potter
-    if gt and rot: forsta, andra = "inkl. moms, efter grön teknik och ROT", "Avdragen dras direkt på fakturan."
-    elif gt:       forsta, andra = "inkl. moms, efter grön teknik", "Avdraget dras direkt på fakturan."
-    elif rot:      forsta, andra = "inkl. moms, efter ROT-avdrag", "Avdraget dras direkt på fakturan."
-    else:          forsta, andra = "inkl. moms", ""
+    namn = [n for n, med in (("Grön teknik", gt), ("ROT", rot)) if med]
+    if namn:
+        forsta = "inkl. moms, efter skattereduktion (%s)" % " och ".join(namn)
+        andra = ("Avdragen" if len(namn) > 1 else "Avdraget") + " dras direkt på fakturan."
+    else:
+        forsta, andra = "inkl. moms", ""
     delar = [forsta + ".", andra]
-    if "inget" in potter and (gt or rot): delar.append("Rader utan avdrag är märkta.")
-    if rot: delar.append("ROT förutsätter att du har avdragsutrymme kvar.")
+    if "inget" in potter and namn: delar.append("Rader utan avdrag är märkta.")
     return forsta, " ".join(d for d in delar if d)
 
 
@@ -178,7 +183,7 @@ for mall in MALLAR:
     # Totalen står EN gång. Två tal med samma namn på samma kort läser som
     # två olika sanningar.
     tot = d["order"]["total"]
-    tot_str = "{:,}".format(tot).replace(",", " ") + " kr"
+    tot_str = "{:,}".format(tot).replace(",", " ") + " kr"
     kolla(syn.count(tot_str) == 1,
           "%s: totalen %r står %d gånger, väntade 1" % (mall, tot_str, syn.count(tot_str)))
 
@@ -196,6 +201,39 @@ for mall in MALLAR:
     kolla(hel in syn, "%s: finstilten säger inte %r" % (mall, hel))
     kolla("Läs våra köpvillkor" in syn,
           "%s: köpvillkorslänken saknas. Villkoren ska nå papperet." % mall)
+
+    # ---- INVARIANT 1. ETT BELOPP BRYTS ALDRIG MITT ITU. -------------------
+    # Ägarbeslut A8, 24 oktober: hårdspatie (U+00A0) BÅDE som
+    # tusentalsavgränsare OCH före "kr". Ett vanligt mellanslag tillåter
+    # radbrytning, och "14 345" på en rad med "kr" på nästa är två saker som
+    # läser som en felskrivning på en sida kunden just har bundit sig vid.
+    # UPPMÄTT FÖRE: 24 av 24 belopp på de fem sidorna bar vanligt mellanslag
+    # före kr, och noten om grannrabatten bar det också i "1 500 kr".
+    # MÄTS I DEN SYNLIGA TEXTEN, inte i källan: Chrome skriver U+00A0 som
+    # &nbsp; i den dumpade DOM:en, så en regex mot rå markup svarar fel.
+    belopp_i_syn = [m2.group(0).strip() for m2 in re.finditer(r"[\d\u00a0 ]*\d.kr\b", syn)]
+    for b in belopp_i_syn:
+        kolla(b.endswith("\u00a0kr"),
+              "%s: beloppet %r har vanligt mellanslag före kr. Hårdspatie på båda "
+              "ställena, ägarbeslut A8 24 okt." % (mall, b))
+    for m2 in re.finditer(r"(?<!\d)(\d{1,3})( )(\d{3})(?!\d)", syn):
+        kolla(False, "%s: tusentalsavgränsaren i %r är ett vanligt mellanslag."
+                     % (mall, m2.group(0)))
+    # EN SLINGA SOM INTE SNURRAR ÄR EN GRÖN RUTA UTAN MÄTNING. Slutar sidan
+    # rendera belopp passerar kontrollerna ovan genom att aldrig köras.
+    # Därför också ett POSITIVT påstående: varje tal kontraktet bär ska stå
+    # på sidan i husets form, och antalet funna belopp ska nå dit.
+    vantade = []
+    if d["order"].get("paket") and isinstance(d["order"]["paket"].get("belopp"), int):
+        vantade.append(d["order"]["paket"]["belopp"])
+    vantade += [r["belopp"] for r in d["order"]["rader"] if isinstance(r.get("belopp"), int)]
+    vantade.append(d["order"]["total"])
+    for v in vantade:
+        kolla(("{:,}".format(v).replace(",", "\u00a0") + "\u00a0kr") in syn,
+              "%s: beloppet %d står inte på sidan i husets form" % (mall, v))
+    kolla(len(belopp_i_syn) >= len(vantade),
+          "%s: %d belopp hittades i texten men kontraktet bär %d. Mätningen letade "
+          "efter fel sak." % (mall, len(belopp_i_syn), len(vantade)))
 
     # Blandade potter: VARJE rad med ett belopp är märkt. En pott: ingen rad.
     etiketter = html.count('<small class="oa__rad-pott">')
@@ -247,7 +285,67 @@ if "--snabb" not in sys.argv:
     kolla('id="oaOrder" hidden' in tom and 'id="oaKvitto" hidden' in tom,
           "ett tomt kontrakt ska lämna sidan som den var, utan ordersektion och utan kvitto")
 
+# ------------------------------------------------- 5. husets skalor
+# INVARIANT 2. SJU TYPSTORLEKAR, INTE FLER.
+# MÄTT I WEBBLÄSAREN, inte läst ur CSS: en clamp, en ärvd procent eller ett
+# !important i en mediafråga syns inte i källan men syns i renderingen. Och
+# vid TVÅ bredder, för en fluid storlek är rätt på en bredd och fel på nästa:
+# rubriken mätte 27 px vid 390 och 35,98 vid 1180, alltså fel på båda.
+# UPPMÄTT FÖRE: elva storlekar vid 390 (27, 19, 17, 16, 15, 14.5, 14, 13,
+# 12.5, 12, 11) där huset har sju.
+if "--snabb" not in sys.argv:
+    sys.path.insert(0, str(HAR / "verktyg"))
+    import typ as _typ
+    for mall in MALLAR:
+        for bredd in (390, 1180):
+            d = _typ.matt(HAR / "fall" / (mall + ".html"), bredd)
+            ute = _typ.utanfor_skalan(d)
+            kolla(not ute,
+                  "%s @ %d: %s ligger utanför husets sju typstorlekar %s"
+                  % (mall, bredd, ute, list(_typ.SKALA)))
+            kolla(len(d["storlekar"]) > 0, "%s @ %d: sonden hittade inga textelement alls, "
+                                           "alltså mätte den ingenting" % (mall, bredd))
+
+# INVARIANT 3. VARJE LÄNGD UR HUSETS SKALOR.
+# Läses ur styles.css, för det är där ett tal utanför skalan skrivs. Undantagen
+# står namngivna i verktyg/skala.py och är få: hårlinjer, skuggor, fokusringen,
+# aurorans bredder, kortets max-width och bockens glyf.
+# UPPMÄTT FÖRE: 51 deklarationer utanför skalan, 28 distinkta värden.
+sys.path.insert(0, str(HAR / "verktyg"))
+import skala as _skala
+_ute = _skala.bryter((HAR / "styles.css").read_text(encoding="utf-8"))
+kolla(not _ute, "styles.css: %d längder utanför husets skalor: %s"
+                % (len(_ute), [(r, s2, e, px) for r, s2, e, px, _ in _ute][:8]))
+# Och att mätaren faktiskt mäter: den ska hitta kortets 540 px, ett tal som
+# står i filen och är ett namngivet undantag. En parser som slutar träffa
+# något rapporterar noll fel, vilket är samma gröna ruta som "allt är rätt".
+_langder = _skala.langder((HAR / "styles.css").read_text(encoding="utf-8"))
+kolla(any(sel.endswith(".oa__card") and px == 540 for _, sel, _, px in _langder),
+      "styles.css: mätaren hittade inte .oa__card max-width 540px, alltså läser den fel")
+kolla(len(_langder) >= 20,
+      "styles.css: mätaren hittade bara %d längder, väntade minst 20" % len(_langder))
+
+# INVARIANT 4. VARJE STRÄNG KUNDEN SER ÄR OFFERTENS EGEN, ORDAGRANT.
+# Det här provet läser OFFERTREPOT. Ett orakel som bara läser sitt eget repo
+# kan inte upptäcka att sanningskällan rört sig, och det var precis så tre fel
+# överlevde till 24 oktober. Hittas inte repot är provet INTE kört, och det
+# sägs rakt ut i stället för att räknas som grönt.
+NORDSTJARNA = pathlib.Path.home() / "Desktop" / "Claude Code" / "laddboxoffert"
+_ordagrant_kord = False
+if NORDSTJARNA.exists():
+    import ordagrant as _ordagrant
+    _antal, _fel = _ordagrant.kor(NORDSTJARNA, tyst=True)
+    for f in _fel:
+        kolla(False, "ordagrant: " + f)
+    kolla(_antal >= 40, "ordagrant: bara %d strängar kontrollerade, väntade minst 40" % _antal)
+    _ordagrant_kord = _antal
+
 print("%d kontroller" % kontroller)
+if _ordagrant_kord:
+    print("ordagrant: %d kundsträngar kontrollerade mot offertrepot" % _ordagrant_kord)
+else:
+    print("EJ KÖRT: ordagrantprovet. Hittar inte offertrepot på %s.\n"
+          "          Kör det för hand: python3 verktyg/ordagrant.py <sökväg>" % NORDSTJARNA)
 if fel:
     print("\n%d FEL:" % len(fel))
     for f in fel:

@@ -20,11 +20,14 @@ tre sektioner som redan fanns.
 
 ```bash
 python3 bygg.py                 # bygger om fall/ ur index.html + exempel/
-python3 prov.py                 # oraklet: 226 kontroller
+python3 prov.py                 # oraklet: 300 kontroller
 python3 verktyg/matt.py fall/laddbox.html 375        # sidledes scroll, träffytor
+python3 verktyg/typ.py fall/laddbox.html 390         # husets sju typstorlekar
+python3 verktyg/skala.py                             # varje längd ur husets skalor
 python3 verktyg/kontrast.py fall/laddbox.html        # WCAG AA
 python3 verktyg/skarmbild.py fall/laddbox.html 375 ut.png 1660
-python3 verktyg/jamfor-skarm.py ~/Desktop/"Claude Code"/laddboxoffert   # glidning mot offertrepot
+python3 verktyg/ordagrant.py ~/Desktop/"Claude Code"/laddboxoffert     # varje kundsträng mot offertrepot
+python3 verktyg/jamfor-skarm.py ~/Desktop/"Claude Code"/laddboxoffert  # glidning mot offertrepot
 ```
 
 `bygg.py` kör `script.js` i headless Chrome och sparar DOM:en. **En renderare, inte två**: en
@@ -32,6 +35,26 @@ andra implementation i Python hade varit en andra sanning som kan glida.
 
 Chrome körs alltid med egen `--user-data-dir` och dödas med sin egen process-grupp. Döda
 aldrig Chrome med `pkill`: det stänger användarens riktiga webbläsare med alla flikar.
+
+## De fyra invarianterna hantverket vilar på
+
+De kom ur passet 24 oktober och de är alla kontroller i `prov.py`, inte råd. Varje
+invariant är bevisad genom att defekten återinfördes och oraklet stoppade bygget.
+
+1. **Ett belopp bryts aldrig mitt itu.** Hårdspatie både som tusentalsavgränsare och före
+   "kr" (ägarbeslut A8, 24 okt). Uppmätt före: 25 av 25 belopp på de fem sidorna bar
+   vanligt mellanslag före kr.
+2. **Sju typstorlekar, inte fler:** 30 / 24 / 20 / 17 / 15 / 13 / 11. Mäts i webbläsaren
+   vid två bredder, inte läses ur CSS. Uppmätt före: elva storlekar vid 390 px.
+3. **Varje längd ur husets skalor.** Spacing 2/4/8/12/16/24/32/48/64, storlekar
+   16/20/24/32/44/48, radier 10/14/20/28. Undantagen är namngivna i `verktyg/skala.py`.
+   Uppmätt före: 51 deklarationer utanför skalan, 28 distinkta värden.
+4. **Varje sträng kunden ser är offertens egen, ordagrant, ur MALLENS egna filer.**
+   `verktyg/ordagrant.py` läser offertrepot. Ett orakel som bara läser sitt eget repo kan
+   inte upptäcka att sanningskällan rört sig, och tre fel överlevde till 24 oktober av
+   precis det skälet. Att en sträng finns någonstans räcker inte: "Driftsättning och
+   avprovning" är en helt riktig rad, i elcentralmallen, och gav grönt på servicemallens
+   bekräftelse i ett dygn.
 
 ## Det tre reglerna sidan inte böjer
 

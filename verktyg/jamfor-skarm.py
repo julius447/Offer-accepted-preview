@@ -49,10 +49,14 @@ AVSIKT = [
      'brickans tecken. Etiketten varierar dessutom: en tilläggsoffert säger '
      '"Tillägg till offert" och pekar på modern.'),
     (('oa__kvitto-not', 'id="oaPaket"'),
-     'Kvittonoten fylls ur kontraktet här och står som fast text "inkl. moms, efter avdrag" '
-     'där. Texten måste följa vilka potter ordern faktiskt har. Dessutom står där '
-     'id="oaPaket" med ordet "Paket" som fast innehåll, och det ordet syns om skriptet inte '
-     'hinner fylla rutan. Här är spannet tomt.'),
+     'Kvittonoten fylls ur kontraktet här och står som fast text där. Texten måste följa '
+     'vilka potter ordern faktiskt har: en bekräftelse VET potterna, acceptskärmen inne i '
+     'offerten gör det inte. Dessutom står där id="oaPaket" med ordet "Paket" som fast '
+     'innehåll, och det ordet syns om skriptet inte hinner fylla rutan. Här är spannet '
+     'tomt. ORDEN jämförs separat nedan, för en förklaring som bara säger "mekanismen '
+     'skiljer" döljer att LYDELSEN drar isär. Den här raden gjorde precis det: den '
+     'citerade "inkl. moms, efter avdrag" i fem dagar efter att offertrepot bytt till '
+     '"inkl. moms, efter skattereduktion".'),
     (('data-oa-steg', 'class="oa__step-text">', 'data-oa="bokare.namn"'),
      'Stegen har datakrokar här, så en mall kan byta eller ta bort ett steg utan att forka '
      'sidan. Tilläggsmallen gör redan bytet med strängersättningar och en regex i '
@@ -97,4 +101,43 @@ if oforklarat:
     for r in oforklarat:
         print("  " + r[:160])
     sys.exit(1)
-print("\nIngen oförklarad glidning.")
+# ----------------------------------------------------------------- ORDEN
+# Markupen kan vara förklarad medan LYDELSEN glider. Kvittonoten är fast text
+# i offertrepot och räknas här, och de två måste säga samma sak om moms och
+# avdrag. Ägarens lydelse D3 24 oktober: "inkl. moms, efter skattereduktion
+# (Grön teknik och ROT)." Offertrepots delade skärm bär första ledet utan
+# parentesen, för den vet inte vilka potter ordern har. Bekräftelsen vet, och
+# fyller parentesen. Regeln: bekräftelsens korta sats BÖRJAR med offertrepots.
+import json
+
+annan_text = annan.read_text(encoding="utf-8")
+m = re.search(r'class="oa__kvitto-not"[^>]*>([^<]+)<', annan_text)
+if not m:
+    print("\nORDEN: hittar ingen oa__kvitto-not i offertrepot, kan inte jämföra lydelsen")
+    sys.exit(1)
+deras = m.group(1).strip()
+
+js = (HAR / "script.js").read_text(encoding="utf-8")
+mina = re.findall(r"forsta = '([^']*)'", js)
+if not mina:
+    print("\nORDEN: hittar ingen pottrad i script.js")
+    sys.exit(1)
+
+print("\nORDEN")
+print("  offertrepots fasta text : %r" % deras)
+fel_ord = []
+# BARA ÅT ETT HÅLL. Ett dubbelriktat prefixprov godkänner också en KORTARE
+# sats, och "inkl. moms, efter " är ett prefix av offertrepots text fast den
+# har tappat ordet skattereduktion. Uppmätt: med `or deras.startswith(f)` gav
+# provet grönt på precis den regressionen. Undantaget är "inkl. moms" utan
+# pott, som inte kan bära ordet skattereduktion eftersom ingen dras.
+for f in mina:
+    passar = f == "inkl. moms" or f.startswith(deras)
+    print("  bekräftelsens sats      : %-56r %s" % (f, "ok" if passar else "GLIDNING"))
+    if not passar:
+        fel_ord.append(f)
+if fel_ord:
+    print("\n%d lydelser säger något annat om moms och avdrag än offertrepot." % len(fel_ord))
+    sys.exit(1)
+
+print("\nIngen oförklarad glidning, och lydelserna säger samma sak.")

@@ -4,14 +4,17 @@
     "paket.belopp": "64063 = SAJ HS3, 20 kWh, offerter/batteri/modeller/saj-hs3.json. Kolumn I ur ägarens egen prislista: KUNDENS PRIS efter grön teknik och inklusive moms, räknat på två personer med grön teknik.",
     "storlek": "20 kWh = förvalet för saj-hs3, offerter/batteri/innehall.json forval_kwh. [GAP] Förvalet är en parameter per offert som bokaren sätter; ingen ägarkälla.",
     "underrubrik": "'20 kWh, monterad och driftsatt', samma mening som motorn skriver i hjälten (offerter/batteri/skript.js rad 107).",
-    "odrift": "30000, ÄGARBESLUT 23 okt punkt 3. offerter/batteri/innehall.json tillagg. Specen är filens egen, ordagrant.",
+    "odrift": "30000, ÄGARBESLUT 23 okt punkt 3. offerter/batteri/innehall.json tillagg, posten odrift. Namnet är filens 'namn', specen är filens 'spec', båda ordagrant. RÄTTAT 2026-10-24: specen stod här som 'Delar av huset får ström från batteriet när nätet går ner', en mening som inte finns någonstans i offertrepot. Noten påstod att den var ordagrant filens egen. Filen säger 'Ström från batteriet när nätet går ner', och det är också det som står på den byggda batterisidan.",
     "odrift_avdrag": "[GAP] Ägarfråga 12 i batteri-förarbetet: räknas ö-driften som grön teknik? Byggd som grön teknik efter principen i ägarbeslut 11 (15 okt). Är den brutto utan avdrag ändras EN rad här till avdrag: 'inget'.",
     "total": "94063 = 64063 + 30000. Samma väg som motorn: netto = gt + rot, där rot är 0 här.",
     "bokare": "Rasmus, offerter/batteri/innehall.json bokare. [GAP] Batterisäljarna säljer också; namn är en parameter per offert.",
-    "referens": "2026-0642, offerter/batteri/innehall.json offertnr. Platshållare; CRM:et sätter det riktiga vid utskick. Kollisionen med serviceofferten är STÄNGD 2026-10-23: service flyttades till 0643.",
+    "referens": "2026-0642, offertrepots .offertnummer.json nyckel batteri. RÄTTAT 2026-10-24: noten pekade på offerter/batteri/innehall.json offertnr, som numera är null: numren flyttades till ett gemensamt register. Numret är oforändrat och står också på den byggda batterisidan. Platshållare; CRM:et sätter det riktiga vid utskick. Kollisionen med serviceofferten är STÄNGD 2026-10-23: service flyttades till 0643.",
     "giltig_till_lang": "[GAP] Inget giltighetsdatum är beslutat för batteriofferten. null tar bort datumet i stället för att hitta på ett."
   },
 
+  "_undantag_ordagrant": {
+    ".order.paket.namn": "KOMPONERAD I KORNING. offerter/batteri/skript.js skriver summeringens huvudrad som MODELL.namn + ', ' + kwh(s.kwh) + ' kWh'. Modellfilen heter 'SAJ HS3' och forvalet ar 20 kWh, sa raden blir den har. Hela strangen star inte i nagon fil."
+  },
   "_kalla_villkor": "https://ampy.se/kopvillkor. Alla fem mallarna länkar dit med texten 'Läs våra köpvillkor' (offerter/laddbox/body.html rad 566, elcentral rad 264, batteri rad 160, service/offert.py rad 155). Kontrollerat 19 okt enligt noten i tillagg.html rad 71.",
 
   "kontrakt_version": 1,
@@ -48,7 +51,7 @@
         "typ": "tillagg",
         "namn": "Ö-drift, reservkraft vid strömavbrott",
         "variant": null,
-        "spec": "Delar av huset får ström från batteriet när nätet går ner",
+        "spec": "Ström från batteriet när nätet går ner",
         "antal": 1,
         "styckpris": null,
         "belopp": 30000,

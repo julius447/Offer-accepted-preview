@@ -46,12 +46,16 @@
 
   function $(id) { return document.getElementById(id); }
 
-  /* Samma form som laddboxrepots _kr och kr(): hårt mellanslag mellan
-     tusentalen, vanligt mellanslag före kr. toLocaleString ger olika
-     avgränsare i olika webbläsare, och ett tal som ser olika ut på två
-     ställen läser som två olika tal. */
+  /* ETT TAL, ETT TECKEN. Hårdspatie (U+00A0) BÅDE mellan tusentalen OCH före
+     kr. ÄGARBESLUT 24 oktober (A8): ett vanligt mellanslag tillåter radbrytning
+     mitt i beloppet, så "14 345" kan hamna på en rad och "kr" på nästa.
+     UPPMÄTT FÖRE: alla 24 beloppen på de fem byggda sidorna bar vanligt
+     mellanslag före kr. Samma rad som laddboxrepots KR_JS,
+     offerter/elcentral/offert.py rad 177 och offerter/service/offert.py rad 117.
+     toLocaleString ger olika avgränsare i olika webbläsare, och ett tal som ser
+     olika ut på två ställen läser som två olika tal. */
   function kr(n) {
-    return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' kr';
+    return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + ' kr';
   }
 
   /* ---- AVDRAGSVOKABULÄRET. Tre värden, inte fyra stavningar. -------------
@@ -67,20 +71,48 @@
   };
 
   /* Raden under totalen. ORDAGRANT porterad ur laddboxrepots
-     offerter/tillagg/offert.py rad 162 till 183 (pottrad). Samma ord i två
-     repon: en mening om moms och avdrag får inte finnas i två versioner.
-     Returnerar [kort, hel]. Den korta satsen står i kvittonoten, den hela i
-     finstilten, precis som tilläggsmallen gör. */
+     offerter/tillagg/offert.py:pottrad. Samma ord i två repon: en mening om
+     moms och avdrag får inte finnas i två versioner. Returnerar [kort, hel].
+     Den korta satsen står i kvittonoten, den hela i finstilten, precis som
+     tilläggsmallen gör.
+
+     ÄGARENS ORD, D3 24 OKTOBER, ORDAGRANT:
+         "inkl. moms, efter skattereduktion (Grön teknik och ROT).
+          Avdragen dras direkt på fakturan."
+
+     TRE SAKER BYTTES MOT DEN FÖRRA PORTEN, OCH ALLA TRE ÄR ÄGARENS:
+     1. ORDET SKATTEREDUKTION FÖRST, potterna i parentes. Förut stod "efter
+        grön teknik och ROT", alltså två programnamn utan överord.
+        "Skattereduktion" är vad båda är, och det är Skatteverkets ord.
+     2. POTTNAMNEN ÄR VERSALA i parentesen: "Grön teknik", inte "grön teknik".
+        Ägarens egen skrivning.
+     3. MENINGEN OM AVDRAGSUTRYMME UTGÅR. Ägaren tog bort den 24 okt, och
+        tilläggsmallens eget orakel stoppar nu bygget om ordet står på sidan
+        (offerter/tillagg/offert.py rad 382). Villkoret står kvar exakt EN
+        gång i elcentral- och servicemallens egen finstilt, alltså i den
+        OFFERT kunden läste innan hon accepterade; hedging-direktivet 15 aug
+        säger EN gång, inte en gång per sida. ÄGARGRIND: vill ägaren ha
+        tillbaka meningen på bekräftelsen är det en rad här och en i prov.py.
+
+     DEN HÄR SIDAN ÄR SAMMA FALL SOM DEN DELADE ACCEPTSKÄRMEN: en yta för fem
+     mallar. Där löstes det med fast text "inkl. moms, efter skattereduktion",
+     eftersom ett delat block inte kan namnge en pott som bara gäller på en av
+     fem sidor. Här BÄR kontraktet potterna, så parentesen kan säga vilka två
+     det faktiskt är. Samma ord, fylld parentes. */
   function pottrad(potter) {
     var gt = potter.indexOf('gron-teknik') >= 0, rot = potter.indexOf('rot') >= 0;
+    var namn = [];
+    if (gt) namn.push('Grön teknik');
+    if (rot) namn.push('ROT');
     var forsta, andra;
-    if (gt && rot) { forsta = 'inkl. moms, efter grön teknik och ROT'; andra = 'Avdragen dras direkt på fakturan.'; }
-    else if (gt)   { forsta = 'inkl. moms, efter grön teknik';         andra = 'Avdraget dras direkt på fakturan.'; }
-    else if (rot)  { forsta = 'inkl. moms, efter ROT-avdrag';          andra = 'Avdraget dras direkt på fakturan.'; }
-    else           { forsta = 'inkl. moms';                            andra = ''; }
+    if (namn.length) {
+      forsta = 'inkl. moms, efter skattereduktion (' + namn.join(' och ') + ')';
+      andra = (namn.length > 1 ? 'Avdragen' : 'Avdraget') + ' dras direkt på fakturan.';
+    } else {
+      forsta = 'inkl. moms'; andra = '';
+    }
     var delar = [forsta + '.', andra];
-    if (potter.indexOf('inget') >= 0 && (gt || rot)) delar.push('Rader utan avdrag är märkta.');
-    if (rot) delar.push('ROT förutsätter att du har avdragsutrymme kvar.');
+    if (potter.indexOf('inget') >= 0 && namn.length) delar.push('Rader utan avdrag är märkta.');
     return [forsta, delar.filter(function (d) { return d; }).join(' ')];
   }
 

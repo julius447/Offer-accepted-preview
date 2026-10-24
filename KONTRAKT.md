@@ -243,8 +243,18 @@ inget tal, för kunden kan inte se vilket av dem som är fel.
 Felen hamnar i `data-oa-fel` på `.oa` och i konsolen. Kunden ser bara att ett tal uteblev.
 
 Finstilten under raderna och den korta satsen i kvittot byggs av `pottrad()`, **ordagrant
-porterad** ur `offerter/tillagg/offert.py` rad 162 till 183. En mening om moms och avdrag får
-inte finnas i två versioner i två repon.
+porterad** ur `offerter/tillagg/offert.py:pottrad`. Funktionen, inte ett radnummer: raderna
+flyttar sig och en hänvisning till rad 162 pekade på något annat inom ett dygn. En mening om
+moms och avdrag får inte finnas i två versioner i två repon.
+
+**Ägarens lydelse, D3 24 oktober, ordagrant:** *"inkl. moms, efter skattereduktion (Grön
+teknik och ROT). Avdragen dras direkt på fakturan."* Parentesen bär de potter ordern
+faktiskt har. Den delade acceptskärmen i offertrepot säger samma mening utan parentes, för
+den vet inte vilka potter ordern har; `verktyg/jamfor-skarm.py` mäter att de två börjar
+likadant. **Meningen "ROT förutsätter att du har avdragsutrymme kvar." står inte här**:
+ägaren tog bort den ur tilläggsmallen 24 okt, och hedging-direktivet 15 aug säger att
+villkoret står EN gång, vilket det gör i elcentral- och servicemallens egen finstilt,
+alltså i den offert kunden läste före accepten. **ÄGARGRIND** om den ska tillbaka hit.
 
 ---
 
@@ -269,9 +279,10 @@ inte finnas i två versioner i två repon.
 ## 6. `[GAP]`, ägaren avgör
 
 1. **Femte mallens namn.** "tilläggsoffert" i uppdraget, "elektriker" i `offerter/LAS-MIG.md` rad 3.
-2. **Offertnumret 2026-0642 används av två mallar.** `offerter/service/jobb.json` rad 29 och
-   `offerter/batteri/innehall.json` rad 21. Båda är platshållare, men två mallar med samma
-   nummer blir två kunder med samma nummer den dagen någon glömmer byta.
+2. ~~**Offertnumret 2026-0642 används av två mallar.**~~ **STÄNGT.** Serviceofferten flyttades
+   till 2026-0643, och offertrepot håller numren i ett gemensamt register, `.offertnummer.json`
+   (laddbox 0640, elcentral 0641, batteri 0642, service 0643). Kontrollerat 24 okt mot de fem
+   byggda sidorna: var och en visar sitt eget nummer och inget annat.
 3. **Tilläggsoffertens eget nummer.** Finns inte. Brickan visar moderns referens.
    `offerter/tillagg/urval.json` `_kallor.moder`: inget ägarbeslut om formen.
 4. **`moder.godkant_pris`** är `null`: priset kunden accepterade i moderofferten finns inte i

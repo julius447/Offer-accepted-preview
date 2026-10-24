@@ -5,7 +5,7 @@
     "avdrag": "'rot', offerter/service/jobb.json rad 38.",
     "express": "2500, offerter/service/jobb.json tid. Etiketten 'Express, 24 till 72 timmar' är den strängen motorn själv bygger: namn + ', ' + spec, offerter/service/offert.py rad 191.",
     "rubrik": "null. Jobbet namnges i huvudraden i stället: service har ingen produkt och ingen bild, och samma sträng tre gånger på samma kort läser som tre olika saker. Rubriken 'Allt som ingår' under raderna gör det hjältens JOBBSPEC gjorde (offerter/service/offert.py rad 167).",
-    "ingar": "Fyra jobbrader ur offerter/service/jobb.json jobb.rader, sedan etiketten 'Det här ingår alltid' (offerter/service/offert.py rad 89) och tre grundrader. Grundraderna är ORDAGRANT flyttade ur redan ägargodkända listor i laddbox- och elcentralmallen; generatorns orakel rad 232 till 236 stoppar bygget om en grundrad inte står ordagrant i en godkänd lista.",
+    "ingar": "Fyra jobbrader ur offerter/service/jobb.json jobb.rader, sedan ägarens FYRA alltid-steg: AGARENS_ALLTID i offerter/service/offert.py rad 151 till 152, ordagrant. RÄTTAT 2026-10-24: här stod tre rader, där 'Driftsättning och avprovning' var EN rad. Ägaren bytte listan 24 okt (uppdrag/2026-10-24-agarfeedback.md E4) och 'Driftsättning' och 'Avprovning' är nu två steg. Den gamla noten här pekade på generatorns orakel rad 232 till 236, som bevakade listan från 23 oktober och är pensionerat av precis det skälet (offert.py rad 148 till 150): ett prov som bevakar en gammal sanning stoppar inte felet, det stoppar rättningen.",
     "total": "9900 = 7400 + 2500. Samma väg som motorn: summa = PRIS + tid.",
     "bokare": "Rasmus, offerter/service/jobb.json rad 31 ('Rasmus L'). Fornamnet är samma som laddboxmallens och batterimallens.",
     "referens": "2026-0643, offerter/service/jobb.json. Kollisionen med batteriofferten är STÄNGD 2026-10-23: serviceofferten flyttades till 0643, och ett generiskt orakel i offertrepot läser nu ALLA offertnummer på en sida, inte bara det första, så en sida som visar två nummer stoppar bygget.",
@@ -13,6 +13,9 @@
     "akut": "[GAP] Är servicemallen planerat flöde eller akut eljour? Styr steg 2 och 3. Är den akutflödet lovar steg 3 ett lugnt schema till någon som har strömavbrott."
   },
 
+  "_undantag_ordagrant": {
+    ".steg[1].under": "KOMPONERAD I KORNING. offerter/service/skript.js bygger meningen som 'Du har valt ' + TID[tid] + '. Vi hor av oss for att boka tid.', dar TID byggs ur jobb.json tid som namn + ', ' + spec. Med Express blir det den har. Hela strangen star darfor inte i nagon fil; delarna gor det."
+  },
   "_kalla_villkor": "https://ampy.se/kopvillkor. Alla fem mallarna länkar dit med texten 'Läs våra köpvillkor' (offerter/laddbox/body.html rad 566, elcentral rad 264, batteri rad 160, service/offert.py rad 155). Kontrollerat 19 okt enligt noten i tillagg.html rad 71.",
 
   "kontrakt_version": 1,
@@ -70,7 +73,8 @@
       { "text": "Ny jordad grupp till köksbänken", "spec": "från elcentralen, upp till 10 meter kabel" },
       { "text": "Håltagning och återställning", "spec": "två hål, spacklade och målade" },
       { "text": "Installation av våra egna elektriker" },
-      { "text": "Driftsättning och avprovning" },
+      { "text": "Driftsättning" },
+      { "text": "Avprovning" },
       { "text": "Arbete och material ingår i priset" }
     ],
     "utestaende": []

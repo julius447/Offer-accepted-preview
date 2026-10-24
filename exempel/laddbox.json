@@ -8,11 +8,16 @@
     "spotlight": "4800 = styckpris 800 gånger 6, katalog/tillval.json rad 245. ROT enligt samma fil rad 264.",
     "batteri-saj": "Intresseanmälan: katalogen bär 'fran': true och inget pris, avdrag 'inget' (rad 289 till 297). Priset går inte att sätta utan att se taket och förbrukningen.",
     "total": "14345 = 9170 + 200 + 175 + 4800. Samma väg som motorn: sum = paketpris + deltan + valda rader, mitt = sum, calcNet = kr(mitt). Motorn drar aldrig ROT ur mitt (offerter/laddbox/skript.js rad 243 till 294).",
-    "grannrabatt": "Texterna är ordagrant motorns egna, offerter/laddbox/skript.js rad 358 till 360.",
+    "grannrabatt": "Texterna är motorns egna, offerter/laddbox/skript.js (raden och noten under grannrabatten). Motorn komponerar dem i körning ur GRANNRABATT och kr(), så de står inte som hela strängar i någon fil: 'Grannrabatt, ' + antal + ' grannar inbjudna', 'dras när de beställt' och 'Upp till ' + kr(antal*500) + ' av, ' + kr(500) + ' för varje granne som beställer. Ditt pris här ändras inte förrän det hänt.' Beloppen i noten bär därför husets kr()-form, alltså hårdspatie både i tusentalet och före kr (ägarbeslut A8 24 okt). RÄTTAT 2026-10-24: de tre beloppen i den här noten bar vanligt mellanslag.",
     "bokare": "Rasmus, laddboxmallens bokare (gemensamt/block/skarm-accept.html rad 40).",
     "giltig_till_lang": "Fylls av CRM:et. Saknas den renderas ingen mening om datum. Ingen hårdkodning finns i den här sidan."
   },
 
+  "_undantag_ordagrant": {
+    ".order.utestaende[0].not": "KOMPONERAD I KORNING. offerter/laddbox/skript.js bygger noten som 'Upp till ' + kr(grannar*GRANNRABATT) + ' av, ' + kr(GRANNRABATT) + ' for varje granne som bestaller. Ditt pris har andras inte forran det hant.' Hela strangen star darfor inte i nagon fil. Med tre grannar och GRANNRABATT 500 blir den den har. Beloppen bar husets kr()-form: hardspatie bade i tusentalet och fore kr (agarbeslut A8 24 okt).",
+    ".order.paket.namn": "KOMPONERAD I KORNING. offerter/laddbox/skript.js skriver summeringens huvudrad som 'Paket ' + p.namn, och paket.json nyckel 4720 heter 'Premium'. Ordet 'Paket' ar motorns, namnet ar katalogens, och hela strangen star darfor inte i nagon fil.",
+    ".order.utestaende[0].text": "KOMPONERAD I KORNING. offerter/laddbox/skript.js skriver 'Grannrabatt, ' + antal + (antal > 1 ? ' grannar inbjudna' : ' granne inbjuden'). Med tre grannar blir det den har."
+  },
   "_kalla_villkor": "https://ampy.se/kopvillkor. Alla fem mallarna länkar dit med texten 'Läs våra köpvillkor' (offerter/laddbox/body.html rad 566, elcentral rad 264, batteri rad 160, service/offert.py rad 155). Kontrollerat 19 okt enligt noten i tillagg.html rad 71.",
 
   "kontrakt_version": 1,
@@ -89,7 +94,7 @@
       {
         "text": "Grannrabatt, 3 grannar inbjudna",
         "ord": "dras när de beställt",
-        "not": "Upp till 1 500 kr av, 500 kr för varje granne som beställer. Ditt pris här ändras inte förrän det hänt."
+        "not": "Upp till 1 500 kr av, 500 kr för varje granne som beställer. Ditt pris här ändras inte förrän det hänt."
       }
     ]
   }

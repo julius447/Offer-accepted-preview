@@ -305,6 +305,12 @@ if "--snabb" not in sys.argv:
                   % (mall, bredd, ute, list(_typ.SKALA)))
             kolla(len(d["storlekar"]) > 0, "%s @ %d: sonden hittade inga textelement alls, "
                                            "alltså mätte den ingenting" % (mall, bredd))
+            # Och vikterna. Typsnittsfilen klamrar tyst en vikt den inte har,
+            # så en 900 som ingen skrivit syns bara om man frågar efter den.
+            viktfel = _typ.utanfor_vikterna(d)
+            kolla(not viktfel,
+                  "%s @ %d: vikten %s renderas men huset har bara %s"
+                  % (mall, bredd, viktfel, list(_typ.VIKTER)))
 
 # INVARIANT 3. VARJE LÄNGD UR HUSETS SKALOR.
 # Läses ur styles.css, för det är där ett tal utanför skalan skrivs. Undantagen

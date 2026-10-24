@@ -20,7 +20,7 @@ tre sektioner som redan fanns.
 
 ```bash
 python3 bygg.py                 # bygger om fall/ ur index.html + exempel/
-python3 prov.py                 # oraklet: 300 kontroller
+python3 prov.py                 # oraklet: 310 kontroller
 python3 verktyg/matt.py fall/laddbox.html 375        # sidledes scroll, träffytor
 python3 verktyg/typ.py fall/laddbox.html 390         # husets sju typstorlekar
 python3 verktyg/skala.py                             # varje längd ur husets skalor
@@ -44,8 +44,10 @@ invariant är bevisad genom att defekten återinfördes och oraklet stoppade byg
 1. **Ett belopp bryts aldrig mitt itu.** Hårdspatie både som tusentalsavgränsare och före
    "kr" (ägarbeslut A8, 24 okt). Uppmätt före: 25 av 25 belopp på de fem sidorna bar
    vanligt mellanslag före kr.
-2. **Sju typstorlekar, inte fler:** 30 / 24 / 20 / 17 / 15 / 13 / 11. Mäts i webbläsaren
-   vid två bredder, inte läses ur CSS. Uppmätt före: elva storlekar vid 390 px.
+2. **Sju typstorlekar, inte fler:** 30 / 24 / 20 / 17 / 15 / 13 / 11, och **sex vikter**,
+   300 till 800. Mäts i webbläsaren vid två bredder, inte läses ur CSS. Uppmätt före:
+   elva storlekar vid 390 px, och en vikt 900 som ingen skrivit (webbläsarens `bolder`
+   räknar upp från stycket) och som typsnittsfilen klamrade tyst.
 3. **Varje längd ur husets skalor.** Spacing 2/4/8/12/16/24/32/48/64, storlekar
    16/20/24/32/44/48, radier 10/14/20/28. Undantagen är namngivna i `verktyg/skala.py`.
    Uppmätt före: 51 deklarationer utanför skalan, 28 distinkta värden.
@@ -55,6 +57,20 @@ invariant är bevisad genom att defekten återinfördes och oraklet stoppade byg
    precis det skälet. Att en sträng finns någonstans räcker inte: "Driftsättning och
    avprovning" är en helt riktig rad, i elcentralmallen, och gav grönt på servicemallens
    bekräftelse i ett dygn.
+
+## Typsnittet
+
+**Inter, självhostad.** Ägarbeslut 20 oktober, ordagrant ur offertrepots `bygg.py`:
+*"Inter for ALLA offertmallar. Storst x-hojd av de fyra kandidaterna, och det ar hela
+skillnaden vid 13 och 15 px."* Vikterna där är 300 till 800.
+
+Sidan stod i Outfit till 24 oktober, alltså i husets typsnitt från före 16 oktober, och
+`styles.css` påstod att filerna var samma produktionssubset som offertsidan använder. Det
+var inte sant: samma kort renderades i två typsnitt i två repon.
+
+**Självhostningen är med flit och behålls.** Offertmallarna hämtar Inter från
+`fonts.googleapis.com`, vilket skickar kundens IP-adress till Google på en sida som bär
+hennes namn och hennes pris. Den här sidan gör det inte.
 
 ## Det tre reglerna sidan inte böjer
 

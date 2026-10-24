@@ -35,6 +35,14 @@ CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 
 SKALA = (30, 24, 20, 17, 15, 13, 11)
 
+# Vikterna ägaren beställde, ordagrant ur offertrepots bygg.py:
+#   family=Inter:wght@300;400;500;600;700;800
+# En vikt utanför listan är antingen ett tryckfel eller, vanligare, en
+# UA-standard som ingen skrivit: <b> räknar upp från sitt stycke, så 600
+# blir 900. Typsnittsfilen klamrar den tyst till sitt tak, och då ser
+# ingen att sidan begär en vikt huset inte har.
+VIKTER = (300, 400, 500, 600, 700, 800)
+
 SOND = """
 <script>window.addEventListener('load',function(){
   var ut={storlekar:{}, element:[]};
@@ -110,6 +118,19 @@ def utanfor_skalan(d):
     return sorted(ut, reverse=True)
 
 
+def utanfor_vikterna(d):
+    """[(vikt, exempeltext)] för varje renderad vikt huset inte har."""
+    ut = {}
+    for e in d["element"]:
+        try:
+            w = int(e["w"])
+        except (TypeError, ValueError):
+            continue
+        if w not in VIKTER and w not in ut:
+            ut[w] = e["t"]
+    return sorted(ut.items())
+
+
 if __name__ == "__main__":
     if len(sys.argv) < 3:
         raise SystemExit(__doc__)
@@ -122,6 +143,8 @@ if __name__ == "__main__":
         ut = "   <-- UTANFOR SKALAN" if (v != round(v) or round(v) not in SKALA) else ""
         print("   %7s : %3d%s" % (px, d["storlekar"][px], ut))
     print(" %d distinkta storlekar, huset har %d" % (len(d["storlekar"]), len(SKALA)))
+    v = utanfor_vikterna(d)
+    print(" vikter utanfor husets %s: %s" % (list(VIKTER), v if v else "inga"))
     if "--element" in sys.argv:
         for e in d["element"]:
             print("   %-26s %6s/%-6s %-4s %s" % (str(e["k"])[:26], e["px"], e["lh"], e["w"], e["t"]))

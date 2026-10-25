@@ -15,10 +15,61 @@
     "steg_2": "'Elektrikern tar det härifrån' / 'Du behöver inte göra något mer.', ordagrant offerter/tillagg/offert.py rad 230 till 232. Här HÅLLER premissen: elektrikern står hos kunden, så 'ringer och bokar tid' lovar ett samtal som inte kommer.",
     "steg_3": "Taget bort. Generatorn tar bort samma steg av samma skäl (offert.py rad 233 till 240): elektrikern står redan hos kunden, så 'på avtalad tid' är ett löfte ingen gett.",
     "bokare": "INGEN. Tillägget skickas av elektrikern på plats, och generatorns orakel rad 310 till 312 stoppar bygget om Rasmus eller Felix står på sidan. [GAP] Elektrikerns namn finns inte i repot.",
-    "giltig_till": "Inget. Generatorns orakel rad 306 till 307 stoppar bygget om ett giltighetsdatum står på sidan, för inget är beslutat."
+    "giltig_till": "Inget. Generatorns orakel rad 306 till 307 stoppar bygget om ett giltighetsdatum står på sidan, för inget är beslutat.",
+    "accepterad": "[GAP] NAR kunden accepterade. Agarsvar 46, 25 oktober: \"Ja, lagg till datum\". Datumet uppstar i det ogonblick kunden trycker acceptera och finns darfor inte i offertrepot: inget av de fem exemplen ar accepterat av nagon. CRM:et satter ISO 8601 (2026-10-25) nar accepten registreras. null tar bort meningen i stallet for att hitta pa ett datum. Faltet finns sa att INGEN hardkodar det, vilket ar precis vad som hant med giltighetsdatumet i offertrepots elcentralmall."
   },
 
   "_kalla_villkor": "https://ampy.se/kopvillkor. Alla fem mallarna länkar dit med texten 'Läs våra köpvillkor' (offerter/laddbox/body.html rad 566, elcentral rad 264, batteri rad 160, service/offert.py rad 155). Kontrollerat 19 okt enligt noten i tillagg.html rad 71.",
+
+  "_tal": {
+      "_not": "HARLEDNINGEN FOR VARJE TAL KUNDEN SER, MED KALLAN I OFFERTREPOT. verktyg/talen.py raknar om uttrycket och slar upp varje operand i den namngivna filen vid varje korning, sa ett tal som rort sig i offertrepot gor det har provet rott. Formerna star i talen.py: fil#jsonvag, fil@ankare, .kontraktsvag och val: med skal. Agarsvar 60, 25 oktober: \"Bygg det nu.\"",
+      ".order.rader[0].belopp": {
+        "uttryck": "2650",
+        "kallor": {
+          "2650": "katalog/tillval.json#perific.varianter.Perific Max, passar alla elmätare.pris"
+        }
+      },
+      ".order.rader[1].belopp": {
+        "uttryck": "495",
+        "kallor": {
+          "495": "katalog/tillval.json#zaptec-chill.pris"
+        }
+      },
+      ".order.rader[2].belopp": {
+        "uttryck": "175",
+        "kallor": {
+          "175": "katalog/tillval.json#rfid.varianter.5-pack.pris"
+        }
+      },
+      ".order.rader[3].antal": {
+        "uttryck": "2",
+        "kallor": {
+          "2": "val: elektrikern lade in tva extra arbetstimmar pa plats. Antalet ar hans, det star inte i katalogen."
+        }
+      },
+      ".order.rader[3].styckpris": {
+        "uttryck": "850",
+        "kallor": {
+          "850": "katalog/tillval.json#arbetstimme.pris"
+        }
+      },
+      ".order.rader[3].belopp": {
+        "uttryck": "850 * 2",
+        "kallor": {
+          "850": ".order.rader[3].styckpris",
+          "2": ".order.rader[3].antal"
+        }
+      },
+      ".order.total": {
+        "uttryck": "2650 + 495 + 175 + 1700",
+        "kallor": {
+          "2650": ".order.rader[0].belopp",
+          "495": ".order.rader[1].belopp",
+          "175": ".order.rader[2].belopp",
+          "1700": ".order.rader[3].belopp"
+        }
+      }
+    },
 
   "kontrakt_version": 1,
   "priser_ar": "netto",
@@ -31,6 +82,7 @@
     "moderreferens": "2026-0640",
     "modertyp": "laddbox",
     "giltig_till_lang": null,
+    "accepterad": null,
     "villkor_url": "https://ampy.se/kopvillkor"
   },
 

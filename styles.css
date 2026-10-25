@@ -142,6 +142,15 @@
   color:var(--teal-ink); background:rgba(0,169,145,.08); border:1px solid rgba(0,169,145,.16);
   padding:var(--s2) var(--s3); border-radius:999px; }
 
+/* --- acceptdatumet ------------------------------------------------------
+   Ägarsvar 46, 25 oktober: "Ja, lägg till datum." En rad under brickan, i
+   samma ton och storlek som sidans övriga sekundärtext (--t6 / --ink-soft),
+   så den läses som en notering om referensen och inte som ett nytt påstående.
+   INGEN EGEN MARGINAL: .oa__head är en flexkolumn med gap var(--s3), alltså
+   husets rytm. En margin-top här hade lagt sig OVANPÅ gapet och gett ett
+   avstånd som inte finns på skalan. */
+.oa__accept{ margin:0; font-size:var(--t6); font-weight:400; color:var(--ink-soft); }
+
 /* --- kvittot i huvudet -------------------------------------------------
    Ett tal, inte ett kort: sidan ar en bekraftelse och inte en andra offert.
    Formen ar porterad ordagrant ur laddboxrepots gemensamt/system.css

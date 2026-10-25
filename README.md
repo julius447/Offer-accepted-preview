@@ -20,13 +20,17 @@ tre sektioner som redan fanns.
 
 ```bash
 python3 bygg.py                 # bygger om fall/ ur index.html + exempel/
-python3 prov.py                 # oraklet: 310 kontroller
+python3 prov.py                 # oraklet: 581 kontroller
+python3 prov.py --snabb         # samma, utan webblasarproven och typmatningen
 python3 verktyg/matt.py fall/laddbox.html 375        # sidledes scroll, träffytor
 python3 verktyg/typ.py fall/laddbox.html 390         # husets sju typstorlekar
 python3 verktyg/skala.py                             # varje längd ur husets skalor
 python3 verktyg/kontrast.py fall/laddbox.html        # WCAG AA
 python3 verktyg/skarmbild.py fall/laddbox.html 375 ut.png 1660
 python3 verktyg/ordagrant.py ~/Desktop/"Claude Code"/laddboxoffert     # varje kundsträng mot offertrepot
+python3 verktyg/talen.py ~/Desktop/"Claude Code"/laddboxoffert         # varje TAL mot offertrepots källfiler
+python3 verktyg/talen.py ~/Desktop/"Claude Code"/laddboxoffert --sjalvprov   # att talprovet kan falla
+python3 verktyg/mutationer.py                        # att prov.py-oraklen kan falla
 python3 verktyg/jamfor-skarm.py ~/Desktop/"Claude Code"/laddboxoffert  # glidning mot offertrepot
 ```
 
@@ -36,10 +40,11 @@ andra implementation i Python hade varit en andra sanning som kan glida.
 Chrome körs alltid med egen `--user-data-dir` och dödas med sin egen process-grupp. Döda
 aldrig Chrome med `pkill`: det stänger användarens riktiga webbläsare med alla flikar.
 
-## De fyra invarianterna hantverket vilar på
+## De sex invarianterna hantverket vilar på
 
-De kom ur passet 24 oktober och de är alla kontroller i `prov.py`, inte råd. Varje
-invariant är bevisad genom att defekten återinfördes och oraklet stoppade bygget.
+De fyra första kom ur passet 24 oktober, de två sista ur ägarsvaren 25 oktober. Alla är
+kontroller i `prov.py`, inte råd. Varje invariant är bevisad genom att defekten
+återinfördes och oraklet stoppade bygget.
 
 1. **Ett belopp bryts aldrig mitt itu.** Hårdspatie både som tusentalsavgränsare och före
    "kr" (ägarbeslut A8, 24 okt). Uppmätt före: 25 av 25 belopp på de fem sidorna bar
@@ -71,6 +76,22 @@ var inte sant: samma kort renderades i två typsnitt i två repon.
 **Självhostningen är med flit och behålls.** Offertmallarna hämtar Inter från
 `fonts.googleapis.com`, vilket skickar kundens IP-adress till Google på en sida som bär
 hennes namn och hennes pris. Den här sidan gör det inte.
+
+## Acceptdatumet
+
+Ägarsvar 46, 25 oktober: "Ja, lägg till datum." Raden står under referensbrickan och säger
+"Accepterad 25 oktober 2026". Datumet är en **parameter per fall** i kontraktet
+(`offert.accepterad`, ISO 8601) och finns inte i markupen: det felet lever i offertrepots
+elcentralmall, där "27 oktober 2026" står som bokstavlig sträng och byts med `str.replace`
+vid varje bygge.
+
+**De fem byggda fallen visar ingen datumrad, och det är med flit.** Ett acceptdatum uppstår
+när kunden trycker acceptera. Ingen av de fem exempeloffererna är accepterad av någon, så
+datumet finns inte i offertrepot och kontrakten bär `null`. Fyll `offert.accepterad` per fall
+och raden kommer. Ingenting hittas på.
+
+Ett acceptdatum drar **inte** med sig ett "giltig till": offerten har ingen giltighetstid
+(ägardirektiv 23 oktober), och `prov.py` stoppar varje sida som skriver ett.
 
 ## Det tre reglerna sidan inte böjer
 

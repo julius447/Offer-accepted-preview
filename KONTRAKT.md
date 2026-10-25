@@ -58,6 +58,7 @@ leverans i de här fälten.** `prov.py` stoppar bygget om ett nytt dyker upp.
     "moderreferens":    null,
     "modertyp":         null,
     "giltig_till_lang": null,
+    "accepterad":       "2026-10-25",
     "villkor_url":      "https://ampy.se/kopvillkor"
   },
 
@@ -104,6 +105,7 @@ leverans i de här fälten.** `prov.py` stoppar bygget om ett nytt dyker upp.
 | `moderreferens` | sträng | **`ar_tillagg: true` utan den stänger totalen** | mallen. Utan den ser kunden två orelaterade nummer. |
 | `modertyp` | sträng | ingen effekt i dag | mallen, för spårbarhet. `MODERTYP` i `offerter/tillagg/offert.py` rad 64. |
 | `giltig_till_lang` | sträng, t.ex. "27 oktober 2026" | meningen renderas **utan datum**. Aldrig en platshållare, aldrig ett gissat datum. | CRM. Används av avböjsskärmens tvilling (`skarm-avboj.html` rad 40). Den accepterade sidan skriver inget datum i dag: offerten är accepterad, och ett giltighetsdatum där är en ägargrind. Fältet finns så att **ingen hårdkodar det**, vilket är precis vad som hänt i dag ("27 oktober 2026" står som bokstavlig sträng i markupen och byts med `str.replace` i `offerter/elcentral/offert.py` rad 697). |
+| `accepterad` | sträng, ISO 8601, t.ex. `"2026-10-25"` | **ingen mening skrivs**. Aldrig en platshållare, aldrig ett gissat datum, och ordet "Accepterad" står inte där ensamt. | CRM, i det ögonblick kunden trycker acceptera. **ÄGARSVAR 46, 25 oktober: "Ja, lägg till datum."** Sidan skriver den svenska formen ("25 oktober 2026") ur ISO-datumet, så de fem mallarna inte kan visa fem former; `prov.py` skriver samma form själv i stället för att läsa sidans. Ett datum som inte finns i kalendern (2026-02-30) **stänger totalen**: ett kontrakt som har fel om datumet är ett kontrakt som har fel, och sidan väljer inte vilka fel den bryr sig om. **Ett acceptdatum drar inte med sig ett `giltig till`:** offerten har ingen giltighetstid (ägardirektiv 23 okt), och `prov.py` stoppar varje sida som skriver ett. |
 | `villkor_url` | URL | **ingen länk renderas, aldrig ett tomt `href`** | CRM. `https://ampy.se/kopvillkor`, kontrollerad 19 okt, samma adress alla fem mallarna länkar till. Länktexten är deras, ordagrant: "Läs våra köpvillkor". På papper skrivs adressen ut efter länken, så villkoren når papperet. |
 
 ### `bokare`
@@ -239,6 +241,9 @@ inget tal, för kunden kan inte se vilket av dem som är fel.
 | 9 | Potterna **härleds** ur raderna och står inte i kontraktet | ett fält som kan motsäga raderna kommer att motsäga raderna |
 | 10 | Bara rader **med ett belopp** sätter en pott och bär en pottmärkning | en intresseanmälan dras inte, så "Utan avdrag" bredvid "ingen kostnad nu" är brus |
 | 11 | Två potter: varje prisrad märks. En pott: ingen rad märks | samma regel som `offerter/tillagg/offert.py` rad 287 till 292 |
+| 12 | `accepterad` är `null` eller ett datum som finns i kalendern | inget totalbelopp, och ingen mening om datum |
+| 13 | **En accepterad offert, en bekräftelse, ett nummer.** Sidan visar exakt ETT offertnummer, och det är kontraktets eget. Radlistan är exakt kontraktets egna rader. | provet stoppar bygget |
+| 14 | **Varje tal kunden ser är härlett ur offertrepots egna källfiler**, med källan per operand i `_tal` | provet stoppar bygget |
 
 Felen hamnar i `data-oa-fel` på `.oa` och i konsolen. Kunden ser bara att ett tal uteblev.
 
@@ -251,10 +256,90 @@ moms och avdrag får inte finnas i två versioner i två repon.
 teknik och ROT). Avdragen dras direkt på fakturan."* Parentesen bär de potter ordern
 faktiskt har. Den delade acceptskärmen i offertrepot säger samma mening utan parentes, för
 den vet inte vilka potter ordern har; `verktyg/jamfor-skarm.py` mäter att de två börjar
-likadant. **Meningen "ROT förutsätter att du har avdragsutrymme kvar." står inte här**:
-ägaren tog bort den ur tilläggsmallen 24 okt, och hedging-direktivet 15 aug säger att
-villkoret står EN gång, vilket det gör i elcentral- och servicemallens egen finstilt,
-alltså i den offert kunden läste före accepten. **ÄGARGRIND** om den ska tillbaka hit.
+likadant. **Meningen "ROT förutsätter att du har avdragsutrymme kvar." står inte här, och kan inte
+komma tillbaka.** ÄGARSVAR 48, 25 oktober, ordagrant: *"Ta bort den raden från alla
+offerter samt orderbekräftelse. Detta står redan i våra köpvillkor och är inte vårt ansvar
+utan kundens."* Ägargrinden som stod här är därmed **stängd**, och skyddet ligger inte i
+den här meningen utan i ett orakel: `prov.py:inget_avdragsutrymme` läser markupen,
+renderaren och varje kundsträng i de fem kontrakten, och stoppar bygget om ordet dyker upp.
+De tre vägarna in är provade var för sig genom att meningen återinförts i var och en.
+
+Att markupen räknas och inte den synliga texten är ett mätfel som rättats: första versionen
+läste `synlig(index)`, och i `index.html` är varje fyllbart element dolt tills ett kontrakt
+fyller det. Meningen inskriven i det dolda `oaFin` gav grönt prov.
+
+---
+
+## 4b. En accepterad offert, en bekräftelse
+
+**ÄGARSVAR 56, 25 oktober, ordagrant:** *"Vi måste se det som två olika offerter. Om en kund
+har accepterat en laddboxoffert kommer de att få en orderbekräftelse för den. Har elektrikern
+sedan varit där, gjort en offert för tillägg och skickat den, får de en orderbekräftelse på
+tilläggen. Det blir inte en ny orderbekräftelse på laddboxen. Alltså är det separat. För varje
+offert som accepteras får man en unik orderbekräftelse."*
+
+Fyra mått, inte fyra påståenden. De körs på de fem byggda sidorna vid varje prov:
+
+1. **Exakt ett offertnummer per sida**, läst ur den synliga texten. Alla träffar, inte den
+   första: offertrepots eget orakel läste `re.search`, och på servicemallen var första
+   träffen laddboxens 2026-0640 ur den delade acceptskärmen. Mallens eget 2026-0643 stod
+   längre ner och sågs aldrig.
+2. **Numret är kontraktets eget.** Sidan och kontraktet jämförs, så en sida inte kan bära ett
+   nummer dess egen order inte känner till.
+3. **Två egna offerter delar aldrig nummer.** Uppmätt 25 okt: laddbox 2026-0640, elcentral
+   0641, batteri 0642, service 0643, var och en på sin egen sida och ingen annanstans.
+4. **Radlistan är exakt kontraktets egna rader**, i ordning. Det är provet som gör "det blir
+   inte en ny orderbekräftelse på laddboxen" mätbart åt båda håll: en rad för lite är en order
+   kunden inte ser, en för mycket är en annan offerts rad.
+
+**Tilläggsofferten delar moderns nummer, med flit, och det provas.** Brickan säger "Tillägg
+till offert #2026-0640", alltså att numret tillhör någon annan. Provet kräver att numret är
+exakt den mall `modertyp` pekar ut, att den mallens egen bekräftelse bär samma nummer, och att
+moderoffertens total, produktrubrik och paketnamn **inte** står någonstans på tilläggets sida.
+
+**`[GAP]` kvar:** tillägget har inget eget offertnummer i repot (§6 punkt 3). Svar 56 säger att
+varje accepterad offert får en unik bekräftelse, och tilläggets bekräftelse är unik som sida men
+bär moderns nummer i brickan. Formen är en ägarfråga, och fältet `offert.referens` står tomt
+och väntar.
+
+---
+
+## 4c. Talen går tillbaka till källan
+
+**ÄGARSVAR 60, 25 oktober:** *"Bygg det nu."*
+
+`prov.py` provade att sidans belopp står i **kontraktet** och att kontraktets belopp står på
+**sidan**. Den kedjan kan vara hel medan kontraktet, som är en kopia av offertens sanning, har
+driftat: provet sa bara att sidan är lika med sig själv, ett led längre bort.
+
+`verktyg/talen.py` går till källfilen. Varje kontrakt bär ett `_tal`-block med en **härledning**
+per tal och en **källa per operand**, och oraklet räknar om härledningen och slår upp varje
+operand i offertrepots fil vid varje körning.
+
+| Källform | Betyder |
+|---|---|
+| `fil#json.väg` | värdet på vägen MÅSTE vara talet. `[fält=värde]` väljer posten i en lista eller nyckeln i ett objekt, `$nyckel` sist ger nyckeln (ett paketpris som ÄR nyckeln i `paket.json`) |
+| `fil@ankare` | talet ska stå som eget tal på en rad som bär ankaret. Ankaret krävs: ett löst tal i en lång fil bevisar ingenting |
+| `.kontrakt.väg` | ett annat tal i samma kontrakt, som i sin tur måste ha en egen post |
+| `val: <skäl>` | kundens eget val (hur många spotlights). Finns inte i någon fil och låtsas inte göra det |
+
+Tre egenskaper gör skillnaden mot en handskriven lista:
+
+* **Fälten räknas upp ur datat.** En ny rad i en offert får en ny väg automatiskt, och saknar
+  den källa blir provet rött. En handskriven lista hade räknat upp precis de tal som redan var rätt.
+* **Mallen får bara läsa sina egna filer**, samma regel som `ordagrant.py`: ett pris ur en annan
+  malls fil är samma fel som en lånad copyrad.
+* **Talen inne i de komponerade strängarna räknas också.** En sträng som hittas ordagrant i
+  offertrepot bär sina siffror med sig; en sträng i `_undantag_ordagrant` finns inte i någon fil.
+  Grannrabattens not sa "Upp till 1 500 kr av, 500 kr för varje granne" utan att något band
+  1 500 till antalet inbjudna. Nu gör en post det: 1 500 = 500 gånger 3, där 500 kommer ur
+  laddboxmotorn och 3 ur radens egen text.
+
+**Oraklet visar att det kan falla.** `python3 verktyg/talen.py <offertrepot> --sjalvprov` kör sex
+mutationer mot en kopia av båda sidorna (ingenting skrivs i offertrepot) och kräver att var och en
+blir röd: ett ändrat belopp, en borttagen post, en text som säger fyra grannar när noten säger
+1 500 kr, en ny rad utan källa, ett ändrat pris i offertrepots katalog, och en omskriven rad i
+offertrepots laddboxmotor.
 
 ---
 
@@ -300,8 +385,16 @@ alltså i den offert kunden läste före accepten. **ÄGARGRIND** om den ska til
    den brutto utan avdrag ändras en rad i `exempel/batteri.json`.
 9. **Servicepriset 7 400 kr är ett exempel**, inte ett Ampy-pris
    (`offerter/service/jobb.json` `_kallor.pris`).
-10. **Giltighetsdatum på den accepterade sidan.** Finns på avböjsskärmen men inte här. Ny text
-    i en godkänd rendering är en ägargrind. Fältet finns i kontraktet och används inte.
+10. **Giltighetsdatum på den accepterade sidan.** Står fortfarande inte här, och ska inte göra
+    det: offerten har ingen giltighetstid (ägardirektiv 23 okt). Fältet `giltig_till_lang` finns
+    för avböjsskärmens tvilling, är `null` i alla fem kontrakten, och `prov.py` stoppar bygget om
+    det sätts. Acceptdatumet är något annat och är inte gated på det här.
+12. **Acceptdatumet saknas i alla fem fallen.** Ägarsvar 46 är byggt: fältet finns, sidan
+    renderar det, oraklen provar både att det syns rätt och att en tom eller omöjlig uppgift
+    stänger. Men **inget av de fem exemplen är accepterat av någon**, och ett acceptdatum uppstår
+    i det ögonblick kunden trycker. Det finns därför inte i offertrepot, och de fem kontrakten bär
+    `null`: de byggda sidorna visar ingen datumrad. Vill ägaren se raden på en sida behövs ett
+    datum per fall, och då fylls `offert.accepterad`. Ingenting hittas på.
 11. **Transporten finns inte.** Accepten skickas ingenstans, och bekräftelsen hämtar
     ingenting. Så länge det gäller är den här sidan en läsare utan något att läsa i
     produktion. Det är det enda som står mellan kontraktet och en fungerande orderbekräftelse.

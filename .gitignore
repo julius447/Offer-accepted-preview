@@ -13,5 +13,6 @@ _typy-*.html
 _typ-*.html
 _cr-*/
 _utskrift.pdf
-exempel/_prov.json
+exempel/_*.json
+fall/_*.html
 __pycache__/

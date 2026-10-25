@@ -37,6 +37,17 @@
       </div>
       <h1 class="oa__title" id="oaTitel">Din offert är nu accepterad!</h1>
       <span class="oa__ref" id="oaRef"><span id="oaRefEtikett">Offert</span> #<span id="oaRefNr" data-oa="offert.referens">2026-0642</span></span>
+      <!-- ACCEPTDATUMET. Ägarsvar 46, 25 oktober: "Ja, lägg till datum."
+           Datumet är en PARAMETER PER FALL i kontraktet (offert.accepterad,
+           ISO 8601) och står inte här: ett datum i markupen är samma fel som
+           "27 oktober 2026" i offertrepots elcentralmall, där en bokstavlig
+           sträng byts med str.replace vid varje bygge. Saknas datumet skrivs
+           ingen mening alls, aldrig en platshållare och aldrig ett gissat
+           datum.
+           ETT ACCEPTDATUM DRAR INTE MED SIG ETT GILTIG TILL. Ägardirektiv
+           23 oktober: offerten har ingen giltighetstid. prov.py stoppar varje
+           sida som skriver ett giltighetsdatum här. -->
+      <p class="oa__accept" id="oaAccept" hidden="">Accepterad <span id="oaAcceptDatum"></span></p>
       <!-- KVITTOT. Sidan visade noll forekomster av "kr": kunden tryckte
            acceptera pa ett belopp och fick tillbaka en bock utan tal.
            Formen ar laddboxrepots egen, gemensamt/block/skarm-accept.html

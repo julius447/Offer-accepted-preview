@@ -28,7 +28,7 @@ JS = r"""
  var ut=[],sedda={};
  document.querySelectorAll('.oa__rad-pott,.oa__rad-text small,.oa__kvitto-not,.oa__fin,.oa__not,'
   +'.oa__prod span,.oa__ingar li span span,.oa__rad-pris--ord,.oa__step-text small,.oa__trust-item,'
-  +'.oa__eyebrow,.oa__ref,.oa__contact,.oa__contact a,.oa__fin a,.oa__rad,.oa__title').forEach(function(e){
+  +'.oa__eyebrow,.oa__ref,.oa__accept,.oa__contact,.oa__contact a,.oa__fin a,.oa__rad,.oa__title').forEach(function(e){
   var st=getComputedStyle(e);var bak=bakgrund(e);var fram=over(rgba(st.color),bak);
   var l1=lum(fram),l2=lum(bak);var k=(Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05);
   var namn=(e.className||e.tagName)+' '+st.fontSize+' '+st.fontWeight;

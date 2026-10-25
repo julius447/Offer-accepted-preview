@@ -116,6 +116,35 @@
     return [forsta, delar.filter(function (d) { return d; }).join(' ')];
   }
 
+  /* ---- ACCEPTDATUMET. Ägarsvar 46, 25 oktober: "Ja, lägg till datum." ----
+     Kontraktet bär ISO 8601 (2026-10-25), sidan skriver svenska. Tre skäl:
+
+     1. ETT DATUM SKA SE LIKADANT UT PÅ FEM MALLAR. Samma skäl som kr():
+        ett tal som ser olika ut på två ställen läser som två olika tal. Låg
+        formen i datat hade fem CRM-fält kunnat ge fem former.
+     2. toLocaleDateString ÄR INTE ETT SVAR. Den ger olika resultat i olika
+        webbläsare och på olika språkinställningar, och en kund med engelsk
+        telefon hade fått "October 25, 2026" på en svensk faktura. Tabellen
+        nedan är fast och kan inte bero på var sidan öppnas.
+     3. ISO GÅR ATT MÄTA. En färdigskriven sträng kan tyst vara "nästa vecka";
+        ett ISO-datum kan provas mot kalendern, och prov.py skriver samma
+        svenska form SJÄLVT i stället för att läsa sidans.
+
+     ETT DATUM SOM INTE FINNS STÄNGER. 2026-02-30 ser riktigt ut i en regex
+     men finns inte, så kalendern får svara. Kontraktet flaggas, och eftersom
+     ett felaktigt kontrakt inte är en felstavning renderas inget totalbelopp
+     heller: sidan väljer inte vilka fel den bryr sig om. */
+  var MANADER = ['januari', 'februari', 'mars', 'april', 'maj', 'juni',
+                 'juli', 'augusti', 'september', 'oktober', 'november', 'december'];
+  function datumLang(v) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(v == null ? '' : v).trim());
+    if (!m) return null;
+    var ar = +m[1], man = +m[2], dag = +m[3];
+    var d = new Date(Date.UTC(ar, man - 1, dag));
+    if (d.getUTCFullYear() !== ar || d.getUTCMonth() !== man - 1 || d.getUTCDate() !== dag) return null;
+    return dag + ' ' + MANADER[man - 1] + ' ' + ar;
+  }
+
   /* EN BOCK, INTE TVÅ. Samma vektor som varje punktlista i offerten,
      gemensamt/bitar.py rad 10 till 11. */
   var BOCK = '<span class="oa__bock" aria-hidden="true"><svg viewBox="0 0 12 12">'
@@ -161,6 +190,12 @@
   var order  = data.order  || {};
   var bokare = data.bokare || {};
 
+  /* Felen samlas FRÅN FÖRSTA SEKTIONEN. Listan deklarerades tidigare nere vid
+     ordern, och då hade ett fel i referensbrickan eller i acceptdatumet inte
+     haft någonstans att ta vägen: var hissas, värdet gör det inte, så en
+     push före raden hade kastat ett TypeError mitt i renderingen. */
+  var fel = [];
+
   /* ---- 1 · REFERENSBRICKAN ---------------------------------------------
      En tilläggsoffert hänger på en offert kunden redan accepterat, och hon
      har redan ett nummer. Utan moderreferensen ser hon två orelaterade
@@ -181,6 +216,18 @@
     $('oaRefNr').textContent = visaRef;
   }
   visa($('oaRef'), !!visaRef);
+
+  /* NÄR hon accepterade. Ägarsvar 46. Saknas datumet står ingen mening alls:
+     en tom rad "Accepterad" är sämre än ingen rad, och ett gissat datum på
+     en bindande handling är det värsta av de tre. */
+  var acceptLang = datumLang(offert.accepterad);
+  if (offert.accepterad != null && offert.accepterad !== '' && !acceptLang) {
+    fel.push('accepterad är inget datum i kalendern: ' + JSON.stringify(offert.accepterad));
+  }
+  if (acceptLang) {
+    $('oaAcceptDatum').textContent = acceptLang;
+    visa($('oaAccept'), true);
+  }
 
   /* ---- 2 · STEGEN -------------------------------------------------------
      "ringer och bokar tid" är fel på ett tillägg där elektrikern redan står
@@ -236,7 +283,6 @@
      risken mot Skatteverket. */
   var netto = data.priser_ar === 'netto';
 
-  var fel = [];
   if (!netto) fel.push('priser_ar är inte "netto"');
 
   /* Potterna HÄRLEDS ur raderna, de står inte i kontraktet. Ett fält som kan

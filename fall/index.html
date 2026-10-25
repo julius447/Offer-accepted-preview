@@ -36,7 +36,7 @@
 <body>
   <main class="f">
     <h1>Orderbekräftelsen, fem fall</h1>
-    <p class="ing">En sida för fem offertmallar. Varje fall är renderat ur sitt kontrakt och
+    <p class="ing">En sida för fem offertmallar: samma markup på alla fem, med en enda skillnad, tilläggets ”Så här går vi vidare”. Varje fall är renderat ur sitt kontrakt och
     sparat som statisk markup: ingen JavaScript, inget kontrakt kvar i sidan. Alla belopp är
     netto, efter avdrag och inklusive moms.</p>
     <ul>
@@ -45,6 +45,10 @@
     <li><a href="batteri.html"><span class="rad"><span class="n">Batterilagring</span><span class="t">94 063 kr</span></span><p>En lagringsstorlek, ö-drift som tillägg, grön teknik.</p></a></li>
     <li><a href="service.html"><span class="rad"><span class="n">Service</span><span class="t">9 900 kr</span></span><p>Inget paket, ingen produktbild, en punktlista ”allt som ingår” och ett pris.</p></a></li>
     <li><a href="tillagg.html"><span class="rad"><span class="n">Tilläggsoffert</span><span class="t">5 020 kr</span></span><p>Inget paket, en artikellista, moderreferens till offerten tillägget hör till. Steg 2 utbytt, steg 3 borttaget.</p></a></li>
+    </ul>
+    <p class="ing" style="margin:28px 0 12px;">Provfall, inte ett sjätte fall</p>
+    <ul>
+    <li><a href="prov-acceptdatum.html"><span class="rad"><span class="n">Acceptdatumet</span><span class="t">14 345 kr</span></span><p>PROV. Laddboxfallet, tecken för tecken, med exakt ett fält ändrat: offert.accepterad. Raden ”Accepterad 25 oktober 2026” syns därför här och ingen annanstans. Datumet är ett provvärde: ingen av de fem offerterna är accepterad av någon, så deras acceptdatum är null och deras sidor skriver ingen datumrad.</p></a></li>
     </ul>
     <p class="fot">Kontraktet står fält för fält i
     <a href="https://github.com/julius447/Offer-accepted-preview/blob/main/KONTRAKT.md">KONTRAKT.md</a>.

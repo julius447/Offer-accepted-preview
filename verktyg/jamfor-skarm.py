@@ -76,7 +76,22 @@ AVSIKT = [
                    'produktbild och inga val: listan ÄR ordern.'),
     (('oaRader',), 'Radlistan finns bara här.'),
     (('oaNot',), 'Noten under raderna finns bara här.'),
-    (('oaFin',), 'Finstilten och köpvillkorslänken finns bara här.'),
+    (('oaFin',), 'Finstilten finns bara här. Köpvillkorslänken låg i den till 25 oktober '
+                 'och ligger nu i folden längst ner.'),
+    (('id="oaAccept"', 'oa__accept'),
+     'ACCEPTDATUMET finns bara här. Ägarsvar 46, 25 oktober: "Ja, lägg till datum." Raden '
+     'hör till den fristående bekräftelsen, som är handlingen kunden sparar; acceptskärmen '
+     'inne i offerten är ögonblicket, inte kvittensen. Datumet är en parameter per fall '
+     '(offert.accepterad, ISO 8601) och står aldrig i markupen. DEN HÄR RADEN SAKNADES I '
+     'AVSIKT FRÅN 25 OKTOBER TILL SAMMA KVÄLL: mätaren var alltså röd, men den körs inte '
+     'av prov.py och ingen såg det. Den körs nu av prov.py.'),
+    (('oa__villkor', 'oa__fold', '<summary>Villkor', 'oaVillkorKropp', '</details>'),
+     'VILLKORSFOLDEN finns bara här. Ägarens GLOBAL NOTERING 25 oktober: länken och "Läs '
+     'våra köpvillkor" ska ligga under en dropdown som heter Villkor längst ner på '
+     'orderbekräftelsen, likt offerten. Acceptskärmen inne i offerten behöver ingen: '
+     'offertsidan har redan sin egen villkorsfold en skärm upp, och två folder med samma '
+     'namn på samma sida hade varit två villkor. Formen är offertens egen '
+     '(offerter/tillagg/body.html rad 60 till 67), i den här sidans klassnamn.'),
     (('id="oaSteps"', '<ol class="oa__steps">'),
      'Steglistan har id här, så ett borttaget steg kan hittas utan att gissa.'),
 ]
@@ -125,6 +140,13 @@ if not mina:
 
 print("\nORDEN")
 print("  offertrepots fasta text : %r" % deras)
+# SEDAN 25 OKTOBER ar bekraftelsens sats inte langre ett PREFIX plus en
+# parentes, utan ord for ord offertrepots egen. Agarens ord: "Under att
+# betala langst upp star aven: 'inkl. moms, efter skattereduktion (Gron
+# teknik och ROT)'. Har vill jag att vi har: 'inkl. moms, efter
+# skattereduktion'." Prefixprovet star kvar som det ar: det ar sant for en
+# identisk strang ocksa, och det ska fortsatta vara provet om nagon av de
+# tva ytorna far en parentes igen.
 fel_ord = []
 # BARA ÅT ETT HÅLL. Ett dubbelriktat prefixprov godkänner också en KORTARE
 # sats, och "inkl. moms, efter " är ett prefix av offertrepots text fast den

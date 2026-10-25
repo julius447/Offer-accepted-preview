@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Bygger fall/<mall>.html ur index.html och exempel/<mall>.json.
 
-    python3 bygg.py            # alla fem fallen
+    python3 bygg.py            # alla fem fallen plus provfallen
     python3 bygg.py laddbox    # ett fall
 
 EN RENDERARE, INTE TVÅ. Sidan fylls av script.js i webbläsaren. Bygget kör
@@ -30,6 +30,10 @@ HAR = pathlib.Path(__file__).resolve().parent
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 TMP = HAR / ".tmp"
 MALLAR = ["laddbox", "elcentral", "batteri", "service", "tillagg"]
+# PROVFALL, INTE EN SJATTE MALL. Ett fall som bara finns for att visa en
+# mekanism, och som darfor inte rakhas med i de fem. Se exempel/<namn>.json
+# for vad varje provfall provar och varifran dess provvarde kommer.
+PROVFALL = ["prov-acceptdatum"]
 
 
 def rendera(kontrakt_fil):
@@ -77,6 +81,18 @@ def stada(dom, mall, kontrakt_fil):
                          % (mall, n1, n2))
     if "<script" in dom:
         raise SystemExit("%s: det står JavaScript kvar i den byggda sidan" % mall)
+    # BYGGET SKRIVER ALDRIG EN SIDA RENDERAREN FLAGGAT.
+    # Sidan STANGER vid ett fel i kontraktet: den visar inget totalbelopp och
+    # satter data-oa-fel pa .oa. Men en stangd sida ar fortfarande en sida,
+    # och utan den har raden skrevs den till fall/ och ut pa Pages med ett
+    # tomt kvitto. Ett omojligt acceptdatum (2026-02-30), en rad i fel pott
+    # eller en total som inte gar ihop ska stoppa BYGGET, inte bara tala om
+    # det i en logg kunden aldrig laser. prov.py provar renderingen direkt
+    # via rendera() och ror alltsa inte den har sparren.
+    flagga = re.search(r'data-oa-fel="([^"]*)"', dom)
+    if flagga:
+        raise SystemExit("%s: renderaren flaggade kontraktsfel och sidan skrevs INTE: %s"
+                         % (mall, flagga.group(1)))
     # fall/ ligger ett steg ner.
     for gammal, ny in (('href="styles.css"', 'href="../styles.css"'),
                        ('href="fonts/', 'href="../fonts/')):
@@ -106,4 +122,4 @@ def main(vilka):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:] or MALLAR)
+    main(sys.argv[1:] or (MALLAR + PROVFALL))

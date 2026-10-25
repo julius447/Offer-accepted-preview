@@ -450,10 +450,21 @@ MUTATIONER = [
     ("en post i _tal tas bort",
      "kontrakt", "elcentral", lambda d: d["_tal"].pop(".order.paket.belopp"),
      "saknar post i _tal"),
-    ("texten sager fyra grannar men noten star kvar pa 1 500 kr",
+    # VANT 25 OKTOBER, INTE RADERAT. Mutationen hette "texten sager fyra
+    # grannar men noten star kvar pa 1 500 kr" och vantade felet
+    # "star inte i strangen": posten .order.utestaende[0].not#1500 band taket
+    # till antalet inbjudna, och en text som sa fyra gjorde provet rott.
+    # Agaren tog bort hela noten 25 oktober ("Har vill jag att vi anvander
+    # foljande ENBART"), och med strangen gick dess tva poster i _tal.
+    # Mutationen star kvar for att trean i RADENS egen text fortfarande ar
+    # ett tal kunden ser och fortfarande maste ha en kalla: byts den till
+    # fyra blir posten for trean foraldralos och fyran saknar post. Det ar
+    # samma sanning en vaning ner, och att radera mutationen hade varit att
+    # sluta prova den.
+    ("antalet grannar i radens text andras utan att kallan foljer med",
      "kontrakt", "laddbox",
      lambda d: d["order"]["utestaende"][0].update(text="Grannrabatt, 4 grannar inbjudna"),
-     "star inte i strangen"),
+     "finns inte i kontraktet"),
     ("en ny rad laggs till i en offert utan att nagon skriver en kalla",
      "kontrakt", "service",
      lambda d: d["order"]["rader"].append({"typ": "tillagg", "namn": "Ny rad", "variant": None,

@@ -84,6 +84,17 @@ def las_nordstjarnan(rot):
     return filer
 
 
+# EN LISTA MED BARA STRANGAR. order.ingar ar "Allt som ingar", och sedan
+# agarens 25 oktober ar varje post en STRANG och inte langre ett objekt med
+# text och spec. UPPMATT NAR SPECERNA TOGS BORT: antalet kontrollerade
+# strangar foll fran 53 till 40, for strangar() gick bara in i dict-noder
+# och en bar strang i en lista foll ut tyst. Atta kundstrangar slutade
+# alltsa provas mot offertrepot, och provet blev gronare av att se mindre.
+# Namnen star har, inte i en generell regel: en lista vars poster ar
+# kundtext ska namnges, annars provas nasta lista inte heller.
+STRANGLISTOR = {"ingar"}
+
+
 def strangar(o, vag=""):
     if isinstance(o, dict):
         for k, v in o.items():
@@ -91,6 +102,10 @@ def strangar(o, vag=""):
                 continue
             if k in FALT and isinstance(v, str) and v.strip():
                 yield (vag + "." + k, v.strip())
+            if k in STRANGLISTOR and isinstance(v, list):
+                for i, post in enumerate(v):
+                    if isinstance(post, str) and post.strip():
+                        yield (vag + "." + k + "[%d]" % i, post.strip())
             yield from strangar(v, vag + "." + k)
     elif isinstance(o, list):
         for i, v in enumerate(o):

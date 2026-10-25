@@ -25,15 +25,26 @@ JS = r"""
   while(n&&n!==document.documentElement){var c=rgba(getComputedStyle(n).backgroundColor);
    if(c&&c[3]>0)lager.push(c);n=n.parentElement;}
   var b=SIDBAS;for(var i=lager.length-1;i>=0;i--)b=over(lager[i],b);return b;}
- var ut=[],sedda={};
- document.querySelectorAll('.oa__rad-pott,.oa__rad-text small,.oa__kvitto-not,.oa__fin,.oa__not,'
-  +'.oa__prod span,.oa__ingar li span span,.oa__rad-pris--ord,.oa__step-text small,.oa__trust-item,'
-  +'.oa__eyebrow,.oa__ref,.oa__accept,.oa__contact,.oa__contact a,.oa__fin a,.oa__rad,.oa__title').forEach(function(e){
-  var st=getComputedStyle(e);var bak=bakgrund(e);var fram=over(rgba(st.color),bak);
-  var l1=lum(fram),l2=lum(bak);var k=(Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05);
-  var namn=(e.className||e.tagName)+' '+st.fontSize+' '+st.fontWeight;
-  if(!sedda[namn]){sedda[namn]=1;ut.push({sel:namn,kontrast:Math.round(k*100)/100});}});
- document.title='MATT'+JSON.stringify(ut);});</script>
+ /* EN SELEKTOR SOM INTE TRAFFAR NAGOT MATER INGENTING, OCH TIGER OM DET.
+    Listan bar .oa__rad-pott, .oa__not, .oa__ingar li span span och
+    .oa__fin a till 25 oktober, alltsa fyra ytor som togs bort samma dag.
+    En matning som letar efter borta ytor ser lika gron ut som en som
+    letar efter alla. Darfor raknas traffarna per selektor och tomma
+    selektorer rapporteras. */
+ var YTOR=['.oa__rad-text small','.oa__kvitto-not','.oa__fin','.oa__prod span',
+  '.oa__ingar li span','.oa__rad-pris--ord','.oa__step-text small','.oa__trust-item',
+  '.oa__eyebrow','.oa__ref','.oa__accept','.oa__contact','.oa__contact a',
+  '.oa__fold > summary','.oa__villkor-rad','.oa__fold a','.oa__rad','.oa__title'];
+ var ut=[],sedda={},tomma=[];
+ YTOR.forEach(function(sel){
+  var n=document.querySelectorAll(sel);
+  if(!n.length){tomma.push(sel);return;}
+  n.forEach(function(e){
+   var st=getComputedStyle(e);var bak=bakgrund(e);var fram=over(rgba(st.color),bak);
+   var l1=lum(fram),l2=lum(bak);var k=(Math.max(l1,l2)+0.05)/(Math.min(l1,l2)+0.05);
+   var namn=(e.className||e.tagName)+' '+st.fontSize+' '+st.fontWeight;
+   if(!sedda[namn]){sedda[namn]=1;ut.push({sel:namn,kontrast:Math.round(k*100)/100});}});});
+ document.title='MATT'+JSON.stringify({ytor:ut,tomma:tomma});});</script>
 """
 sida = pathlib.Path(sys.argv[1]).resolve()
 prov = sida.parent/("_k-%d.html"%time.time_ns())
@@ -45,9 +56,28 @@ r = subprocess.run(["/Applications/Google Chrome.app/Contents/MacOS/Google Chrom
 prov.unlink(missing_ok=True); subprocess.run(["rm","-rf",str(prof)],check=False)
 import html as _h
 m = re.search(r"<title>MATT(.*?)</title>", r.stdout.decode("utf-8","replace"), re.S)
-for o in json.loads(_h.unescape(m.group(1))):
+if not m:
+    print("ingen matning: sonden svarade inte. Kontrasten ar INTE provad.")
+    sys.exit(1)
+svar = json.loads(_h.unescape(m.group(1)))
+fel = []
+# EN SELEKTOR SOM INTE TRAFFAR NAGOT pa en viss sida ar inte alltid ett fel:
+# ingar-listan finns bara pa servicefallet och acceptraden bara pa
+# provfallet. Men en yta som saknas pa ALLA sidor ar en dod selektor, och
+# det syns genom att den star har varje gang.
+for sel in svar["tomma"]:
+    print("%-46s   traffade inget pa den har sidan" % sel)
+for o in svar["ytor"]:
     px = float(re.search(r"([\d.]+)px", o["sel"]).group(1))
     vikt = int(o["sel"].split()[-1])
     krav = 3.0 if (px >= 24 or (px >= 18.66 and vikt >= 700)) else 4.5
+    under = o["kontrast"] < krav
+    if under:
+        fel.append("%s mater %.2f mot kravet %.1f" % (o["sel"], o["kontrast"], krav))
     print("%-46s %5.2f  krav %.1f%s" % (o["sel"][:46], o["kontrast"], krav,
-          "   <-- UNDER" if o["kontrast"] < krav else ""))
+          "   <-- UNDER" if under else ""))
+if not svar["ytor"]:
+    print("\nINGEN yta matt. Sonden letade efter fel saker.")
+    sys.exit(1)
+print("\n%d ytor matta, %d under kravet" % (len(svar["ytor"]), len(fel)))
+sys.exit(1 if fel else 0)

@@ -12,55 +12,51 @@
     "giltig_till_lang": "[GAP] Inget giltighetsdatum är beslutat för batteriofferten. null tar bort datumet i stället för att hitta på ett.",
     "accepterad": "[GAP] NAR kunden accepterade. Agarsvar 46, 25 oktober: \"Ja, lagg till datum\". Datumet uppstar i det ogonblick kunden trycker acceptera och finns darfor inte i offertrepot: inget av de fem exemplen ar accepterat av nagon. CRM:et satter ISO 8601 (2026-10-25) nar accepten registreras. null tar bort meningen i stallet for att hitta pa ett datum. Faltet finns sa att INGEN hardkodar det, vilket ar precis vad som hant med giltighetsdatumet i offertrepots elcentralmall."
   },
-
   "_undantag_ordagrant": {
     ".order.paket.namn": "KOMPONERAD I KORNING. offerter/batteri/skript.js skriver summeringens huvudrad som MODELL.namn + ', ' + kwh(s.kwh) + ' kWh'. Modellfilen heter 'SAJ HS3' och forvalet ar 20 kWh, sa raden blir den har. Hela strangen star inte i nagon fil."
   },
-  "_kalla_villkor": "https://ampy.se/kopvillkor. Alla fem mallarna länkar dit med texten 'Läs våra köpvillkor' (offerter/laddbox/body.html rad 566, elcentral rad 264, batteri rad 160, service/offert.py rad 155). Kontrollerat 19 okt enligt noten i tillagg.html rad 71.",
-
+  "_kalla_villkor": "https://ampy.se/kopvillkor. Alla fem mallarna länkar dit med texten 'Läs våra köpvillkor' (offerter/laddbox/body.html rad 566, elcentral rad 264, batteri rad 160, service/offert.py rad 155). Kontrollerat 19 okt enligt noten i tillagg.html rad 71. ÄGARENS ORD 25 OKTOBER, GLOBAL NOTERING: länken ligger nu under en fold som heter Villkor längst ner på bekräftelsen, i samma form som offerternas egen villkorsfold (offerter/tillagg/body.html rad 60 till 67).",
   "_tal": {
-      "_not": "HARLEDNINGEN FOR VARJE TAL KUNDEN SER, MED KALLAN I OFFERTREPOT. verktyg/talen.py raknar om uttrycket och slar upp varje operand i den namngivna filen vid varje korning, sa ett tal som rort sig i offertrepot gor det har provet rott. Formerna star i talen.py: fil#jsonvag, fil@ankare, .kontraktsvag och val: med skal. Agarsvar 60, 25 oktober: \"Bygg det nu.\"",
-      ".order.paket.belopp": {
-        "uttryck": "128126 - min(128126 // 2, 50000 * 2)",
-        "kallor": {
-          "128126": [
-            "offerter/batteri/modeller/saj-hs3.json#storlekar[kwh=20.0].brutto",
-            "offerter/batteri/modeller/saj-hs3.json#storlekar[kwh=20.0].brutto"
-          ],
-          "2": [
-            "gemensamt/bitar.py@min(brutto // 2, pott)",
-            "offerter/batteri/innehall.json#personer"
-          ],
-          "50000": "gemensamt/bitar.py@GT_PER_PERSON"
-        },
-        "_not": "HELA HARLEDNINGEN, INTE SVARET. Modellfilen bar BRUTTO sedan 24 okt; nettot ar brutto minus min(halva bruttot, potten), och potten ar 50 000 kr per person. De tva tvaorna betyder olika saker och har darfor en kalla var: den forsta ar gron tekniks halva, den andra ar antalet personer i hushallet. Vid EN person blir samma batteri 78 126 kr, och det syns bara om bada tvaorna bar sin egen kalla."
+    "_not": "HARLEDNINGEN FOR VARJE TAL KUNDEN SER, MED KALLAN I OFFERTREPOT. verktyg/talen.py raknar om uttrycket och slar upp varje operand i den namngivna filen vid varje korning, sa ett tal som rort sig i offertrepot gor det har provet rott. Formerna star i talen.py: fil#jsonvag, fil@ankare, .kontraktsvag och val: med skal. Agarsvar 60, 25 oktober: \"Bygg det nu.\"",
+    ".order.paket.belopp": {
+      "uttryck": "128126 - min(128126 // 2, 50000 * 2)",
+      "kallor": {
+        "128126": [
+          "offerter/batteri/modeller/saj-hs3.json#storlekar[kwh=20.0].brutto",
+          "offerter/batteri/modeller/saj-hs3.json#storlekar[kwh=20.0].brutto"
+        ],
+        "2": [
+          "gemensamt/bitar.py@min(brutto // 2, pott)",
+          "offerter/batteri/innehall.json#personer"
+        ],
+        "50000": "gemensamt/bitar.py@GT_PER_PERSON"
       },
-      ".order.rader[0].belopp": {
-        "uttryck": "30000",
-        "kallor": {
-          "30000": "offerter/batteri/innehall.json#tillagg[grupp=odrift].pris"
-        },
-        "_not": "Agarbeslut 23 okt punkt 3. Talet ar NETTOT, det kunden betalar (prisform netto i samma fil)."
+      "_not": "HELA HARLEDNINGEN, INTE SVARET. Modellfilen bar BRUTTO sedan 24 okt; nettot ar brutto minus min(halva bruttot, potten), och potten ar 50 000 kr per person. De tva tvaorna betyder olika saker och har darfor en kalla var: den forsta ar gron tekniks halva, den andra ar antalet personer i hushallet. Vid EN person blir samma batteri 78 126 kr, och det syns bara om bada tvaorna bar sin egen kalla."
+    },
+    ".order.rader[0].belopp": {
+      "uttryck": "30000",
+      "kallor": {
+        "30000": "offerter/batteri/innehall.json#tillagg[grupp=odrift].pris"
       },
-      ".order.total": {
-        "uttryck": "64063 + 30000",
-        "kallor": {
-          "64063": ".order.paket.belopp",
-          "30000": ".order.rader[0].belopp"
-        }
-      },
-      ".order.paket.namn#20": {
-        "uttryck": "20",
-        "kallor": {
-          "20": "offerter/batteri/innehall.json#forval_kwh.saj-hs3"
-        },
-        "_not": "Huvudradens namn komponeras i korning av modellnamnet och forvalet, sa 20:an i 'SAJ HS3, 20 kWh' har ingen egen strang i nagon fil. Den har kallan binder den till forvalet, som ocksa satter bruttot ovan."
+      "_not": "Agarbeslut 23 okt punkt 3. Talet ar NETTOT, det kunden betalar (prisform netto i samma fil)."
+    },
+    ".order.total": {
+      "uttryck": "64063 + 30000",
+      "kallor": {
+        "64063": ".order.paket.belopp",
+        "30000": ".order.rader[0].belopp"
       }
     },
-
+    ".order.paket.namn#20": {
+      "uttryck": "20",
+      "kallor": {
+        "20": "offerter/batteri/innehall.json#forval_kwh.saj-hs3"
+      },
+      "_not": "Huvudradens namn komponeras i korning av modellnamnet och forvalet, sa 20:an i 'SAJ HS3, 20 kWh' har ingen egen strang i nagon fil. Den har kallan binder den till forvalet, som ocksa satter bruttot ovan."
+    }
+  },
   "kontrakt_version": 1,
   "priser_ar": "netto",
-
   "offert": {
     "referens": "2026-0642",
     "mall": "batteri",
@@ -72,11 +68,10 @@
     "accepterad": null,
     "villkor_url": "https://ampy.se/kopvillkor"
   },
-
-  "bokare": { "fornamn": "Rasmus" },
-
+  "bokare": {
+    "fornamn": "Rasmus"
+  },
   "steg": [],
-
   "order": {
     "rubrik": "SAJ HS3",
     "underrubrik": "20 kWh, monterad och driftsatt",

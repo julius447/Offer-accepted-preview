@@ -64,11 +64,16 @@
      laddboxmarkupens data-rot-boolean mappas HIT av den som fyller
      kontraktet, inte av den här sidan: tar sidan emot fyra stavningar lever
      fyra stavningar vidare. Ett okänt värde stänger totalen. */
-  var POTT = {
-    'gron-teknik': { etikett: 'Grön teknik-avdrag' },
-    'rot':         { etikett: 'ROT-avdrag' },
-    'inget':       { etikett: 'Utan avdrag' }
-  };
+  /* INGEN ETIKETT. Vokabulären är en LISTA, inte en etiketttabell.
+     ÄGARENS ORD 25 OKTOBER, ORDAGRANT: "Jag vill bara att du ska ha själva
+     rubrikerna, 'i stället för 5 meter' och inte 'grön teknikavdrag', utan
+     det gör bara så att det här blir ännu mer klotterigt. Bara rubrikerna
+     och priset."
+     Potten styr fortfarande finstilten, och ett okänt värde stänger
+     fortfarande totalen: skillnaden är att den inte längre SKRIVS vid raden.
+     Etiketterna är borta ur koden och inte bara ur renderingen, för en
+     tabell som finns kommer någon att rendera. */
+  var POTT = ['gron-teknik', 'rot', 'inget'];
 
   /* Raden under totalen. ORDAGRANT porterad ur laddboxrepots
      offerter/tillagg/offert.py:pottrad. Samma ord i två repon: en mening om
@@ -94,26 +99,39 @@
         säger EN gång, inte en gång per sida. ÄGARGRIND: vill ägaren ha
         tillbaka meningen på bekräftelsen är det en rad här och en i prov.py.
 
-     DEN HÄR SIDAN ÄR SAMMA FALL SOM DEN DELADE ACCEPTSKÄRMEN: en yta för fem
-     mallar. Där löstes det med fast text "inkl. moms, efter skattereduktion",
-     eftersom ett delat block inte kan namnge en pott som bara gäller på en av
-     fem sidor. Här BÄR kontraktet potterna, så parentesen kan säga vilka två
-     det faktiskt är. Samma ord, fylld parentes. */
+     PARENTESEN ÄR BORTTAGEN, ÄGARENS ORD 25 OKTOBER, ORDAGRANT. Om texten
+     under raderna: "Här vill jag att vi använder följande enbart: 'inkl.
+     moms, efter skattereduktion. Avdragen dras direkt på fakturan.'" Och om
+     noten i kvittot: "Under att betala längst upp står även: 'inkl. moms,
+     efter skattereduktion (Grön teknik och ROT)'. Här vill jag att vi har:
+     'inkl. moms, efter skattereduktion'."
+
+     TRE FÖLJDER AV ATT PARENTESEN GÅR BORT:
+     1. DEN KORTA SATSEN ÄR NU ORD FÖR ORD OFFERTREPOTS FASTA TEXT. Den
+        delade acceptskärmen inne i offerten säger exakt "inkl. moms, efter
+        skattereduktion" (gemensamt/block/skarm-accept.html rad 25), och de
+        två ytorna kan därmed inte längre säga olika om samma sak.
+     2. MENINGEN ÄR DENSAMMA PÅ ALLA FEM. Förut sa elcentralen "(ROT)",
+        batteriet "(Grön teknik)" och laddboxen "(Grön teknik och ROT)",
+        alltså tre lydelser på fem sidor. Ägaren: "varenda mall är lite
+        annorlunda."
+     3. "Avdragen" ÄR ÄGARENS EGEN FORM och böjs inte längre efter antalet
+        potter. Utan parentesen står ingen uppräkning kvar att kongruera med,
+        och en bekräftelse med flera avdragna rader har avdrag i plural
+        oavsett om de hör till en pott eller två.
+
+     UTAN AVDRAG STÅR BARA "inkl. moms". Den grenen är inte dekoration: en
+     order där varje rad bär potten "inget" har ingen skattereduktion, och
+     ägarens mening hade då varit osann. Finns ingen pott nämns ingen.
+     "Rader utan avdrag är märkta" UTGÅR MED MÄRKNINGEN. Den meningen var
+     sann så länge raderna bar en pottetikett. Nu gör de inte det, och en
+     mening som beskriver en märkning som inte finns är en osanning, inte
+     en överflödig rad. */
   function pottrad(potter) {
-    var gt = potter.indexOf('gron-teknik') >= 0, rot = potter.indexOf('rot') >= 0;
-    var namn = [];
-    if (gt) namn.push('Grön teknik');
-    if (rot) namn.push('ROT');
-    var forsta, andra;
-    if (namn.length) {
-      forsta = 'inkl. moms, efter skattereduktion (' + namn.join(' och ') + ')';
-      andra = (namn.length > 1 ? 'Avdragen' : 'Avdraget') + ' dras direkt på fakturan.';
-    } else {
-      forsta = 'inkl. moms'; andra = '';
-    }
-    var delar = [forsta + '.', andra];
-    if (potter.indexOf('inget') >= 0 && namn.length) delar.push('Rader utan avdrag är märkta.');
-    return [forsta, delar.filter(function (d) { return d; }).join(' ')];
+    var harAvdrag = potter.indexOf('gron-teknik') >= 0 || potter.indexOf('rot') >= 0;
+    if (!harAvdrag) return ['inkl. moms', 'inkl. moms.'];
+    var forsta = 'inkl. moms, efter skattereduktion';
+    return [forsta, forsta + '. Avdragen dras direkt på fakturan.'];
   }
 
   /* ---- ACCEPTDATUMET. Ägarsvar 46, 25 oktober: "Ja, lägg till datum." ----
@@ -292,7 +310,7 @@
   var potter = [];
   function pott(v, harBelopp) {
     var p = str(v);
-    if (!p || !POTT[p]) { fel.push('okänd avdragspott ' + JSON.stringify(v)); return null; }
+    if (!p || POTT.indexOf(p) < 0) { fel.push('okänd avdragspott ' + JSON.stringify(v)); return null; }
     if (harBelopp && potter.indexOf(p) < 0) potter.push(p);
     return p;
   }
@@ -341,36 +359,47 @@
                   belopp: belopp, ord: belopp == null ? (str(r.notis) || 'ingen kostnad nu') : null });
   });
 
-  /* Blandade potter: varje rad märks. En pott: ingen rad märks, för då är
-     märkningen brus. Samma regel som tilläggsmallens orakel,
-     offerter/tillagg/offert.py rad 287 till 292. */
-  var visaPott = potter.length > 1;
-
+  /* EN RAD ÄR RUBRIKEN, SPECEN OCH PRISET. INGEN POTTMÄRKNING.
+     ÄGARENS ORD 25 OKTOBER, ORDAGRANT: "Till exempel står det 'grön teknik'
+     under paket Premium. Laddkabel 22 kilowatt, 10 meter. Då har du också
+     lagt till 'i stället för 5 meter'. Och sedan också 'grön teknikavdrag',
+     RFID-taggar 5-pack, 'grön teknikavdrag'. (...) Jag vill bara att du ska
+     ha själva rubrikerna, 'i stället för 5 meter' och inte 'grön
+     teknikavdrag', utan det gör bara så att det här blir ännu mer
+     klotterigt. Bara rubrikerna och priset."
+     SKILLNADEN MELLAN DE TVÅ UNDERRADERNA ÄR DÄRFÖR AVGÖRANDE OCH INTE EN
+     SMAKSAK: "i stället för 5 meter" säger vad kunden FÅR, och utan den
+     läser raden som att en laddkabel kostar 200 kr. "Grön teknik-avdrag"
+     säger bara vilken skattekolumn raden hamnar i, och det säger finstilten
+     redan en gång för hela ordern. Specen står kvar, märkningen går bort. */
   var html = poster.map(function (p) {
-    var pm = (visaPott && p.pott && p.belopp != null)
-      ? '<small class="oa__rad-pott">' + txt(POTT[p.pott].etikett) + '</small>' : '';
     var un = p.under ? '<small>' + txt(p.under) + '</small>' : '';
     var pris = (netto && p.belopp != null)
       ? '<span class="oa__rad-pris kr">' + txt(kr(p.belopp)) + '</span>'
       : (p.ord ? '<span class="oa__rad-pris oa__rad-pris--ord">' + txt(p.ord) + '</span>' : '');
     return '<li class="oa__rad' + (p.huvud ? ' oa__rad--huvud' : '') + '">'
-         + '<span class="oa__rad-text">' + txt(p.namn) + un + pm + '</span>' + pris + '</li>';
+         + '<span class="oa__rad-text">' + txt(p.namn) + un + '</span>' + pris + '</li>';
   });
 
   /* Utestående: ett löfte offerten gav och som bekräftelsen ska kvittera.
      Grannrabatten är det enda fallet i dag. Texten kommer ur den mall som
-     gav löftet, ordagrant, och sidan skriver inget eget om den. */
-  var noter = [];
+     gav löftet, ordagrant, och sidan skriver inget eget om den.
+     INGEN NOT UNDER RADERNA. ÄGARENS ORD 25 OKTOBER om texten under
+     grannrabattraden, ordagrant: "Här vill jag att vi använder följande
+     ENBART: 'inkl. moms, efter skattereduktion. Avdragen dras direkt på
+     fakturan.'" Noten "Upp till 1 500 kr av, 500 kr för varje granne som
+     beställer. Ditt pris här ändras inte förrän det hänt." går därmed bort,
+     och med den fältet `not`: ett fält som finns kommer någon att rendera.
+     Raden själv står kvar och säger fortfarande att rabatten inte är dragen
+     ("dras när de beställt"), så kvittensen lovar inget den inte håller. */
   utest.forEach(function (u) {
     if (!u || !str(u.text)) return;
     html.push('<li class="oa__rad"><span class="oa__rad-text">' + txt(str(u.text)) + '</span>'
             + (str(u.ord) ? '<span class="oa__rad-pris oa__rad-pris--ord">' + txt(str(u.ord)) + '</span>' : '')
             + '</li>');
-    if (str(u.not)) noter.push(str(u.not));
   });
 
   $('oaRader').innerHTML = html.join('');
-  if (noter.length) { $('oaNot').textContent = noter.join(' '); visa($('oaNot'), true); }
 
   /* Produktraden. Service och tillägg har ingen produkt och ingen bild: då
      står raden inte där, den står inte tom. */
@@ -383,13 +412,21 @@
 
   /* "Allt som ingår." Serviceofferten är den mall som inte konfigurerar
      något: kunden läser en lista och svarar ja eller nej. Då är listan hela
-     ordern och måste följa med på kvittensen. */
+     ordern och måste följa med på kvittensen.
+     EN REN PUNKTLISTA, INGEN BRÖDTEXT UNDER PUNKTERNA. ÄGARENS ORD 25
+     OKTOBER, ORDAGRANT: "Det viktiga med allt som ingår är att om vi kollar
+     på servicemallen så har vi till exempel byte av sex strömbrytare, och
+     sen har vi en text under det. Här ska det, och jag vet att det här var
+     feedback tidigare, bara vara en punktlista."
+     OCH SKÄLET ÄR INTE BARA SMAK. Samma pass, om offertens egen lista:
+     "vi kommer inte kunna göra det i praktiken, utan vi kommer bara ha
+     rubrikerna". Underraderna beskrev ett jobb ingen lovat så noggrant.
+     En post är därför en STRÄNG och inget annat: tog listan emot ett objekt
+     med ett spec-fält skulle nästa kontrakt fylla det. */
   if (ingar.length) {
     $('oaIngar').innerHTML = ingar.map(function (i) {
-      var t = (typeof i === 'string') ? { text: i } : (i || {});
-      if (!str(t.text)) return '';
-      return '<li>' + BOCK + '<span>' + txt(str(t.text))
-           + (str(t.spec) ? '<span>' + txt(str(t.spec)) + '</span>' : '') + '</span></li>';
+      if (i && typeof i === 'object') { fel.push('ingår-posten är ett objekt, inte en sträng'); return ''; }
+      return str(i) ? '<li>' + BOCK + '<span>' + txt(str(i)) + '</span></li>' : '';
     }).join('');
     visa($('oaIngarRubrik'), true);
     visa($('oaIngar'), true);
@@ -414,20 +451,29 @@
   }
 
   /* Finstilten. Villkoret står EN gång, här, och inte en gång per rad:
-     hedging-direktivet 2026-08-15. Köpvillkorslänken sätts bara om adressen
-     finns: ett tomt href är inget villkor. */
-  var fin = [];
-  if (netto && (poster.length || total != null)) fin.push(kort[1]);
-  var vUrl = str(offert.villkor_url);
-  if (fin.length || vUrl) {
-    var h = fin.map(txt).join(' ');
-    if (vUrl) h += (h ? ' ' : '')
-      + '<a href="' + txt(vUrl) + '" target="_blank" rel="noopener">Läs våra köpvillkor</a>';
-    $('oaFin').innerHTML = h;
+     hedging-direktivet 2026-08-15. EN mening och ingenting mer under
+     raderna: ägarens "enbart" 25 oktober. Köpvillkorslänken har flyttat
+     härifrån till folden längst ner. */
+  if (netto && (poster.length || total != null)) {
+    $('oaFin').textContent = kort[1];
     visa($('oaFin'), true);
   }
 
   visa($('oaOrder'), !!(poster.length || ingar.length || rubrik));
+
+  /* ---- 5 · VILLKOREN, I EN FOLD LÄNGST NER -----------------------------
+     Ägarens ord 25 oktober, GLOBAL NOTERING: länken och "Läs våra
+     köpvillkor" ska ligga under en dropdown som heter Villkor längst ner på
+     orderbekräftelsen, likt offerten. Formen är offertens egen fold.
+     LÄNKEN SKRIVS HÄR, INTE I MARKUPEN. Ett tomt href är inget villkor:
+     saknas adressen står sektionen kvar dold, och kunden får ingen trasig
+     länk att trycka på. Texten är offertens, ordagrant. */
+  var vUrl = str(offert.villkor_url);
+  if (vUrl) {
+    $('oaVillkorKropp').innerHTML = '<p class="oa__villkor-rad"><a href="' + txt(vUrl)
+      + '" target="_blank" rel="noopener">Läs våra köpvillkor</a></p>';
+    visa($('oaVillkor'), true);
+  }
 
   /* Kontraktsfel hör i byggets logg, inte på kundens sida. prov.py läser
      flaggan; kunden ser bara att ett tal uteblev. */

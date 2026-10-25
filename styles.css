@@ -202,23 +202,15 @@
 .oa__rad-text{ min-width:0; overflow-wrap:break-word; }
 .oa__rad-text small{ display:block; font-size:var(--t6); font-weight:400; color:var(--ink-soft);
   line-height:1.4; margin-top:var(--s0); }
-/* Pottmarkningen ar INTE radens spec: den sager vilket avdrag raden hor till
-   och star bara nar ordern har tva potter. Samma behandling som
-   tillaggsmallens .o-art__pott (offerter/tillagg/stil.css rad 23): mindre,
-   ljusare, lite bredare satt, sa den laser som en etikett och inte som mer
-   text om produkten. */
-/* RAKNAT: rgba(11,16,48,.5) mot kortytan mater omkring 3,3:1, alltsa under
-   4,5:1 for brodtext i 11 px. --ink-soft (.62) ar den ljusaste ton sidan redan
-   anvander och mater over 4,5:1. Etiketten skiljs darfor med storlek och
-   sparrning, inte med annu ljusare gratt. */
-.oa__rad-pott{ font-size:var(--t7) !important; letter-spacing:.02em;
-  color:var(--ink-soft) !important; margin-top:var(--s0) !important; }
+/* POTTMARKNINGEN AR BORTTAGEN, AGARENS ORD 25 OKTOBER: "Bara rubrikerna och
+   priset." Regeln .oa__rad-pott stod har och gav etiketten 11 px och lite
+   bredare sattning. Den ar borta ur CSS och inte bara ur renderingen: en
+   klass som finns kvar ar en inbjudan att anvanda den igen. */
 .oa__rad-pris{ flex:0 0 auto; font-weight:600; font-variant-numeric:tabular-nums; white-space:nowrap; }
 /* "ingen kostnad nu" och "dras nar de bestallt" ar ord, inte tal. De far
    darfor inte brodtextens vikt eller sifferbredden: en intresseanmalan som
    ser ut som en prisrad laser som nagot kunden har kopt. */
 .oa__rad-pris--ord{ font-weight:400; font-size:var(--t6); color:var(--ink-soft); white-space:normal; text-align:right; }
-.oa__not{ margin:var(--s3) 0 0; font-size:var(--t6); line-height:1.45; color:var(--ink-soft); }
 /* UPPMATT: rubriken stod i 13 px over en lista i 15, alltsa mindre an det
    den rubricerar. Nu samma steg som raderna, med vikten som skillnad.
    INTE ett steg UPP: pa servicebekraftelsen ar listan en jamlike till
@@ -230,7 +222,9 @@
    inget annat att lasa. Darfor brodtextens 15. */
 .oa__ingar{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:var(--s3); font-size:var(--t5); }
 .oa__ingar li{ display:flex; align-items:flex-start; gap:var(--s3); line-height:1.35; }
-.oa__ingar li > span span{ display:block; font-size:var(--t6); color:var(--ink-soft); line-height:1.4; margin-top:var(--s0); }
+/* INGEN BRODTEXT UNDER EN PUNKT. Har stod .oa__ingar li > span span, specens
+   egen rad. Agaren 25 oktober: "bara vara en punktlista". Regeln ar borta,
+   inte bara tom: en regel utan innehall ar en regel nagon fyller igen. */
 /* EN BOCK, INTE TVA. Samma vektor som varje punktlista i offerten,
    gemensamt/bitar.py rad 10 till 11, sa listan pa bekraftelsen och listan i
    offerten bar samma symbol. Brickan ritas i CSS, inte i svg: border-radius
@@ -242,12 +236,38 @@
 /* Finstilten. Villkoret star EN gang, har, och inte en gang per rad:
    hedging-direktivet 2026-08-15. */
 .oa__fin{ margin:var(--rytm-block) 0 0; font-size:var(--t6); line-height:1.5; color:var(--ink-soft); }
-/* UPPMATT: lanken ar sidans enda kontroll utover telefonnumret och maste
-   ha 44 px traffyta. Inline i finstilten slog de 44 pixlarna ut radavstandet
-   i det stycke den stod i. Egen rad, egen traffyta, oforandrad brodtext. */
-.oa__fin a{ display:flex; align-items:center; width:fit-content; min-height:var(--z5);
-  padding:0 var(--s2); margin:var(--s0) 0 calc(var(--s2) * -1) calc(var(--s2) * -1);
-  color:var(--teal-deep); font-weight:600; text-decoration:underline; text-underline-offset:3px; }
+/* Finstilten bar kopvillkorslanken till 25 oktober. Den har flyttat till
+   folden langst ner (se .oa__fold), pa agarens ord. Har star nu EN mening
+   och ingenting annat. */
+
+/* --- villkorsfolden ----------------------------------------------------
+   Agarens ord 25 oktober: lanken ska ligga "under en dropdown som heter
+   villkor som ligger langst ner pa orderbekraftelsen", likt offerten.
+   MATTEN AR OFFERTENS EGNA, gemensamt/system.css rad 170 till 178:
+   .o-fold har 1 px ram, radie r2, summary med 12/16 i padding, 15/600 i
+   text och ett golv pa 48 px, och kroppen 0/16/16. Allt det ligger redan pa
+   den har sidans skalor, sa inget nytt matt uppstar av flytten.
+   PILEN RITAS SOM SVG, inte som en roterad CSS-ram. Sidan ritar redan bocken
+   och stjarnorna i svg, och en 1,8 px bred ram hade varit en langd till
+   utanfor husets skalor. */
+.oa__villkor{ padding-top:var(--s5); padding-bottom:var(--s5); }
+.oa__fold{ background:#fff; border:1px solid var(--line); border-radius:var(--r2); overflow:hidden; }
+.oa__fold > summary{ list-style:none; cursor:pointer; display:flex; align-items:center;
+  justify-content:space-between; gap:var(--s3); min-height:var(--z6);
+  padding:var(--s3) var(--s4); font-size:var(--t5); font-weight:600; color:var(--ink); }
+.oa__fold > summary::-webkit-details-marker{ display:none; }
+.oa__fold-pil{ flex:0 0 auto; width:var(--z1); height:var(--z1); fill:none; stroke:var(--ink-soft);
+  stroke-width:2; stroke-linecap:round; stroke-linejoin:round; transition:transform .18s var(--ease-soft); }
+.oa__fold[open] .oa__fold-pil{ transform:rotate(180deg); }
+@media (prefers-reduced-motion: reduce){ .oa__fold-pil{ transition:none; } }
+.oa__fold-kropp{ padding:0 var(--s4) var(--s4); }
+.oa__villkor-rad{ margin:0; font-size:var(--t6); line-height:1.5; color:var(--ink-soft); }
+/* Samma traffyta som lanken hade i finstilten: 44 px ar golvet, och de
+   negativa marginalerna haller radhojden oforandrad. */
+.oa__fold a{ display:flex; align-items:center; width:fit-content; min-height:var(--z5);
+  padding:0 var(--s2); margin:0 0 0 calc(var(--s2) * -1);
+  color:var(--teal-deep); font-weight:600; font-size:var(--t5);
+  text-decoration:underline; text-underline-offset:3px; }
 
 /* --- next-steps: centred group, internally left-aligned --- */
 .oa__next{ width:fit-content; max-width:100%; margin-inline:auto; }
@@ -325,11 +345,21 @@
     background:#fff; -webkit-backdrop-filter:none; backdrop-filter:none; }
   .oa__tick{ stroke-dashoffset:0 !important; animation:none !important; }
   .oa__disc{ animation:none !important; opacity:1 !important; transform:none !important; }
-  .oa__kvitto, .oa__order, .oa__rad, .oa__ingar li{ break-inside:avoid; }
+  .oa__kvitto, .oa__order, .oa__rad, .oa__ingar li, .oa__fold{ break-inside:avoid; }
   /* Lasbart pa papper: .62 och #5b6480 mot vitt ar for ljust i tryck. */
-  .oa__fin, .oa__not, .oa__kvitto-not, .oa__rad-text small,
-  .oa__ingar li > span span, .oa__prod span{ color:#3b4256 !important; }
+  .oa__fin, .oa__kvitto-not, .oa__rad-text small,
+  .oa__villkor-rad, .oa__prod span{ color:#3b4256 !important; }
+  /* FOLDEN OPPNAS PA PAPPER. En STANGD <details> doljer sitt innehall genom
+     ::details-content med content-visibility:hidden, och det biter ingen
+     display-regel pa barnet. Samma tre rader som offertrepots egen
+     utskriftsregel (gemensamt/system.css rad 519 till 522), som kom dit
+     efter en riktig utskrifts-PDF dar villkoren saknades helt. Det som
+     binder kunden ska med pa papperet. */
+  .oa__fold::details-content{ content-visibility:visible !important; block-size:auto !important; }
+  .oa__fold > .oa__fold-kropp{ display:block !important; }
+  .oa__fold-pil{ display:none !important; }
+  .oa__fold{ border-color:#d5d9e4; }
   /* En understruken lank utan adress ar inget villkor pa papper. */
-  .oa__fin a{ display:inline; min-height:0; padding:0; margin:0; }
-  .oa__fin a::after{ content:" (" attr(href) ")"; font-weight:400; text-decoration:none; }
+  .oa__fold a{ display:inline; min-height:0; padding:0; margin:0; }
+  .oa__fold a::after{ content:" (" attr(href) ")"; font-weight:400; text-decoration:none; }
 }

@@ -109,20 +109,33 @@ def datum_lang(iso):
 
 
 def pottrad(potter):
-    """Ägarens lydelse D3, 24 oktober, ordagrant samma som offertrepots
-    offerter/tillagg/offert.py:pottrad. Oraklet skriver den SJÄLVT i stället
-    för att läsa sidans, annars provar det bara att sidan är lika med sig
-    själv. Ändras lydelsen ändras två ställen, och det är meningen."""
-    gt, rot = "gron-teknik" in potter, "rot" in potter
-    namn = [n for n, med in (("Grön teknik", gt), ("ROT", rot)) if med]
-    if namn:
-        forsta = "inkl. moms, efter skattereduktion (%s)" % " och ".join(namn)
-        andra = ("Avdragen" if len(namn) > 1 else "Avdraget") + " dras direkt på fakturan."
-    else:
-        forsta, andra = "inkl. moms", ""
-    delar = [forsta + ".", andra]
-    if "inget" in potter and namn: delar.append("Rader utan avdrag är märkta.")
-    return forsta, " ".join(d for d in delar if d)
+    """ÄGARENS LYDELSE 25 OKTOBER, ORDAGRANT, i två meningar:
+
+        kvittonoten  "inkl. moms, efter skattereduktion"
+        finstilten   "inkl. moms, efter skattereduktion. Avdragen dras
+                      direkt på fakturan."
+
+    Hans egna ord om den förra lydelsen: om noten i kvittot, "Här vill jag
+    att vi har: 'inkl. moms, efter skattereduktion'", och om texten under
+    raderna, "Här vill jag att vi använder följande ENBART: 'inkl. moms,
+    efter skattereduktion. Avdragen dras direkt på fakturan.'"
+
+    PARENTESEN ÄR BORTA, OCH MED DEN BÖJNINGEN. Till 25 oktober skrev den
+    här funktionen "(ROT)" på elcentralen, "(Grön teknik)" på batteriet och
+    "(Grön teknik och ROT)" på laddboxen, och böjde "Avdraget"/"Avdragen"
+    efter hur många potter som räknades upp. Utan uppräkning finns inget att
+    kongruera med, och ägaren skrev plural.
+
+    UTAN AVDRAG STÅR BARA "inkl. moms". Den grenen är sanningen, inte en
+    finess: har ingen rad en pott finns ingen skattereduktion att nämna.
+
+    ORAKLET SKRIVER LYDELSEN SJÄLVT i stället för att läsa sidans, annars
+    provar det bara att sidan är lika med sig själv. Ändras lydelsen ändras
+    två ställen, och det är meningen."""
+    if "gron-teknik" not in potter and "rot" not in potter:
+        return "inkl. moms", "inkl. moms."
+    forsta = "inkl. moms, efter skattereduktion"
+    return forsta, forsta + ". Avdragen dras direkt på fakturan."
 
 
 # ---------------------------------------------------------------- 1. källan
@@ -143,7 +156,24 @@ kolla("2026-0" not in index, "index.html bär ett offertnummer. Exempelvärden i
                              "läcker till en kund som får en sida utan kontrakt.")
 kolla("<form" not in index and "<button" not in index,
       "index.html bär en kontroll. Sidan visar räknade tal och ska inte ha något att trycka på "
-      "utöver telefonlänken.")
+      "utöver telefonlänken och villkorsfolden.")
+# EXAKT EN FOLD. Ägarens GLOBAL NOTERING 25 oktober gav sidan sin första
+# riktiga kontroll, och den är avsiktlig: "denna länk och 'Läs våra
+# köpvillkor' ligger under en dropdown som heter villkor som ligger längst
+# ner på orderbekräftelsen". En andra <details> är däremot ingen beställning.
+# RAKNAT UTAN KOMMENTARER. Kommentaren ovanfor folden citerar bade taggen och
+# ett utdrag ur utskriftsregeln, och forsta versionen av den har kontrollen
+# raknade dem: tre <details> i en fil som har en. Samma mathal som sveptes
+# 24 oktober, dar en kontroll last den rATa markupen i stallet for sidan.
+_index_ren = re.sub(r"<!--.*?-->", " ", index, flags=re.S)
+kolla(_index_ren.count("<details") == 1 and _index_ren.count("<summary>Villkor") == 1,
+      "index.html har %d <details> och %d summary som heter Villkor, väntade 1 och 1."
+      % (_index_ren.count("<details"), _index_ren.count("<summary>Villkor")))
+# OCH INGEN LÄNKADRESS I MARKUPEN. href sätts av renderaren ur kontraktet:
+# ett tomt href i mallen är en trasig länk på varje sida som inte fylls.
+kolla("ampy.se/kopvillkor" not in index,
+      "index.html bär köpvillkorsadressen som fast text. Den kommer ur kontraktets "
+      "villkor_url, annars kan de fem mallarna peka olika utan att någon ser det.")
 
 # MARKUPEN, INTE DEN SYNLIGA TEXTEN. Första versionen läste synlig(index),
 # och synlig() tar bort dolda element. I index.html är VARJE fyllbart element
@@ -241,6 +271,20 @@ for mall in MALLAR:
     for _vag, _s in ((v, s) for v, s in _strangar_i(d)):
         inget_avdragsutrymme(_s, "%s %s" % (mall, _vag))
 
+    # ---- ÄGARENS 25 OKTOBER, I DATAT OCH INTE BARA I RENDERINGEN --------
+    # Skyddet mot att en text kommer tillbaka ligger i att det inte finns
+    # något fält att hämta den ur. Samma princip som ROT-beloppet.
+    for _i, _u in enumerate(o.get("utestaende") or []):
+        kolla("not" not in _u,
+              "%s: utestaende[%d] bär fältet `not`. Noten under raderna utgick 25 oktober "
+              "(\"Här vill jag att vi använder följande enbart\"), och ett fält som finns "
+              "kommer någon att rendera." % (mall, _i))
+    for _i, _p in enumerate(o.get("ingar") or []):
+        kolla(isinstance(_p, str) and _p.strip(),
+              "%s: ingar[%d] är %r, inte en sträng. Allt som ingår är en REN punktlista: "
+              "ett objekt med ett spec-fält är brödtexten under punkten, och den utgick "
+              "25 oktober." % (mall, _i, _p))
+
     # Inget fält i kontraktet får bära ett avdragsBELOPP. Ägardirektiv 2026-10-23.
     platt = json.dumps(d, ensure_ascii=False)
     for forbjudet in ('"rot_belopp"', '"avdrag_belopp"', '"rotavdrag"', '"gron_teknik_belopp"',
@@ -334,8 +378,13 @@ for mall in MALLAR:
     kolla(html.count('<span class="oa__kvitto-not" id="oaKvittoNot">%s</span>' % kort) == 1,
           "%s: kvittonoten säger inte %r" % (mall, kort))
     kolla(hel in syn, "%s: finstilten säger inte %r" % (mall, hel))
-    kolla("Läs våra köpvillkor" in syn,
-          "%s: köpvillkorslänken saknas. Villkoren ska nå papperet." % mall)
+    # EN MENING OCH INGENTING MER UNDER RADERNA. Ägarens "enbart" 25 okt.
+    # Mätt mot elementets hela innehåll, inte med ett "finns i": en andra
+    # mening inskriven efter den rätta hade annars passerat.
+    _fin = re.search(r'<p class="oa__fin" id="oaFin"[^>]*>(.*?)</p>', html, re.S)
+    kolla(bool(_fin) and " ".join(_fin.group(1).split()) == hel,
+          "%s: finstilten står som %r, väntade exakt %r"
+          % (mall, " ".join(_fin.group(1).split()) if _fin else None, hel))
 
     # ---- INVARIANT 1. ETT BELOPP BRYTS ALDRIG MITT ITU. -------------------
     # Ägarbeslut A8, 24 oktober: hårdspatie (U+00A0) BÅDE som
@@ -370,16 +419,94 @@ for mall in MALLAR:
           "%s: %d belopp hittades i texten men kontraktet bär %d. Mätningen letade "
           "efter fel sak." % (mall, len(belopp_i_syn), len(vantade)))
 
-    # Blandade potter: VARJE rad med ett belopp är märkt. En pott: ingen rad.
-    etiketter = html.count('<small class="oa__rad-pott">')
-    med_belopp = sum(1 for r in d["order"]["rader"] if isinstance(r.get("belopp"), int))
-    med_belopp += 1 if (d["order"].get("paket") and isinstance(d["order"]["paket"].get("belopp"), int)) else 0
-    if len(potter) > 1:
-        kolla(etiketter == med_belopp,
-              "%s: %d potter men %d av %d prisrader är märkta"
-              % (mall, len(potter), etiketter, med_belopp))
-    else:
-        kolla(etiketter == 0, "%s: en pott men %d rader bär en pottmärkning" % (mall, etiketter))
+    # ---- BARA RUBRIKERNA OCH PRISET. ÄGARENS ORD 25 OKTOBER. -------------
+    # VÄNT ORAKEL. Här stod till 25 oktober motsatsen: "blandade potter:
+    # VARJE rad med ett belopp är märkt. En pott: ingen rad." Den kontrollen
+    # bevakade en sanning ägaren just ersatt, och hade stoppat rättningen i
+    # stället för felet (FALLOR.md). Den är vänd, inte raderad: samma rad
+    # mäter nu att ingen rad är märkt, oavsett hur många potter ordern har.
+    # Hans ord, ordagrant: "Jag vill bara att du ska ha själva rubrikerna,
+    # 'i stället för 5 meter' och inte 'grön teknikavdrag', utan det gör
+    # bara så att det här blir ännu mer klotterigt. Bara rubrikerna och
+    # priset."
+    kolla('oa__rad-pott' not in html,
+          "%s: en rad bär en pottmärkning. Ägaren 25 okt: bara rubrikerna och priset."
+          % mall)
+    for _etikett in ("Grön teknik-avdrag", "ROT-avdrag", "Utan avdrag"):
+        kolla(_etikett not in syn,
+              "%s: %r står på sidan. Pottmärkningen vid raden utgick 25 oktober; "
+              "vilken pott ordern har säger finstilten en gång." % (mall, _etikett))
+    # OCH SPECEN STÅR KVAR. Samma mening tar bort märkningen och behåller
+    # det som säger vad kunden får. Utan en positiv mätning kunde nästa
+    # person ta bort <small> helt och få grönt: "Laddkabel 22 kW, 10 meter"
+    # utan "i stället för 5 meter" säger att en laddkabel kostar 200 kr.
+    for r in d["order"]["rader"]:
+        if r.get("typ") == "mellanskillnad" and r.get("i_stallet_for"):
+            kolla(("i stället för " + r["i_stallet_for"]) in syn,
+                  "%s: raden %r har tappat 'i stället för %s'. Specen säger vad kunden "
+                  "får och står kvar; det var pottmärkningen som gick bort."
+                  % (mall, r.get("namn"), r["i_stallet_for"]))
+
+    # ---- FINSTILTEN SÄGER INGET OM VILKA POTTER DET ÄR -------------------
+    # Ägarens ord om kvittonoten: "Under att betala längst upp står även:
+    # 'inkl. moms, efter skattereduktion (Grön teknik och ROT)'. Här vill
+    # jag att vi har: 'inkl. moms, efter skattereduktion'." Parentesen är
+    # ett eget mått: pottrad() ovan kan skrivas om utan att någon märker
+    # att den gamla formen kommit tillbaka på en av fem sidor.
+    for _form in ("(Grön teknik och ROT)", "(Grön teknik)", "(ROT)",
+                  "Rader utan avdrag är märkta"):
+        kolla(_form not in syn,
+              "%s: %r står på sidan. Den lydelsen utgick 25 oktober." % (mall, _form))
+
+    # ---- INGEN NOT UNDER RADERNA -----------------------------------------
+    # "Här vill jag att vi använder följande ENBART." Blocket under raderna
+    # är en mening och ingenting mer.
+    kolla('oa__not' not in html,
+          "%s: noten under raderna är tillbaka. Ägaren 25 okt: enbart finstiltsmeningen."
+          % mall)
+    kolla("Upp till" not in syn and "ändras inte förrän" not in syn,
+          "%s: grannrabattnoten står på sidan." % mall)
+
+    # ---- ALLT SOM INGÅR ÄR EN REN PUNKTLISTA -----------------------------
+    # "Här ska det, och jag vet att det här var feedback tidigare, bara vara
+    # en punktlista." Mätt i markupen: en punkt är <li><bock><span>text</span>,
+    # och ett andra <span> INNE i det spannet är brödtexten som gick bort.
+    for _lista in re.findall(r'<ul class="oa__ingar"[^>]*>(.*?)</ul>', html, re.S):
+        for _punkt in re.findall(r"<li>(.*?)</li>", _lista, re.S):
+            # Bocken ar ett <span class="oa__bock">, texten ett <span>. Ett
+            # ANDRA textspann inne i textspannet var specens egen rad.
+            _efter_bock = re.sub(r'<span class="oa__bock".*?</span>', "", _punkt, flags=re.S)
+            kolla(_efter_bock.count("<span>") == 1,
+                  "%s: en punkt i Allt som ingår bär brödtext under sig: %r. Ägaren 25 okt: "
+                  "bara en punktlista." % (mall, re.sub(r"<[^>]+>", " ", _punkt).strip()[:70]))
+
+    # ---- VILLKOREN LIGGER I EN FOLD LÄNGST NER ---------------------------
+    # Ägarens GLOBAL NOTERING 25 oktober. Fyra mått, för "det finns en
+    # dropdown" är inte samma sak som "länken ligger i den".
+    _ren = re.sub(r"<!--.*?-->", " ", html, flags=re.S)
+    kolla(_ren.count("<details") == 1 and _ren.count("<summary>") == 1,
+          "%s: sidan har %d <details> och %d <summary>, väntade 1 och 1."
+          % (mall, _ren.count("<details"), _ren.count("<summary>")))
+    _fold = re.search(r"<details[^>]*>(.*?)</details>", _ren, re.S)
+    kolla(bool(_fold) and _fold.group(1).lstrip().startswith("<summary>Villkor"),
+          "%s: folden heter inte Villkor." % mall)
+    kolla(bool(_fold) and "Läs våra köpvillkor" in _fold.group(1),
+          "%s: köpvillkorslänken ligger inte i folden." % mall)
+    kolla(syn.count("Läs våra köpvillkor") == 1,
+          "%s: 'Läs våra köpvillkor' står %d gånger, väntade 1. Länken flyttade till "
+          "folden och ska inte stå kvar i finstilten också."
+          % (mall, syn.count("Läs våra köpvillkor")))
+    _url = d["offert"].get("villkor_url")
+    kolla(bool(_fold) and ('href="%s"' % _url) in _fold.group(1),
+          "%s: folden länkar inte till kontraktets villkor_url %r. Aldrig ett tomt href."
+          % (mall, _url))
+    # Och den ligger SIST bland kortets innehållsblock: under den står bara
+    # avslutningen med telefonnumret, precis som offertens <footer class=
+    # "o-fot"> står under villkorsfolden där.
+    _sektioner = re.findall(r'<section class="oa__section([^"]*)"', _ren)
+    kolla(len(_sektioner) >= 2 and " oa__villkor" in _sektioner[-2],
+          "%s: villkorsfolden är inte näst sist bland sektionerna (%s). Den ska ligga "
+          "längst ner, med bara avslutningen under sig." % (mall, _sektioner))
 
 
 # ------------------------------------- 3b. en accepterad offert, en bekräftelse
@@ -512,6 +639,86 @@ for mall in MALLAR:
           "inte ser, en för mycket är en annan offerts rad." % (mall, _pa, _i))
 
 
+# ------------------------------------------------- 3c. EN MALL, EN SKILLNAD
+# ÄGARENS ORD 25 OKTOBER, ORDAGRANT:
+#   "När jag har gått igenom mallarna ser jag att varenda mall är lite
+#    annorlunda. (...) Orderbekräftelsen kommer inte att ha olika mallar.
+#    Det enda är ju tilläggsarbetet, eftersom 'Så här går vi vidare' är
+#    annorlunda. Det är egentligen den enda skillnaden."
+# Mätt i markupen, inte lovat i en kommentar: verktyg/samma-mall.py blankar
+# det som är DATA och jämför resten tecken för tecken. Måttet är tvåsidigt:
+# allt utanför steglistan ska vara samma tecken på alla fem, och exakt
+# tilläggsmallens steglista ska skilja sig.
+sys.path.insert(0, str(HAR / "verktyg"))
+import importlib
+_samma = importlib.import_module("samma-mall")
+_n_mall, _fel_mall, _skiljer = _samma.kor(tyst=True)
+for f in _fel_mall:
+    kolla(False, f)
+kolla(_n_mall >= 6, "samma-mall: bara %d kontroller kördes" % _n_mall)
+
+
+# ------------------------------------------------- 3d. PROVFALLET, ÄGARSVAR 46
+# "Ja, lägg till datum." Mekanismen är byggd, men de fem fallen bär null:
+# ett acceptdatum uppstår när kunden trycker acceptera och finns inte i
+# offertrepot. En sida som aldrig får ett datum bevisar bara att sidan kan
+# tiga, så raden syns i ETT provfall, och provfallet mäts hårdare än de fem:
+# det får inte vara en bakväg in för hittepå.
+PROVFALL = "prov-acceptdatum"
+_pf_k = HAR / "exempel" / (PROVFALL + ".json")
+_pf_h = HAR / "fall" / (PROVFALL + ".html")
+kolla(_pf_k.exists() and _pf_h.exists(),
+      "provfallet saknas: %s och %s ska finnas (ägarsvar 46)" % (_pf_k.name, _pf_h.name))
+if _pf_k.exists() and _pf_h.exists():
+    _pf = json.loads(_pf_k.read_text(encoding="utf-8"))
+    _lb = json.loads((HAR / "exempel" / "laddbox.json").read_text(encoding="utf-8"))
+    # 1. KONTRAKTET ÄR LADDBOXENS, MED EXAKT ETT FÄLT ÄNDRAT. Allt annat på
+    #    sidan är alltså laddboxfallets egna tal och strängar, redan
+    #    kontrollerade mot offertrepot av ordagrant.py och talen.py.
+    _utan = {k: v for k, v in _pf.items() if k != "_prov"}
+    _utan["offert"] = {k: v for k, v in _utan["offert"].items() if k != "accepterad"}
+    _lb_utan = dict(_lb); _lb_utan["offert"] = {k: v for k, v in _lb["offert"].items()
+                                                if k != "accepterad"}
+    kolla(json.dumps(_utan, sort_keys=True, ensure_ascii=False)
+          == json.dumps(_lb_utan, sort_keys=True, ensure_ascii=False),
+          "provfallet skiljer sig från laddbox.json i mer än offert.accepterad. Provet ska "
+          "visa EN mekanism, inte bära ett eget påhittat fall.")
+    kolla(_lb["offert"]["accepterad"] is None,
+          "laddbox.json har fått ett acceptdatum. Ingen av de fem offerterna är accepterad "
+          "av någon, och ett provvärde får inte förorena ett riktigt fall.")
+    _pf_datum = _pf["offert"].get("accepterad")
+    kolla(datum_lang(_pf_datum) is not None,
+          "provfallets accepterad är %r, inget datum i kalendern" % _pf_datum)
+    # 2. RADEN RENDERAS, I HUSETS SVENSKA FORM, EXAKT EN GÅNG.
+    _pf_syn = " ".join(synlig(_pf_h.read_text(encoding="utf-8")).split())
+    _vantad_rad = "Accepterad " + (datum_lang(_pf_datum) or "?")
+    kolla(_pf_syn.count(_vantad_rad) == 1,
+          "provfallet: %r står %d gånger på sidan, väntade 1"
+          % (_vantad_rad, _pf_syn.count(_vantad_rad)))
+    kolla(_pf_datum not in _pf_syn,
+          "provfallet skriver ISO-datumet %r rakt av. Kunden läser svenska." % _pf_datum)
+    kolla("iltig" not in _pf_syn,
+          "provfallet skriver något om giltighet. Ett acceptdatum drar inte med sig ett "
+          "giltig till (ägardirektiv 23 okt).")
+    # 3. OCH SIDAN ÄR LADDBOXENS, RAD FÖR RAD, UTOM ACCEPTRADEN. Det är
+    #    måttet som gör provfallet ofarligt: det kan inte visa ett tal eller
+    #    en sträng som laddboxsidan inte redan visar.
+    import difflib as _difflib
+    def _utan_huvud(h):
+        return re.sub(r"<!-- BYGGD FIL.*?-->\n", "", h, flags=re.S).split("\n")
+    _d = [l for l in _difflib.unified_diff(
+            _utan_huvud((HAR / "fall" / "laddbox.html").read_text(encoding="utf-8")),
+            _utan_huvud(_pf_h.read_text(encoding="utf-8")),
+            "laddbox", PROVFALL, lineterm="", n=0)
+          if l[:1] in "+-" and l[:3] not in ("+++", "---")]
+    kolla(len(_d) == 2 and all('id="oaAccept"' in l for l in _d),
+          "provfallet skiljer sig från fall/laddbox.html i %d rader, väntade 2 och bara "
+          "acceptraden: %s" % (len(_d), [l.strip()[:80] for l in _d]))
+    # 4. OCH DET BLANDAS INTE IN BLAND DE FEM. Ett provfall som räknas som
+    #    ett sjätte fall är ett fall ingen granskat som ett fall.
+    kolla(PROVFALL not in MALLAR, "provfallet står i MALLAR och räknas som en mall")
+
+
 # GRANSKNINGSSIDAN ÄR OCKSÅ EN KOPIA. fall/index.html är skriven för hand och
 # bär de fem totalerna som text. Den är ingen kundyta, men den är en andra
 # plats där samma tal står, och en andra plats är en plats som kan drifta.
@@ -527,6 +734,13 @@ if _oversikt.exists():
         kolla(_vantad + " kr" in _o or (_vantad.replace(" ", " ") + " kr") in _o,
               "fall/index.html säger inte %s kr för %s. Översikten är en andra kopia av "
               "samma tal och har driftat." % (_vantad, mall))
+    # OCH PROVFALLET STÅR DÄR, MÄRKT SOM ETT PROV. En sida i fall/ som inte
+    # står i översikten är en sida ägaren inte hittar, och ett provfall som
+    # inte säger att det är ett prov läser som ett sjätte fall.
+    kolla('href="prov-acceptdatum.html"' in _o,
+          "fall/index.html länkar inte till provfallet för acceptdatumet")
+    kolla("PROV." in _o and "provvärde" in _o,
+          "fall/index.html säger inte att provfallet är ett prov med ett provvärde")
 
 
 # ------------------------------------------------- 4. att felet faktiskt stänger
@@ -639,6 +853,52 @@ if "--snabb" not in sys.argv:
                   "%s @ %d: vikten %s renderas men huset har bara %s"
                   % (mall, bredd, viktfel, list(_typ.VIKTER)))
 
+# WCAG AA, MÄTT I WEBBLÄSAREN OCH KÖRT HÄRIFRÅN.
+# verktyg/kontrast.py fanns sedan tidigare men kördes bara för hand, och den
+# returnerade dessutom alltid 0: en sida under kravet gav exit 0 och såg
+# godkänd ut. Båda är stängda. Tre sidor räcker för att täcka VARJE yta i
+# verktygets lista, och det är mätt och inte antaget: de fem sidorna har
+# samma markup utanför stegen (3c ovan), och de tre ytor som bara finns på
+# en sida är ingår-listan (service), "ingen kostnad nu" (laddbox) och
+# acceptraden (provfallet). Unionen av deras tomma selektorer ska vara tom.
+if "--snabb" not in sys.argv:
+    import subprocess as _sp2
+    _tomma = None
+    for _sida in ("laddbox", "service", "prov-acceptdatum"):
+        _r2 = _sp2.run([sys.executable, str(HAR / "verktyg" / "kontrast.py"),
+                        str(HAR / "fall" / (_sida + ".html"))],
+                       capture_output=True, text=True, cwd=str(HAR),
+                       env=dict(__import__("os").environ, PYTHONDONTWRITEBYTECODE="1"))
+        kolla(_r2.returncode == 0,
+              "kontrast %s: %s" % (_sida, " | ".join(l.strip() for l in _r2.stdout.split("\n")
+                                                     if "UNDER" in l or "INGEN" in l)[:300]))
+        _t = {l.split()[0] for l in _r2.stdout.split("\n") if "traffade inget" in l}
+        _tomma = _t if _tomma is None else (_tomma & _t)
+    kolla(not _tomma,
+          "kontrast: selektorerna %s träffade ingen yta på någon av de tre sidorna. En "
+          "mätning som letar efter borttagna ytor är lika grön som en som letar efter "
+          "alla." % sorted(_tomma or []))
+
+# VILLKOREN NÅR PAPPERET, ÄVEN MED FOLDEN STÄNGD.
+# Ägarens dropdown skapade en ny felväg: en STÄNGD fold döljer sitt innehåll
+# genom ::details-content med content-visibility:hidden, och det biter ingen
+# display-regel på barnet. Offertrepot lärde sig det av en riktig
+# utskrifts-PDF där villkoren saknades helt (gemensamt/system.css rad 505
+# till 522). DET HÄR ÄR EN KÄLLKONTROLL, inte en mätning av papperet: den
+# säger att de tre reglerna finns, inte att de verkar. Papperet är mätt för
+# hand 25 oktober med en riktig utskrifts-PDF av fall/service.html, där
+# folden står öppen och adressen skrivs ut efter länken.
+_css = (HAR / "styles.css").read_text(encoding="utf-8")
+_print = _css[_css.index("@media print"):] if "@media print" in _css else ""
+for _regel, _varfor in (
+        (".oa__fold::details-content", "folden öppnas inte på papper"),
+        ("content-visibility:visible", "folden öppnas inte på papper"),
+        (".oa__fold > .oa__fold-kropp{ display:block", "foldens kropp visas inte på papper"),
+        ('.oa__fold a::after{ content:" (" attr(href)', "adressen skrivs inte ut efter länken")):
+    kolla(_regel in _print,
+          "styles.css @media print saknar %r: %s. Det som binder kunden ska med på papperet."
+          % (_regel, _varfor))
+
 # INVARIANT 3. VARJE LÄNGD UR HUSETS SKALOR.
 # Läses ur styles.css, för det är där ett tal utanför skalan skrivs. Undantagen
 # står namngivna i verktyg/skala.py och är få: hårlinjer, skuggor, fokusringen,
@@ -681,6 +941,21 @@ if NORDSTJARNA.exists():
     # sanning, så den kedjan kan vara hel medan kopian har driftat. Det här
     # provet går till källfilen, räknar om varje härledning och slår upp
     # varje operand på plats.
+    # SKARMJAMFORELSEN KORS HAR, INTE BARA FOR HAND.
+    # verktyg/jamfor-skarm.py matte glidningen mellan det har kortet och
+    # offertrepots gemensamt/block/skarm-accept.html, och den var ROD fran
+    # 25 oktober: acceptraden lades till utan en post i AVSIKT. Ingen sag
+    # det, for maetaren kordes bara nar nagon rakade kora den. Ett orakel
+    # som inte kors av prov.py ar ett orakel som inte finns.
+    import subprocess as _sp
+    _r = _sp.run([sys.executable, str(HAR / "verktyg" / "jamfor-skarm.py"), str(NORDSTJARNA)],
+                 capture_output=True, text=True, cwd=str(HAR),
+                 env=dict(__import__("os").environ, PYTHONDONTWRITEBYTECODE="1"))
+    kolla(_r.returncode == 0,
+          "jamfor-skarm: %s" % " | ".join(l.strip() for l in _r.stdout.split("\n")
+                                          if l.strip().startswith(("+", "-", "0 ", "1 ", "2 "))
+                                          or "OFÖRKLARAD" in l or "GLIDNING" in l)[:400])
+
     import talen as _talen
     _n, _felt, _rakn = _talen.kor(NORDSTJARNA, tyst=True)
     for f in _felt:

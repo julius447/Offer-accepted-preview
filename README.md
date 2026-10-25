@@ -15,17 +15,20 @@ tre sektioner som redan fanns.
   med källan skriven i filens eget `_kallor`.
 * `fall/*.html` är de fem fallen renderade och sparade som **statisk markup**. Ingen
   JavaScript, inget kontrakt kvar i sidan: det är vad serversidan ska skicka.
+* `exempel/prov-acceptdatum.json` och `fall/prov-acceptdatum.html` är ett **provfall**, inte
+  ett sjätte fall. Se "Acceptdatumet" nedan.
 
 ## Köra
 
 ```bash
 python3 bygg.py                 # bygger om fall/ ur index.html + exempel/
-python3 prov.py                 # oraklet: 581 kontroller
+python3 prov.py                 # oraklet: 690 kontroller
 python3 prov.py --snabb         # samma, utan webblasarproven och typmatningen
+python3 verktyg/samma-mall.py   # att de fem sidorna ar SAMMA markup, med en skillnad
 python3 verktyg/matt.py fall/laddbox.html 375        # sidledes scroll, träffytor
 python3 verktyg/typ.py fall/laddbox.html 390         # husets sju typstorlekar
 python3 verktyg/skala.py                             # varje längd ur husets skalor
-python3 verktyg/kontrast.py fall/laddbox.html        # WCAG AA
+python3 verktyg/kontrast.py fall/laddbox.html        # WCAG AA (kors ocksa av prov.py)
 python3 verktyg/skarmbild.py fall/laddbox.html 375 ut.png 1660
 python3 verktyg/ordagrant.py ~/Desktop/"Claude Code"/laddboxoffert     # varje kundsträng mot offertrepot
 python3 verktyg/talen.py ~/Desktop/"Claude Code"/laddboxoffert         # varje TAL mot offertrepots källfiler
@@ -39,6 +42,27 @@ andra implementation i Python hade varit en andra sanning som kan glida.
 
 Chrome körs alltid med egen `--user-data-dir` och dödas med sin egen process-grupp. Döda
 aldrig Chrome med `pkill`: det stänger användarens riktiga webbläsare med alla flikar.
+
+## Ägarens genomgång 25 oktober
+
+Sex punkter, alla byggda, alla mätta, var och en bevisad genom att defekten återinfördes
+(`python3 verktyg/mutationer.py`: 32 mutationer, 0 slapp förbi).
+
+1. **Raderna visar bara rubrik och pris.** Pottmärkningarna ("Grön teknik-avdrag",
+   "ROT-avdrag") under varje rad är borta ur renderaren, ur CSS och ur sidorna. Specen står
+   kvar: "i stället för 5 meter" säger vad kunden får, och utan den läser raden som att en
+   laddkabel kostar 200 kr. Hans ord: *"Bara rubrikerna och priset."*
+2. **Blocket under raderna är en mening.** *"inkl. moms, efter skattereduktion. Avdragen dras
+   direkt på fakturan."* Grannrabattnoten och fältet `not` är borta.
+3. **Villkoren ligger i en fold som heter Villkor, längst ner**, i offertens egen form.
+   Global, alla fem. Länken står på ett ställe och `href` kommer ur kontraktet.
+4. **Kvittonoten under "Att betala"** säger *"inkl. moms, efter skattereduktion"*, utan
+   parentes. Den är nu ord för ord offertrepots egen fasta text.
+5. **En mall, en skillnad.** De fem byggda sidorna har **identisk markup tecken för tecken**
+   utanför "Så här går vi vidare" och de namngivna datafacken, och exakt tilläggsmallens
+   steglista skiljer sig. Mätt av `verktyg/samma-mall.py`, se KONTRAKT.md §4b2.
+6. **"Allt som ingår" är en ren punktlista** utan brödtext under punkterna. Fältet `spec`
+   finns inte längre, och en post är en sträng.
 
 ## De sex invarianterna hantverket vilar på
 
@@ -89,6 +113,15 @@ vid varje bygge.
 när kunden trycker acceptera. Ingen av de fem exempeloffererna är accepterad av någon, så
 datumet finns inte i offertrepot och kontrakten bär `null`. Fyll `offert.accepterad` per fall
 och raden kommer. Ingenting hittas på.
+
+**Raden syns i ett PROVFALL.** Ägaren bad om ett prov, och `fall/prov-acceptdatum.html` är
+det: `exempel/laddbox.json` tecken för tecken med **exakt ett fält ändrat**
+(`offert.accepterad`). `prov.py` mäter att kontrakten skiljer sig i bara det fältet, att den
+byggda sidan skiljer sig från `fall/laddbox.html` i **exakt två rader, båda acceptraden**, att
+raden står i husets svenska form exakt en gång, att ISO-datumet inte skrivs rakt av, och att
+de fem riktiga fallen fortfarande bär `null`. Datumet är ett provvärde, inte ett påstående om
+någon kund. Och ett omöjligt datum (2026-02-30) stoppar nu **bygget**: `bygg.py` skriver
+aldrig en sida som renderaren flaggat.
 
 Ett acceptdatum drar **inte** med sig ett "giltig till": offerten har ingen giltighetstid
 (ägardirektiv 23 oktober), och `prov.py` stoppar varje sida som skriver ett.

@@ -60,7 +60,6 @@
       <h2 class="oa__eyebrow">Det här accepterade du</h2>
       <p class="oa__prod" id="oaProd" hidden><b id="oaProdRubrik"></b><span id="oaProdUnder"></span></p>
       <ul class="oa__rader" id="oaRader"></ul>
-      <p class="oa__not" id="oaNot" hidden></p>
       <h3 class="oa__ingar-rubrik" id="oaIngarRubrik" hidden>Allt som ingår</h3>
       <ul class="oa__ingar" id="oaIngar" hidden></ul>
       <p class="oa__fin" id="oaFin" hidden></p>
@@ -87,7 +86,37 @@
       </div>
     </section>
 
-    <!-- 4 · trust + contact + close -->
+    <!-- 4 · VILLKOREN, I EN FOLD, LANGST NER.
+         AGARENS ORD 25 OKTOBER, ORDAGRANT: "Under det har vi kopvillkor.
+         Likt hur vi har det i offerten hade jag velat att denna lank och
+         'Las vara kopvillkor' ligger under en dropdown som heter villkor som
+         ligger langst ner pa orderbekraftelsen (GLOBAL NOTERING)."
+         Formen ar offertens egen, inte en ny: en o-fold med rubriken
+         Villkor och lanken i kroppen star likadant i
+         offerter/laddbox/body.html, elcentral/body.html, batteri/body.html
+         och tillagg/body.html. Lanktexten ar deras, ordagrant.
+         KOMMENTAREN CITERAR INGEN TAGG. En kommentar foljer med in i varje
+         byggd sida, och tva matningar raknade forst taggarna i den har
+         texten som markup: tre folder i en fil som har en. Oraklen tar nu
+         bort kommentarerna forst, och texten haller sig borta fran dem.
+         PLACERINGEN SPEGLAR OFFERTEN: folden ar sista innehallsblocket, och
+         under den star kortets avslutning med telefonnumret, precis som
+         offertens <footer class="o-fot"> star under folden dar.
+         LANKEN SKRIVS AV RENDERAREN, inte av markupen. Ett tomt href ar
+         inget villkor: saknas villkor_url star sektionen kvar dold och
+         ingen trasig lank nar kunden.
+         PA PAPPER OPPNAS FOLDEN. En stangd fold doljer sitt innehall med
+         ::details-content, och en display-regel pa barnet biter inte.
+         Samma matning som offertrepots egen: villkoren saknades helt i en
+         riktig utskrifts-PDF innan den regeln kom pa plats. -->
+    <section class="oa__section oa__villkor" id="oaVillkor" hidden>
+      <details class="oa__fold">
+        <summary>Villkor<svg class="oa__fold-pil" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="oa__fold-kropp" id="oaVillkorKropp"></div>
+      </details>
+    </section>
+
+    <!-- 5 · trust + contact + close -->
     <section class="oa__section">
       <div class="oa__trust">
         <span class="oa__trust-item">

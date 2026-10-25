@@ -106,7 +106,7 @@ leverans i de här fälten.** `prov.py` stoppar bygget om ett nytt dyker upp.
 | `modertyp` | sträng | ingen effekt i dag | mallen, för spårbarhet. `MODERTYP` i `offerter/tillagg/offert.py` rad 64. |
 | `giltig_till_lang` | sträng, t.ex. "27 oktober 2026" | meningen renderas **utan datum**. Aldrig en platshållare, aldrig ett gissat datum. | CRM. Används av avböjsskärmens tvilling (`skarm-avboj.html` rad 40). Den accepterade sidan skriver inget datum i dag: offerten är accepterad, och ett giltighetsdatum där är en ägargrind. Fältet finns så att **ingen hårdkodar det**, vilket är precis vad som hänt i dag ("27 oktober 2026" står som bokstavlig sträng i markupen och byts med `str.replace` i `offerter/elcentral/offert.py` rad 697). |
 | `accepterad` | sträng, ISO 8601, t.ex. `"2026-10-25"` | **ingen mening skrivs**. Aldrig en platshållare, aldrig ett gissat datum, och ordet "Accepterad" står inte där ensamt. | CRM, i det ögonblick kunden trycker acceptera. **ÄGARSVAR 46, 25 oktober: "Ja, lägg till datum."** Sidan skriver den svenska formen ("25 oktober 2026") ur ISO-datumet, så de fem mallarna inte kan visa fem former; `prov.py` skriver samma form själv i stället för att läsa sidans. Ett datum som inte finns i kalendern (2026-02-30) **stänger totalen**: ett kontrakt som har fel om datumet är ett kontrakt som har fel, och sidan väljer inte vilka fel den bryr sig om. **Ett acceptdatum drar inte med sig ett `giltig till`:** offerten har ingen giltighetstid (ägardirektiv 23 okt), och `prov.py` stoppar varje sida som skriver ett. |
-| `villkor_url` | URL | **ingen länk renderas, aldrig ett tomt `href`** | CRM. `https://ampy.se/kopvillkor`, kontrollerad 19 okt, samma adress alla fem mallarna länkar till. Länktexten är deras, ordagrant: "Läs våra köpvillkor". På papper skrivs adressen ut efter länken, så villkoren når papperet. |
+| `villkor_url` | URL | **ingen länk renderas, aldrig ett tomt `href`**, och villkorssektionen står kvar dold | CRM. `https://ampy.se/kopvillkor`, kontrollerad 19 okt, samma adress alla fem mallarna länkar till. Länktexten är deras, ordagrant: "Läs våra köpvillkor". **ÄGARENS GLOBALA NOTERING 25 OKTOBER:** länken ligger i en fold som heter **Villkor längst ner** på bekräftelsen, i samma form som offerternas egen villkorsfold (`offerter/tillagg/body.html` rad 60 till 67), inte längre i finstilten under raderna. På papper öppnas folden och adressen skrivs ut efter länken, så villkoren når papperet: en stängd fold döljer sitt innehåll genom `::details-content`, och det biter ingen display-regel på barnet. |
 
 ### `bokare`
 
@@ -182,9 +182,18 @@ forka sidan.
 
 ### `order.ingar[]`
 
-En sträng, eller `{ "text": "...", "spec": "..." }`. Renderas med samma bock som varje
-punktlista i offerten (`gemensamt/bitar.py` rad 10). Serviceofferten är den enda mall som inte
-konfigurerar något: kunden läser en lista och svarar ja eller nej, och då **är** listan ordern.
+**En sträng. Inget annat.** Renderas med samma bock som varje punktlista i offerten
+(`gemensamt/bitar.py` rad 10). Serviceofferten är den enda mall som inte konfigurerar något:
+kunden läser en lista och svarar ja eller nej, och då **är** listan ordern.
+
+Fram till 25 oktober fick en post också vara `{ "text": "...", "spec": "..." }`, och specen
+renderades som en rad brödtext under punkten. **ÄGARENS ORD 25 OKTOBER, ordagrant:** *"Det
+viktiga med allt som ingår är att om vi kollar på servicemallen så har vi till exempel byte av
+sex strömbrytare, och sen har vi en text under det. Här ska det, och jag vet att det här var
+feedback tidigare, bara vara en punktlista."* Och skälet är inte bara smak, samma pass om
+offertens egen lista: *"vi kommer inte kunna göra det i praktiken, utan vi kommer bara ha
+rubrikerna"*. Fältet är borttaget och inte bara orenderat: `prov.py` stoppar bygget på ett
+objekt i listan, och renderaren flaggar det som ett kontraktsfel som stänger totalen.
 
 ### `order.utestaende[]`
 
@@ -194,10 +203,19 @@ Ett löfte offerten gav och som bekräftelsen ska kvittera.
 |---|---|---|
 | `text` | sträng | radens etikett, t.ex. "Grannrabatt, 3 grannar inbjudna" |
 | `ord` | sträng | står där beloppet annars stått, t.ex. "dras när de beställt" |
-| `not` | sträng | noten under listan |
 
 **Texten skrivs av den mall som gav löftet, ordagrant.** Sidan komponerar ingenting här.
-Grannrabattens tre strängar står i `offerter/laddbox/skript.js` rad 358 till 360.
+Grannrabattens två strängar står i `offerter/laddbox/skript.js`.
+
+**Fältet `not` är borttaget 25 oktober.** Det bar noten under listan, och på laddboxfallet löd
+den *"Upp till 1 500 kr av, 500 kr för varje granne som beställer. Ditt pris här ändras inte
+förrän det hänt."* **ÄGARENS ORD, ordagrant**, om hela texten under raderna: *"Här vill jag att
+vi använder följande **enbart**: 'inkl. moms, efter skattereduktion. Avdragen dras direkt på
+fakturan.'"* Blocket under raderna är därmed **en mening och ingenting mer**. Raden själv står
+kvar och säger fortfarande att rabatten inte är dragen ("dras när de beställt"), så kvittensen
+lovar inget den inte håller. Med strängen gick också dess två poster i `_tal`
+(`.order.utestaende[0].not#500` och `#1500`, som band taket 1 500 kr till de tre inbjudna
+grannarna): `verktyg/talen.py` stoppar bygget om en post bevakar ett tal som inte längre finns.
 
 ---
 
@@ -239,8 +257,8 @@ inget tal, för kunden kan inte se vilket av dem som är fel.
 | 7 | Saknas en sträng renderas meningen utan den | aldrig en platshållare, aldrig ett gissat datum, aldrig ett tomt `href` |
 | 8 | `paket` får vara `null`, `rader` får vara tom men aldrig `null` | |
 | 9 | Potterna **härleds** ur raderna och står inte i kontraktet | ett fält som kan motsäga raderna kommer att motsäga raderna |
-| 10 | Bara rader **med ett belopp** sätter en pott och bär en pottmärkning | en intresseanmälan dras inte, så "Utan avdrag" bredvid "ingen kostnad nu" är brus |
-| 11 | Två potter: varje prisrad märks. En pott: ingen rad märks | samma regel som `offerter/tillagg/offert.py` rad 287 till 292 |
+| 10 | Bara rader **med ett belopp** sätter en pott | en intresseanmälan dras inte och ska inte få finstilten att nämna en pott den inte hör till |
+| 11 | **Ingen rad bär en pottmärkning**, oavsett hur många potter ordern har | ÄGARENS ORD 25 OKT: "Bara rubrikerna och priset." Vänt 25 oktober: här stod motsatsen, att varje prisrad märks när ordern har två potter. Den regeln gäller **offerten** (`offerter/tillagg/offert.py` rad 287 till 292), där kunden väljer, inte bekräftelsen, där hon redan valt. Radens **spec** står kvar: "i stället för 5 meter" säger vad kunden får |
 | 12 | `accepterad` är `null` eller ett datum som finns i kalendern | inget totalbelopp, och ingen mening om datum |
 | 13 | **En accepterad offert, en bekräftelse, ett nummer.** Sidan visar exakt ETT offertnummer, och det är kontraktets eget. Radlistan är exakt kontraktets egna rader. | provet stoppar bygget |
 | 14 | **Varje tal kunden ser är härlett ur offertrepots egna källfiler**, med källan per operand i `_tal` | provet stoppar bygget |
@@ -252,11 +270,28 @@ porterad** ur `offerter/tillagg/offert.py:pottrad`. Funktionen, inte ett radnumm
 flyttar sig och en hänvisning till rad 162 pekade på något annat inom ett dygn. En mening om
 moms och avdrag får inte finnas i två versioner i två repon.
 
-**Ägarens lydelse, D3 24 oktober, ordagrant:** *"inkl. moms, efter skattereduktion (Grön
-teknik och ROT). Avdragen dras direkt på fakturan."* Parentesen bär de potter ordern
-faktiskt har. Den delade acceptskärmen i offertrepot säger samma mening utan parentes, för
-den vet inte vilka potter ordern har; `verktyg/jamfor-skarm.py` mäter att de två börjar
-likadant. **Meningen "ROT förutsätter att du har avdragsutrymme kvar." står inte här, och kan inte
+**Ägarens lydelse, 25 oktober, ordagrant, i två meningar:**
+
+| var | lydelse |
+|---|---|
+| kvittonoten under "Att betala" | *"inkl. moms, efter skattereduktion"* |
+| finstilten under raderna | *"inkl. moms, efter skattereduktion. Avdragen dras direkt på fakturan."* |
+
+Hans egna ord: om kvittonoten, *"Under att betala längst upp står även: 'inkl. moms, efter
+skattereduktion (Grön teknik och ROT)'. Här vill jag att vi har: 'inkl. moms, efter
+skattereduktion'."* Och om texten under raderna, *"Här vill jag att vi använder följande
+**enbart**: 'inkl. moms, efter skattereduktion. Avdragen dras direkt på fakturan.'"*
+
+**Parentesen är borta, och med den tre saker.** (1) Den korta satsen är nu ord för ord
+offertrepots egen fasta text (`gemensamt/block/skarm-accept.html` rad 25), så de två ytorna
+inte längre kan säga olika om samma sak; `verktyg/jamfor-skarm.py` mäter det. (2) Meningen är
+densamma på alla fem. Förut sa elcentralen "(ROT)", batteriet "(Grön teknik)" och laddboxen
+"(Grön teknik och ROT)", alltså tre lydelser på fem sidor, och det var en av de skillnader
+ägaren såg när han sa att varenda mall är lite annorlunda. (3) "Avdragen" är ägarens egen form
+och böjs inte längre efter antalet potter: utan uppräkning finns inget att kongruera med.
+**Har ordern ingen pott alls står bara "inkl. moms"**: en bekräftelse utan skattereduktion får
+inte nämna en. **Och "Rader utan avdrag är märkta." utgår med märkningen.** En mening som
+beskriver en märkning som inte finns är en osanning, inte en överflödig rad. **Meningen "ROT förutsätter att du har avdragsutrymme kvar." står inte här, och kan inte
 komma tillbaka.** ÄGARSVAR 48, 25 oktober, ordagrant: *"Ta bort den raden från alla
 offerter samt orderbekräftelse. Detta står redan i våra köpvillkor och är inte vårt ansvar
 utan kundens."* Ägargrinden som stod här är därmed **stängd**, och skyddet ligger inte i
@@ -301,6 +336,70 @@ moderoffertens total, produktrubrik och paketnamn **inte** står någonstans på
 varje accepterad offert får en unik bekräftelse, och tilläggets bekräftelse är unik som sida men
 bär moderns nummer i brickan. Formen är en ägarfråga, och fältet `offert.referens` står tomt
 och väntar.
+
+---
+
+## 4b2. En mall, en skillnad
+
+**ÄGARSVAR 25 OKTOBER, ORDAGRANT:** *"När jag har gått igenom mallarna ser jag att varenda
+mall är lite annorlunda. Det jag hade sagt är att jag gillar servicemallen mest. (...)
+Orderbekräftelsen kommer inte att ha olika mallar. Det enda är ju tilläggsarbetet, eftersom
+'Så här går vi vidare' är annorlunda. Det är egentligen den enda skillnaden."*
+
+Det är ett påstående om **markup**, och det mäts därför i stället för att försäkras.
+`verktyg/samma-mall.py` tar varje byggd sida, blankar det som är DATA och jämför resten
+**tecken för tecken**:
+
+* byggets huvudkommentar och `<title>` (tilläggsmallen byter flikrubriken ur kontraktet)
+* `hidden` tas bort: att produktraden syns på laddboxen och inte på servicen är kontraktets
+  `order.rubrik`, inte två mallar
+* innehållet i de namngivna datafacken (`oaTitel`, `oaRefNr`, `oaAcceptDatum`, `oaPaket`,
+  `oaTotal`, `oaProdRubrik`, `oaProdUnder`)
+* radlistan och ingår-listan blir en markör: deras längd är ordern
+* steglistan lyfts ut och jämförs för sig, med sin egen text blankad
+
+**Vad som avsiktligt INTE blankas:** `oaFin`, `oaKvittoNot` och villkorsfoldens kropp står
+kvar med sin text. Det var där mallarna drog isär, och efter 25 oktober säger alla fem samma
+mening. Då ska den jämföras, inte blankas bort.
+
+**Måttet är tvåsidigt.** Allt utanför steglistan ska vara samma tecken på alla fem, och exakt
+**tilläggsmallens** steglista ska skilja sig. Slutar tillägget byta sin steglista är det lika
+fel som att en annan mall börjar byta sin.
+
+**Uppmätt 25 oktober, efter passet:** ett skelett för alla fem, och `['tillagg']` är hela
+listan över mallar vars steglista skiljer sig. Före passet gav samma mätare fem olika
+skelett: pottmärkningarna på raderna (laddbox och tillägg), noten under raderna (laddbox),
+specerna under ingår-punkterna (service) och tre olika finstiltsmeningar.
+
+**Produktraden och "Allt som ingår" är DATA, inte mallar.** Service och tillägg har ingen
+produkt (`order.rubrik: null`), och bara service fyller `order.ingar`. Att ge de övriga en
+ingår-lista, eller att ta bort "Zaptec Go" från laddboxens bekräftelse, hade krävt att något
+hittades på eller att en uppgift kunden betalat för ströks. **`[GAP]`:** vill ägaren att
+produktraden försvinner från alla fem är det ett fält i fem kontrakt, inte en ändring i
+markupen, och det är hans beslut.
+
+---
+
+## 4b3. Villkoren bor i en fold längst ner
+
+**ÄGARENS ORD 25 OKTOBER, GLOBAL NOTERING, ordagrant:** *"Under det har vi köpvillkor. Likt
+hur vi har det i offerten hade jag velat att denna länk och 'Läs våra köpvillkor' ligger under
+en dropdown som heter villkor som ligger längst ner på orderbekräftelsen (GLOBAL NOTERING)"*
+
+Formen är **offertens egen**, inte en ny: en `o-fold` med rubriken Villkor och länken i
+kroppen står likadant i `offerter/laddbox/body.html`, `elcentral/body.html`,
+`batteri/body.html` och `tillagg/body.html`. Måtten är deras (`gemensamt/system.css` rad 170
+till 178) och ligger redan på den här sidans skalor, så inget nytt mått uppstår av flytten.
+
+**Placeringen speglar offerten:** folden är sista innehållsblocket, och under den står
+kortets avslutning med telefonnumret, precis som offertens `<footer class="o-fot">` står under
+folden där. `prov.py` mäter att villkorssektionen är **näst sist** bland sektionerna.
+**`[GAP]`:** menade ägaren bokstavligen efter telefonnumret är det en flytt på en rad.
+
+**Länken skrivs av renderaren, inte av markupen.** Ett tomt `href` är inget villkor: saknas
+`villkor_url` står sektionen kvar dold. Och den står på **ett** ställe: `prov.py` räknar
+"Läs våra köpvillkor" och kräver exakt en förekomst, så den inte kan bli kvar i finstilten
+också.
 
 ---
 
@@ -389,12 +488,17 @@ offertrepots laddboxmotor.
     det: offerten har ingen giltighetstid (ägardirektiv 23 okt). Fältet `giltig_till_lang` finns
     för avböjsskärmens tvilling, är `null` i alla fem kontrakten, och `prov.py` stoppar bygget om
     det sätts. Acceptdatumet är något annat och är inte gated på det här.
-12. **Acceptdatumet saknas i alla fem fallen.** Ägarsvar 46 är byggt: fältet finns, sidan
-    renderar det, oraklen provar både att det syns rätt och att en tom eller omöjlig uppgift
-    stänger. Men **inget av de fem exemplen är accepterat av någon**, och ett acceptdatum uppstår
-    i det ögonblick kunden trycker. Det finns därför inte i offertrepot, och de fem kontrakten bär
-    `null`: de byggda sidorna visar ingen datumrad. Vill ägaren se raden på en sida behövs ett
-    datum per fall, och då fylls `offert.accepterad`. Ingenting hittas på.
+12. ~~**Acceptdatumet saknas i alla fem fallen.**~~ **PROVAT 25 oktober.** Ägarsvar 46 är
+    byggt: fältet finns, sidan renderar det, oraklen provar både att det syns rätt och att en
+    tom eller omöjlig uppgift stänger. Ägaren bad om ett prov, och det finns nu som ett
+    **provfall**: `exempel/prov-acceptdatum.json` och `fall/prov-acceptdatum.html`. Provfallet
+    är `exempel/laddbox.json` **tecken för tecken, med exakt ett fält ändrat**
+    (`offert.accepterad`), och `prov.py` mäter just det, plus att den byggda sidan skiljer sig
+    från `fall/laddbox.html` i **exakt två rader, båda acceptraden**. Det gör provfallet
+    ofarligt: det kan inte visa ett tal eller en sträng som laddboxsidan inte redan visar.
+    **De fem riktiga fallen bär fortfarande `null` och ska göra det**, för inget av dem är
+    accepterat av någon, och `prov.py` stoppar bygget om ett av dem får ett datum. Datumet i
+    provfallet är ett **provvärde**, inte ett påstående om någon kund. Ingenting hittas på.
 11. **Transporten finns inte.** Accepten skickas ingenstans, och bekräftelsen hämtar
     ingenting. Så länge det gäller är den här sidan en läsare utan något att läsa i
     produktion. Det är det enda som står mellan kontraktet och en fungerande orderbekräftelse.

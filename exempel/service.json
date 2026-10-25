@@ -5,7 +5,7 @@
     "avdrag": "'rot', offerter/service/jobb.json rad 38.",
     "express": "2500, offerter/service/jobb.json tid. Etiketten 'Express, 24 till 72 timmar' är den strängen motorn själv bygger: namn + ', ' + spec, offerter/service/offert.py rad 191.",
     "rubrik": "null. Jobbet namnges i huvudraden i stället: service har ingen produkt och ingen bild, och samma sträng tre gånger på samma kort läser som tre olika saker. Rubriken 'Allt som ingår' under raderna gör det hjältens JOBBSPEC gjorde (offerter/service/offert.py rad 167).",
-    "ingar": "Fyra jobbrader ur offerter/service/jobb.json jobb.rader, sedan ägarens FYRA alltid-steg: AGARENS_ALLTID i offerter/service/offert.py rad 151 till 152, ordagrant. RÄTTAT 2026-10-24: här stod tre rader, där 'Driftsättning och avprovning' var EN rad. Ägaren bytte listan 24 okt (uppdrag/2026-10-24-agarfeedback.md E4) och 'Driftsättning' och 'Avprovning' är nu två steg. Den gamla noten här pekade på generatorns orakel rad 232 till 236, som bevakade listan från 23 oktober och är pensionerat av precis det skälet (offert.py rad 148 till 150): ett prov som bevakar en gammal sanning stoppar inte felet, det stoppar rättningen.",
+    "ingar": "Fyra jobbrader ur offerter/service/jobb.json jobb.rader, sedan ägarens FYRA alltid-steg: AGARENS_ALLTID i offerter/service/offert.py rad 151 till 152, ordagrant. EN REN PUNKTLISTA SEDAN 2026-10-25: specerna under punkterna är borta på ägarens ord, ordagrant: \"Det viktiga med allt som ingår är att om vi kollar på servicemallen så har vi till exempel byte av sex strömbrytare, och sen har vi en text under det. Här ska det, och jag vet att det här var feedback tidigare, bara vara en punktlista.\" Samma pass, om offertens egen lista: \"vi kommer inte kunna göra det i praktiken, utan vi kommer bara ha rubrikerna\". De fyra specerna som stod här ('hall, vardagsrum och kök', 'kök och vardagsrum', 'från elcentralen, upp till 10 meter kabel', 'två hål, spacklade och målade') är jobb.json egna och står kvar där; de renderas bara inte på bekräftelsen. RÄTTAT 2026-10-24: här stod tre rader, där 'Driftsättning och avprovning' var EN rad. Ägaren bytte listan 24 okt (uppdrag/2026-10-24-agarfeedback.md E4) och 'Driftsättning' och 'Avprovning' är nu två steg.",
     "total": "9900 = 7400 + 2500. Samma väg som motorn: summa = PRIS + tid.",
     "bokare": "Rasmus, offerter/service/jobb.json rad 31 ('Rasmus L'). Fornamnet är samma som laddboxmallens och batterimallens.",
     "referens": "2026-0643, offerter/service/jobb.json. Kollisionen med batteriofferten är STÄNGD 2026-10-23: serviceofferten flyttades till 0643, och ett generiskt orakel i offertrepot läser nu ALLA offertnummer på en sida, inte bara det första, så en sida som visar två nummer stoppar bygget.",
@@ -13,52 +13,48 @@
     "akut": "[GAP] Är servicemallen planerat flöde eller akut eljour? Styr steg 2 och 3. Är den akutflödet lovar steg 3 ett lugnt schema till någon som har strömavbrott.",
     "accepterad": "[GAP] NAR kunden accepterade. Agarsvar 46, 25 oktober: \"Ja, lagg till datum\". Datumet uppstar i det ogonblick kunden trycker acceptera och finns darfor inte i offertrepot: inget av de fem exemplen ar accepterat av nagon. CRM:et satter ISO 8601 (2026-10-25) nar accepten registreras. null tar bort meningen i stallet for att hitta pa ett datum. Faltet finns sa att INGEN hardkodar det, vilket ar precis vad som hant med giltighetsdatumet i offertrepots elcentralmall."
   },
-
   "_undantag_ordagrant": {
     ".steg[1].under": "KOMPONERAD I KORNING. offerter/service/skript.js bygger meningen som 'Du har valt ' + TID[tid] + '. Vi hor av oss for att boka tid.', dar TID byggs ur jobb.json tid som namn + ', ' + spec. Med Express blir det den har. Hela strangen star darfor inte i nagon fil; delarna gor det."
   },
-  "_kalla_villkor": "https://ampy.se/kopvillkor. Alla fem mallarna länkar dit med texten 'Läs våra köpvillkor' (offerter/laddbox/body.html rad 566, elcentral rad 264, batteri rad 160, service/offert.py rad 155). Kontrollerat 19 okt enligt noten i tillagg.html rad 71.",
-
+  "_kalla_villkor": "https://ampy.se/kopvillkor. Alla fem mallarna länkar dit med texten 'Läs våra köpvillkor' (offerter/laddbox/body.html rad 566, elcentral rad 264, batteri rad 160, service/offert.py rad 155). Kontrollerat 19 okt enligt noten i tillagg.html rad 71. ÄGARENS ORD 25 OKTOBER, GLOBAL NOTERING: länken ligger nu under en fold som heter Villkor längst ner på bekräftelsen, i samma form som offerternas egen villkorsfold (offerter/tillagg/body.html rad 60 till 67).",
   "_tal": {
-      "_not": "HARLEDNINGEN FOR VARJE TAL KUNDEN SER, MED KALLAN I OFFERTREPOT. verktyg/talen.py raknar om uttrycket och slar upp varje operand i den namngivna filen vid varje korning, sa ett tal som rort sig i offertrepot gor det har provet rott. Formerna star i talen.py: fil#jsonvag, fil@ankare, .kontraktsvag och val: med skal. Agarsvar 60, 25 oktober: \"Bygg det nu.\"",
-      ".order.rader[0].belopp": {
-        "uttryck": "7400",
-        "kallor": {
-          "7400": "offerter/service/jobb.json#pris"
-        },
-        "_not": "AGARFRAGA. Talet ar ett EXEMPEL for att mallen ska ga att se, inte ett Ampy-pris (_pris_exempel: true i samma fil). Bokaren satter ett tal per offert."
+    "_not": "HARLEDNINGEN FOR VARJE TAL KUNDEN SER, MED KALLAN I OFFERTREPOT. verktyg/talen.py raknar om uttrycket och slar upp varje operand i den namngivna filen vid varje korning, sa ett tal som rort sig i offertrepot gor det har provet rott. Formerna star i talen.py: fil#jsonvag, fil@ankare, .kontraktsvag och val: med skal. Agarsvar 60, 25 oktober: \"Bygg det nu.\"",
+    ".order.rader[0].belopp": {
+      "uttryck": "7400",
+      "kallor": {
+        "7400": "offerter/service/jobb.json#pris"
       },
-      ".order.rader[1].belopp": {
-        "uttryck": "2500",
-        "kallor": {
-          "2500": "offerter/service/jobb.json#tid[namn=Express].pris"
-        }
-      },
-      ".order.total": {
-        "uttryck": "7400 + 2500",
-        "kallor": {
-          "7400": ".order.rader[0].belopp",
-          "2500": ".order.rader[1].belopp"
-        }
-      },
-      ".steg[1].under#24": {
-        "uttryck": "24",
-        "kallor": {
-          "24": "offerter/service/jobb.json#tid[namn=Express].spec"
-        }
-      },
-      ".steg[1].under#72": {
-        "uttryck": "72",
-        "kallor": {
-          "72": "offerter/service/jobb.json#tid[namn=Express].spec"
-        },
-        "_not": "Steg 2 komponeras i korning av 'Du har valt ' + TID[tid] + '...', sa tidsfonstret har ingen egen strang. Bada talen binds till Express egen spec i jobb.json: byter agaren fonstret blir provet rott."
+      "_not": "AGARFRAGA. Talet ar ett EXEMPEL for att mallen ska ga att se, inte ett Ampy-pris (_pris_exempel: true i samma fil). Bokaren satter ett tal per offert."
+    },
+    ".order.rader[1].belopp": {
+      "uttryck": "2500",
+      "kallor": {
+        "2500": "offerter/service/jobb.json#tid[namn=Express].pris"
       }
     },
-
+    ".order.total": {
+      "uttryck": "7400 + 2500",
+      "kallor": {
+        "7400": ".order.rader[0].belopp",
+        "2500": ".order.rader[1].belopp"
+      }
+    },
+    ".steg[1].under#24": {
+      "uttryck": "24",
+      "kallor": {
+        "24": "offerter/service/jobb.json#tid[namn=Express].spec"
+      }
+    },
+    ".steg[1].under#72": {
+      "uttryck": "72",
+      "kallor": {
+        "72": "offerter/service/jobb.json#tid[namn=Express].spec"
+      },
+      "_not": "Steg 2 komponeras i korning av 'Du har valt ' + TID[tid] + '...', sa tidsfonstret har ingen egen strang. Bada talen binds till Express egen spec i jobb.json: byter agaren fonstret blir provet rott."
+    }
+  },
   "kontrakt_version": 1,
   "priser_ar": "netto",
-
   "offert": {
     "referens": "2026-0643",
     "mall": "service",
@@ -70,15 +66,16 @@
     "accepterad": null,
     "villkor_url": "https://ampy.se/kopvillkor"
   },
-
-  "bokare": { "fornamn": "Rasmus" },
-
+  "bokare": {
+    "fornamn": "Rasmus"
+  },
   "steg": [
     null,
-    { "under": "Du har valt Express, 24 till 72 timmar. Vi hör av oss för att boka tid." },
+    {
+      "under": "Du har valt Express, 24 till 72 timmar. Vi hör av oss för att boka tid."
+    },
     null
   ],
-
   "order": {
     "rubrik": null,
     "underrubrik": null,
@@ -107,14 +104,14 @@
       }
     ],
     "ingar": [
-      { "text": "Byte av 6 strömbrytare", "spec": "hall, vardagsrum och kök" },
-      { "text": "Byte av 4 vägguttag", "spec": "kök och vardagsrum" },
-      { "text": "Ny jordad grupp till köksbänken", "spec": "från elcentralen, upp till 10 meter kabel" },
-      { "text": "Håltagning och återställning", "spec": "två hål, spacklade och målade" },
-      { "text": "Installation av våra egna elektriker" },
-      { "text": "Driftsättning" },
-      { "text": "Avprovning" },
-      { "text": "Arbete och material ingår i priset" }
+      "Byte av 6 strömbrytare",
+      "Byte av 4 vägguttag",
+      "Ny jordad grupp till köksbänken",
+      "Håltagning och återställning",
+      "Installation av våra egna elektriker",
+      "Driftsättning",
+      "Avprovning",
+      "Arbete och material ingår i priset"
     ],
     "utestaende": []
   }

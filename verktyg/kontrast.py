@@ -31,10 +31,16 @@ JS = r"""
     En matning som letar efter borta ytor ser lika gron ut som en som
     letar efter alla. Darfor raknas traffarna per selektor och tomma
     selektorer rapporteras. */
+ /* 29 OKTOBER: .oa__step-text small ar borta med stegremsan, och tre nya
+    ytor har kommit till i de tva foldarna. Listan foljer med bada vagarna,
+    precis som den gjorde 25 oktober: en selektor som inte traffar nagot
+    rapporteras, och en ny yta utan matning ar en yta utan kontrastdom. */
  var YTOR=['.oa__rad-text small','.oa__kvitto-not','.oa__fin','.oa__prod span',
-  '.oa__ingar li span','.oa__rad-pris--ord','.oa__step-text small','.oa__trust-item',
+  '.oa__ingar li span','.oa__rad-pris--ord','.oa__trust-item',
   '.oa__eyebrow','.oa__ref','.oa__accept','.oa__contact','.oa__contact a',
-  '.oa__fold > summary','.oa__villkor-rad','.oa__fold a','.oa__rad','.oa__title'];
+  '.oa__fold > summary','.oa__villkor-rad','.oa__fold a','.oa__rad','.oa__title',
+  '.oa__fold-intro','.oa__fold-fot','.oa__fold-lista li','.oa__fold-lista li b',
+  '.oa__fold-lista li span'];
  var ut=[],sedda={},tomma=[];
  YTOR.forEach(function(sel){
   var n=document.querySelectorAll(sel);

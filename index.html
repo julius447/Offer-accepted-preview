@@ -65,25 +65,41 @@
       <p class="oa__fin" id="oaFin" hidden></p>
     </section>
 
-    <!-- 3 · what happens next -->
-    <section class="oa__section">
-      <div class="oa__next">
-      <h2 class="oa__eyebrow">Så här går vi vidare</h2>
-      <ol class="oa__steps" id="oaSteps">
-        <li class="oa__step">
-          <span class="oa__node" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg></span>
-          <span class="oa__step-text"><span data-oa-steg="1">Din accept är registrerad</span><small data-oa-steg-under="1">Klart, vi har tagit emot ditt godkännande.</small></span>
-        </li>
-        <li class="oa__step">
-          <span class="oa__node" aria-hidden="true"><span>2</span></span>
-          <span class="oa__step-text"><span data-oa-steg="2">Vi ringer och bokar tid</span><small data-oa-steg-under="2">Ni kommer överens om en tid som passar dig.</small></span>
-        </li>
-        <li class="oa__step">
-          <span class="oa__node" aria-hidden="true"><span>3</span></span>
-          <span class="oa__step-text"><span data-oa-steg="3">Ampys behöriga elektriker utför arbetet</span><small data-oa-steg-under="3">På avtalad tid, utan överraskningar</small></span>
-        </li>
-      </ol>
-      </div>
+    <!-- 3 · KOSTNADER SOM KAN TILLKOMMA, och 3b FORBEREDELSERNA.
+         AGARDOKUMENT 29 OKTOBER, "Bokningsbekraftelse & Godkand offert",
+         ordagrant: "Det vi behover lagga till ar ovanfor villkor. 1:
+         Kostnader som kan tillkomma (som en dropdown) hamtas fran offert
+         mall laddbox. 2: Vad behover du gora innan installationen? Har vill
+         vi satta en standard for laddbox, batteri och elcentral."
+         Ordningen ar darfor kostnader, forberedelser, villkor, och det ar
+         samma ordning acceptskarmen inne i offerten fick samma dag.
+
+         BADA KOMMER UR KONTRAKTET, inte ur markupen, och det ar inte en
+         formalitet: texterna skiljer sig mellan mallarna (laddbox har sju
+         prissatta rader, elcentralen tre villkorstexter utan pris, service
+         och tillagg ingen fold alls), och sidan komponerar ingenting at fem
+         mallar. Saknas listan star sektionen kvar dold, som villkoren gor
+         utan sin adress.
+
+         FORMEN AR VILLKORSFOLDENS, inte en ny: samma details.oa__fold, samma
+         pil, samma kropp. Tre folder i rad som ser olika ut hade lasts som
+         tre sorters innehall.
+
+         PA PAPPER OPPNAS DE, av samma skal som villkoren: en stangd fold
+         doljer sitt innehall med ::details-content, och det biter ingen
+         display-regel pa barnet. -->
+    <section class="oa__section oa__villkor" id="oaKostnader" hidden>
+      <details class="oa__fold">
+        <summary>Kostnader som kan tillkomma<svg class="oa__fold-pil" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="oa__fold-kropp" id="oaKostnaderKropp"></div>
+      </details>
+    </section>
+
+    <section class="oa__section oa__villkor" id="oaForbered" hidden>
+      <details class="oa__fold">
+        <summary>Vad behöver du göra före installationen?<svg class="oa__fold-pil" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
+        <div class="oa__fold-kropp" id="oaForberedKropp"></div>
+      </details>
     </section>
 
     <!-- 4 · VILLKOREN, I EN FOLD, LANGST NER.

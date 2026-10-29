@@ -341,6 +341,19 @@ def ogonfalt(kontrakt):
             ut.append((".order.rader[%d].antal" % i, r["antal"], "antal"))
             if isinstance(r.get("styckpris"), (int, float)):
                 ut.append((".order.rader[%d].styckpris" % i, r["styckpris"], "belopp"))
+    # KOSTNADER SOM KAN TILLKOMMA, 29 oktober. Folden kom till samma dag, och
+    # dess prissatta rader ar TAL KUNDEN SER: "245 kr per meter" star i samma
+    # fold som "850 kr per paborjad timme". Walkern raknade bara order, sa de
+    # sexton beloppen hade stat obevakade medan allt annat pa sidan har en
+    # kalla. Forsta versionen lade talet i ett TEXT-falt, och da provades ett
+    # pris som om det vore copy; ordagrant.py sag det direkt. Raden bar nu ett
+    # belopp och en enhet var for sig, och beloppet hor hit.
+    # Elcentralens tre rader har belopp null (villkorstexter utan pris) och
+    # far darfor ingen vag, vilket ar ratt: det finns inget tal att bevaka.
+    for i, r in enumerate(kontrakt.get("kostnader") or []):
+        if isinstance(r, dict) and isinstance(r.get("belopp"), (int, float)):
+            ut.append((".kostnader[%d].belopp" % i, r["belopp"], "belopp"))
+
     # TALEN INNE I DE KOMPONERADE STRANGARNA. En sträng som ordagrant.py
     # hittar ordagrant i offertrepot bar sina siffror med sig. En sträng i
     # _undantag_ordagrant finns inte i nagon fil, och da gor inte dess

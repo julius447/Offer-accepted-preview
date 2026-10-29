@@ -78,13 +78,17 @@ AVSIKT = [
     (('oaNot',), 'Noten under raderna finns bara här.'),
     (('oaFin',), 'Finstilten finns bara här. Köpvillkorslänken låg i den till 25 oktober '
                  'och ligger nu i folden längst ner.'),
-    (('id="oaAccept"', 'oa__accept'),
-     'ACCEPTDATUMET finns bara här. Ägarsvar 46, 25 oktober: "Ja, lägg till datum." Raden '
-     'hör till den fristående bekräftelsen, som är handlingen kunden sparar; acceptskärmen '
-     'inne i offerten är ögonblicket, inte kvittensen. Datumet är en parameter per fall '
-     '(offert.accepterad, ISO 8601) och står aldrig i markupen. DEN HÄR RADEN SAKNADES I '
-     'AVSIKT FRÅN 25 OKTOBER TILL SAMMA KVÄLL: mätaren var alltså röd, men den körs inte '
-     'av prov.py och ingen såg det. Den körs nu av prov.py.'),
+    (('id="oaAccept"', 'oa__accept', 'id="oaDatum"', 'oa__datum'),
+     'ACCEPTDATUMET SKRIVS NU PÅ BÅDA YTORNA, under olika id. Ägarsvar 46, 25 oktober: '
+     '"Ja, lägg till datum." Till 28 oktober stod raden bara här, och noten sa "finns '
+     'bara här": den fristående bekräftelsen är handlingen kunden sparar, acceptskärmen '
+     'inne i offerten är ögonblicket. Den 28 oktober fick acceptskärmen sin egen rad '
+     '(gemensamt/block/acceptkvitto.js), för ägaren tryckte acceptera och fick tillbaka '
+     'en bock utan datum. ID:NA SKILJER MED FLIT, för raderna fylls olika: oaAccept ur '
+     'kontraktets offert.accepterad (ISO 8601, serversidan), oaDatum ur webbläsarens egen '
+     'klocka i mallsidan, som inte har något CRM. FORMEN ÄR DÄREMOT SAMMA svenska långform '
+     'på båda, så de två ytorna inte kan visa två former av samma datum. Ingen av dem står '
+     'som ett tal i markupen.'),
     (('oa__villkor', 'oa__fold', '<summary>Villkor', 'oaVillkorKropp', '</details>'),
      'VILLKORSFOLDEN finns bara här. Ägarens GLOBAL NOTERING 25 oktober: länken och "Läs '
      'våra köpvillkor" ska ligga under en dropdown som heter Villkor längst ner på '

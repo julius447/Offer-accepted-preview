@@ -54,7 +54,7 @@
            rad 23 till 26, sa de tva kopiorna av skarmen inte drar isar.
            Ett tal, inte ett kort: raderna star i sin egen sektion under. -->
       <p class="oa__kvitto" id="oaKvitto">
-        <span class="oa__kvitto-rad"><span id="oaPaket">Att betala</span><b class="kr" id="oaTotal">5&nbsp;020&nbsp;kr</b></span>
+        <span class="oa__kvitto-rad"><span id="oaPaket">Att betala</span><b class="kr" id="oaTotal">5&nbsp;295&nbsp;kr</b></span>
         <span class="oa__kvitto-not" id="oaKvittoNot">inkl. moms, efter skattereduktion</span>
       </p>
     </section>
@@ -63,28 +63,47 @@
     <section class="oa__section oa__order" id="oaOrder">
       <h2 class="oa__eyebrow">Det här accepterade du</h2>
       <p class="oa__prod" id="oaProd" hidden=""><b id="oaProdRubrik"></b><span id="oaProdUnder"></span></p>
-      <ul class="oa__rader" id="oaRader"><li class="oa__rad"><span class="oa__rad-text">Perific lastbalansering, Perific Max<small>passar alla elmätare</small></span><span class="oa__rad-pris kr">2&nbsp;650&nbsp;kr</span></li><li class="oa__rad"><span class="oa__rad-text">Zaptec Chill<small>kabelhållare</small></span><span class="oa__rad-pris kr">495&nbsp;kr</span></li><li class="oa__rad"><span class="oa__rad-text">RFID-taggar, 5-pack</span><span class="oa__rad-pris kr">175&nbsp;kr</span></li><li class="oa__rad"><span class="oa__rad-text">Extra arbetstimme på plats<small>2 stycken, 850&nbsp;kr per styck</small></span><span class="oa__rad-pris kr">1&nbsp;700&nbsp;kr</span></li></ul>
+      <ul class="oa__rader" id="oaRader"><li class="oa__rad"><span class="oa__rad-text">Perific lastbalansering, Perific Max<small>passar alla elmätare</small></span><span class="oa__rad-pris kr">2&nbsp;650&nbsp;kr</span></li><li class="oa__rad"><span class="oa__rad-text">Zaptec Chill<small>kabelhållare</small></span><span class="oa__rad-pris kr">495&nbsp;kr</span></li><li class="oa__rad"><span class="oa__rad-text">RFID-taggar, 5-pack</span><span class="oa__rad-pris kr">450&nbsp;kr</span></li><li class="oa__rad"><span class="oa__rad-text">Extra arbetstimme på plats<small>2 stycken, 850&nbsp;kr per styck</small></span><span class="oa__rad-pris kr">1&nbsp;700&nbsp;kr</span></li></ul>
       <h3 class="oa__ingar-rubrik" id="oaIngarRubrik" hidden="">Allt som ingår</h3>
       <ul class="oa__ingar" id="oaIngar" hidden=""></ul>
       <p class="oa__fin" id="oaFin">inkl. moms, efter skattereduktion. Avdragen dras direkt på fakturan.</p>
     </section>
 
-    <!-- 3 · what happens next -->
-    <section class="oa__section">
-      <div class="oa__next">
-      <h2 class="oa__eyebrow">Så här går vi vidare</h2>
-      <ol class="oa__steps" id="oaSteps">
-        <li class="oa__step">
-          <span class="oa__node" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"></path></svg></span>
-          <span class="oa__step-text"><span data-oa-steg="1">Din accept är registrerad</span><small data-oa-steg-under="1">Klart, vi har tagit emot ditt godkännande.</small></span>
-        </li>
-        <li class="oa__step">
-          <span class="oa__node" aria-hidden="true"><span>2</span></span>
-          <span class="oa__step-text"><span data-oa-steg="2">Elektrikern tar det härifrån</span><small data-oa-steg-under="2">Du behöver inte göra något mer.</small></span>
-        </li>
-        
-      </ol>
-      </div>
+    <!-- 3 · KOSTNADER SOM KAN TILLKOMMA, och 3b FORBEREDELSERNA.
+         AGARDOKUMENT 29 OKTOBER, "Bokningsbekraftelse & Godkand offert",
+         ordagrant: "Det vi behover lagga till ar ovanfor villkor. 1:
+         Kostnader som kan tillkomma (som en dropdown) hamtas fran offert
+         mall laddbox. 2: Vad behover du gora innan installationen? Har vill
+         vi satta en standard for laddbox, batteri och elcentral."
+         Ordningen ar darfor kostnader, forberedelser, villkor, och det ar
+         samma ordning acceptskarmen inne i offerten fick samma dag.
+
+         BADA KOMMER UR KONTRAKTET, inte ur markupen, och det ar inte en
+         formalitet: texterna skiljer sig mellan mallarna (laddbox har sju
+         prissatta rader, elcentralen tre villkorstexter utan pris, service
+         och tillagg ingen fold alls), och sidan komponerar ingenting at fem
+         mallar. Saknas listan star sektionen kvar dold, som villkoren gor
+         utan sin adress.
+
+         FORMEN AR VILLKORSFOLDENS, inte en ny: samma details.oa__fold, samma
+         pil, samma kropp. Tre folder i rad som ser olika ut hade lasts som
+         tre sorters innehall.
+
+         PA PAPPER OPPNAS DE, av samma skal som villkoren: en stangd fold
+         doljer sitt innehall med ::details-content, och det biter ingen
+         display-regel pa barnet. -->
+    <section class="oa__section oa__villkor" id="oaKostnader" hidden="">
+      <details class="oa__fold">
+        <summary>Kostnader som kan tillkomma<svg class="oa__fold-pil" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+        <div class="oa__fold-kropp" id="oaKostnaderKropp"></div>
+      </details>
+    </section>
+
+    <section class="oa__section oa__villkor" id="oaForbered" hidden="">
+      <details class="oa__fold">
+        <summary>Vad behöver du göra före installationen?<svg class="oa__fold-pil" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+        <div class="oa__fold-kropp" id="oaForberedKropp"></div>
+      </details>
     </section>
 
     <!-- 4 · VILLKOREN, I EN FOLD, LANGST NER.

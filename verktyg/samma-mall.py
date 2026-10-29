@@ -10,6 +10,13 @@
      enda är ju tilläggsarbetet, eftersom 'Så här går vi vidare' är
      annorlunda. Det är egentligen den enda skillnaden."
 
+UNDANTAGET FÖLL BORT 29 OKTOBER, och mätningen blev strängare av det.
+Ägarordern samma dag: "SÅHÄR GÅR VI VIDARE och alla dess 1/2/3 steg och copy
+tar vi bort helt och hållet från alla acceptera mallarna." Fanns ingen
+steglista kvar finns inget att undanta, och ägarens egen mening blir sann
+UTAN förbehåll: alla fem sidorna är nu samma tecken. Kravet är inte raderat
+utan vänt: provet kräver numera att ingen av de fem HAR en steglista.
+
 Det är ett PÅSTÅENDE OM MARKUP, och det går därför att mäta i stället för att
 försäkra. Mätningen tar varje byggd sida, blankar det som är DATA och jämför
 resten tecken för tecken:
@@ -44,8 +51,19 @@ MALLAR = ["laddbox", "elcentral", "batteri", "service", "tillagg"]
 
 # Facken kontraktet fyller med den här orderns egna värden. Ett fack till
 # här är ett beslut: det säger "den här texten FÅR skilja mellan fallen".
+# oaKostnaderKropp och oaForberedKropp kom till 29 oktober. De är data på
+# exakt samma sätt som oaRader: laddboxen har sju prissatta rader, batteriet
+# nio, elcentralen tre villkorstexter utan pris, service och tillägg ingen
+# fold alls. Att de skiljer sig ÄR kontraktet, inte två mallar. Att innehållet
+# stämmer provas av verktyg/ordagrant.py och verktyg/talen.py, som läser varje
+# sträng och varje tal mot offertrepots egna filer.
 DATA_FACK = ["oaTitel", "oaRefEtikett", "oaRefNr", "oaAcceptDatum",
              "oaPaket", "oaTotal", "oaProdRubrik", "oaProdUnder"]
+# FACK MED EGEN MARKUP INUTI blankas till sin slutande tagg, inte till nasta.
+# DATA_FACK-regexen slutar pa forsta "</", och foldarnas kropp innehaller
+# <p> och <ul>: den traffade "</p>" och lamnade listan kvar. Samma losning som
+# oaRader och oaIngar redan har, och samma fel de en gang hade.
+FACK_MED_MARKUP = [("oaKostnaderKropp", "</div>"), ("oaForberedKropp", "</div>")]
 
 
 def dela(html):
@@ -55,14 +73,17 @@ def dela(html):
     s = s.replace(' hidden=""', "")
     for fack in DATA_FACK:
         s = re.sub(r'(id="%s"[^>]*>).*?(</)' % fack, r"\1DATA\2", s, flags=re.S)
+    for fack, slut in FACK_MED_MARKUP:
+        s = re.sub(r'(id="%s">).*?(%s)' % (fack, re.escape(slut)), r"\1DATA\2", s, flags=re.S)
     s = re.sub(r'(id="oaRader">).*?(</ul>)', r"\1RADER\2", s, flags=re.S)
     s = re.sub(r'(id="oaIngar">).*?(</ul>)', r"\1INGAR\2", s, flags=re.S)
-    m = re.search(r'<ol class="oa__steps" id="oaSteps">.*?</ol>', s, flags=re.S)
-    if not m:
-        return s, "INGEN STEGLISTA"
-    steg = re.sub(r'(data-oa-steg="\d+">).*?(</span>)', r"\1DATA\2", m.group(0), flags=re.S)
-    steg = re.sub(r'(data-oa-steg-under="\d+">).*?(</small>)', r"\1DATA\2", steg, flags=re.S)
-    return s[:m.start()] + "STEGLISTAN" + s[m.end():], steg
+    # STEGLISTAN LYFTES TIDIGARE UT och jämfördes för sig, eftersom tillägget
+    # fick ha en egen. Den finns inte längre på någon av de fem (ägarorder 29
+    # oktober), så det finns inget att lyfta ut. Returvärdet är kvar som ett
+    # par så anroparen inte behöver ändras, och andra halvan bär nu BEVISET på
+    # att listan är borta i stället för dess innehåll.
+    kvar = re.findall(r'oa__steps|oa__step\b|data-oa-steg', s)
+    return s, ("STEGLISTA: %s" % ", ".join(sorted(set(kvar)))) if kvar else "INGEN STEGLISTA"
 
 
 def kor(fall=None, tyst=False):
@@ -89,20 +110,19 @@ def kor(fall=None, tyst=False):
                        "orderbekräftelsen har inte olika mallar."
                        % (bas, mall, len(rader), " / ".join(r.strip()[:90] for r in rader[:2])))
 
-    # 2. STEGEN: exakt tilläggsmallen får skilja sig, och den SKA göra det.
-    #    Ett positivt påstående åt båda håll: slutar tillägget byta sin
-    #    steglista är det lika fel som att en annan mall börjar byta sin.
-    skiljer = sorted(m for m in MALLAR if stegen[m] != stegen[MALLAR[0]])
-    antal += 1
-    if skiljer != ["tillagg"]:
-        fel.append("samma-mall: steglistan skiljer sig på %s, väntade exakt ['tillagg']. "
-                   "Ägaren 25 okt: 'Det enda är ju tilläggsarbetet, eftersom Så här går vi "
-                   "vidare är annorlunda. Det är egentligen den enda skillnaden.'" % skiljer)
-    antal += 1
-    if stegen["tillagg"].count("<li") != 2:
-        fel.append("samma-mall: tilläggets steglista har %d steg, väntade 2. Steg 3 lovar "
-                   "'på avtalad tid' till en kund vars elektriker redan står i hallen."
-                   % stegen["tillagg"].count("<li"))
+    # 2. STEGEN SKA INTE FINNAS, på någon av de fem.
+    #    Kravet är vänt, inte raderat: fram till 29 oktober krävde provet att
+    #    exakt tilläggsmallen hade en EGEN steglista. Nu kräver det att ingen
+    #    har någon alls. Ett borttaget krav är en kontroll mindre för alltid;
+    #    ett vänt krav stoppar återkomsten.
+    for mall in MALLAR:
+        antal += 1
+        if stegen[mall] != "INGEN STEGLISTA":
+            fel.append("samma-mall: %s har en steglista igen (%s). Ägarorder 29 okt: "
+                       "'SÅHÄR GÅR VI VIDARE och alla dess 1/2/3 steg och copy tar vi "
+                       "bort helt och hållet från alla acceptera mallarna.'"
+                       % (mall, stegen[mall]))
+    skiljer = []
     if not tyst:
         print("%d mallar, skelettet utanför stegen: %s"
               % (len(MALLAR), "ETT" if len({skelett[m] for m in MALLAR}) == 1 else "FLERA"))

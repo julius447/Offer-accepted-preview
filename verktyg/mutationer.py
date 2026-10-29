@@ -95,7 +95,12 @@ FALL = [
   "unik orderbekräftelse"),
  ("svar 56, moderoffertens total star pa tillaggets bekraftelse",
   text("fall/tillagg.html", '<h2 class="oa__eyebrow">Det här accepterade du</h2>',
-       '<h2 class="oa__eyebrow">Det här accepterade du</h2><p>14 345 kr</p>'),
+       '<h2 class="oa__eyebrow">Det här accepterade du</h2><p>14 620 kr</p>'),
+  # TALET FOLJDE MED LADDBOXENS TOTAL 29 OKTOBER: 14 345 -> 14 620, efter att
+  # RFID 5-pack gick 175 -> 450 i offertrepot. Mutationen skrev det GAMLA
+  # talet, och da kande oraklet inte igen det som moderns total: sviten blev
+  # rod av ett annat skal, och harnessen rapporterade MISS i stallet for ROTT.
+  # En mutation som bar ett foraldrat tal provar inte det den sager sig prova.
   "moderoffertens total"),
  ("svar 56, en rad forsvinner fran en bekraftelse",
   text("fall/laddbox.html", '<li class="oa__rad"><span class="oa__rad-text">RFID-taggar, 5-pack',
@@ -140,10 +145,37 @@ FALL = [
        'Avdragen dras direkt på fakturan. <a href="https://ampy.se/kopvillkor">'
        "Läs våra köpvillkor</a></p>"),
   "står 2 gånger"),
+ # ANKARET GJORDES UNIKT 29 OKTOBER. Klassen oa__villkor delas nu av tre
+ # sektioner (kostnader, forberedelser, villkor), sa anten traffade tre och
+ # harnessen vagrade hellre an muterade fel stalle. Id:t sager vilken fold det
+ # ar; klassen sager bara vilken form den har.
  ("25 okt 3, folden ligger inte langst ner",
-  text("fall/elcentral.html", '<section class="oa__section oa__villkor"',
-       '<section class="oa__section"'),
+  text("fall/elcentral.html", '<section class="oa__section oa__villkor" id="oaVillkor"',
+       '<section class="oa__section" id="oaVillkor"'),
   "näst sist"),
+
+ # 3b. DE TVA FOLDARNA FRAN 29 OKTOBER
+ ("29 okt, stegremsan tillbaka pa en sida",
+  text("fall/laddbox.html", '<section class="oa__section oa__villkor" id="oaKostnader"',
+       '<section class="oa__section"><ol class="oa__steps"><li class="oa__step">'
+       'Din accept ar registrerad</li></ol></section>'
+       '<section class="oa__section oa__villkor" id="oaKostnader"'),
+  "steglista igen"),
+ ("29 okt, foldarna i fel ordning",
+  text("fall/batteri.html", '<summary>Kostnader som kan tillkomma',
+       '<summary>Vad behöver du göra före installationen?'),
+  "foldarna"),
+ ("29 okt, kostnadsfolden syns utan innehall i kontraktet",
+  text("fall/service.html", '<section class="oa__section oa__villkor" id="oaKostnader" hidden=""',
+       '<section class="oa__section oa__villkor" id="oaKostnader"'),
+  "oaKostnader"),
+ ("29 okt, forberedelsefolden goms trots att kontraktet har texten",
+  text("fall/elcentral.html", '<section class="oa__section oa__villkor" id="oaForbered"',
+       '<section class="oa__section oa__villkor" id="oaForbered" hidden=""'),
+  "oaForbered"),
+ ("29 okt, ett kostnadsbelopp driftar fran katalogen",
+  text("exempel/laddbox.json", '"belopp": 245,', '"belopp": 240,'),
+  "245"),
 
  # 4. FINSTILTEN UTAN PARENTES
  ("25 okt 4, parentesen tillbaka i finstilten",
@@ -161,10 +193,14 @@ FALL = [
   text("fall/service.html", '<h2 class="oa__eyebrow">Det här accepterade du</h2>',
        '<h2 class="oa__eyebrow">Det här accepterade du</h2><p class="oa__extra"></p>'),
   "olika markup utanför"),
- ("25 okt 5, en andra mall byter sin steglista",
-  text("fall/service.html",
-       '<span class="oa__node" aria-hidden="true"><span>3</span></span>', "", 1),
-  "väntade exakt"),
+ # MUTATIONEN "en andra mall byter sin steglista" AR AVVECKLAD 29 OKTOBER,
+ # och ersatt i stallet for raderad. Den bevisade att samma-mall sag nar en
+ # ANNAN mall an tillagget fick en egen steglista. Agarordern samma dag tog
+ # bort remsan fran alla fem, sa det pastaendet finns inte langre att bevisa:
+ # ankaret traffade noll och harnessen vagrade, vilket var ratt av den.
+ # Samma sanning en vaning upp bevisas nu av "29 okt, stegremsan tillbaka pa
+ # en sida" ovanfor: ingen av de fem far HA en steglista. Ett borttaget krav
+ # ar en kontroll mindre for alltid; ett vant krav stoppar aterkomsten.
 
  # 6. ALLT SOM INGAR AR EN REN PUNKTLISTA
  ("25 okt 6, brodtext tillbaka under en punkt",

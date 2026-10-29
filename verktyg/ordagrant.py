@@ -33,6 +33,7 @@ förklaras i kontraktets `_undantag_ordagrant`, med skäl. En oförklarad miss
 plötsligt hittas och undantaget blir onödigt, och det rapporteras också.
 """
 import json
+import re as _re
 import pathlib
 import sys
 
@@ -78,7 +79,34 @@ def las_nordstjarnan(rot):
         if p.suffix.lower() in BINARA:
             continue
         try:
-            filer.append((p.relative_to(rot).as_posix(), p.read_text(encoding="utf-8")))
+            # RADBRYTNINGEN AR INTE INNEHALL, MEN HARDSPATIEN AR DET.
+            # En mening i en body.html ar ombruten over fyra rader med
+            # indrag, och en rak substrangsokning missar den darfor aven nar
+            # varje ord stammer. Uppmatt 29 oktober: elcentralens tre
+            # villkorstexter foll alla tre, och felet lod "star inte i
+            # mallens egna filer" om texter som stod ordagrant i
+            # offerter/elcentral/body.html. Ett prov som inte kan hitta ratt
+            # svar ar lika oanvandbart som ett som inte kan hitta fel svar.
+            #
+            # BARA [ ]\t\r\n SLAS IHOP. \u00a0 lamnas i fred med flit: huset
+            # kraver hardspatie i tusental och mellan tal och enhet, sa
+            # "1 200 kr" med vanlig spatie och med hardspatie ar TVA olika
+            # strangar och ska vara det. Hade normaliseringen tagit dem bada
+            # hade provet slutat se precis den defekt det skrevs for.
+            rad = p.read_text(encoding="utf-8")
+            # EN KOMMENTAR AGER INGEN COPY.
+            # Uppmatt 29 oktober: undantaget for laddboxens ".order.paket.namn"
+            # pekades ut som onodigt, med skalet att strangen star ORDAGRANT i
+            # gemensamt/block/acceptkvitto.js. Den gjorde det ocksa, i en
+            # kommentar som forklarar varfor "Paket Premium" inte far sta
+            # bredvid totalen. Strangen komponeras fortfarande i korning av
+            # laddboxens skript och finns inte i nagon fil som data, sa
+            # undantaget var ratt och provet hade fel. Det ar samma lardom som
+            # det har repot redan dragit om sina EGNA kommentarer: tva matningar
+            # raknade en gang taggarna i en kommentarstext som markup.
+            rad = _re.sub(r"<!--.*?-->", " ", rad, flags=_re.S)
+            rad = _re.sub(r"/\*.*?\*/", " ", rad, flags=_re.S)
+            filer.append((p.relative_to(rot).as_posix(), _re.sub(r"[ \t\r\n]+", " ", rad)))
         except Exception:
             pass
     return filer

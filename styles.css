@@ -78,8 +78,6 @@
   /* Bocken och noden ar komponentmatt. Noden ar z5, alltsa traffytans golv:
      den ar inte klickbar, men 44 ar talet huset redan har for "sa stor ska
      en rund kontroll vara", och kopplingslinjen raknas ur den. */
-  --nod:var(--z5);
-  --steg-gap:var(--rytm-grupp);
   /* Bocken i hjalten ar sidans ENDA signaturfigur och har sitt eget matt. */
   --check:80px;
 
@@ -262,6 +260,30 @@
 @media (prefers-reduced-motion: reduce){ .oa__fold-pil{ transition:none; } }
 .oa__fold-kropp{ padding:0 var(--s4) var(--s4); }
 .oa__villkor-rad{ margin:0; font-size:var(--t6); line-height:1.5; color:var(--ink-soft); }
+/* DE TVA NYA FOLDARNA, 29 oktober: kostnader och forberedelser. Formen ar
+   villkorsfoldens, och texten ar samma grad och fargstyrka som .oa__villkor-rad
+   ovanfor, sa tre folder i rad laser som tre folder och inte som tre sorters
+   innehall. Punkten ar ritad och inte en list-style-bock: en bock betyder
+   "det har ingar" pa den har sidan, och forberedelserna ar tvartom nagot
+   kunden ska gora. */
+.oa__fold-intro{ margin:0 0 var(--s3); font-size:var(--t6); line-height:1.5; color:var(--ink-soft); }
+.oa__fold-fot{ margin:var(--s3) 0 0; font-size:var(--t7); line-height:1.45; color:var(--ink-soft); }
+.oa__fold-lista{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:var(--s2); }
+.oa__fold-lista li{ display:flex; justify-content:space-between; gap:var(--s4);
+  font-size:var(--t6); line-height:1.5; color:var(--ink-soft); }
+.oa__fold-lista li b{ font-weight:600; color:var(--ink); }
+.oa__fold-lista li span{ text-align:right; white-space:nowrap; }
+/* Elcentralens rader ar villkorstexter utan pris: lead i fetstil och en
+   mening efter, pa EN rad som bryter normalt. Da far spannet inte sta kvar
+   hogerstallt och obrytbart. Klassen sattes forst med :has(), vilket band
+   formen till MARKUPENS form i stallet for till radens sort; renderaren
+   sager nu vilken sort raden ar, och CSS:en behover inte gissa. */
+.oa__fold-villkor{ display:block !important; }
+.oa__fold-villkor span{ text-align:left !important; white-space:normal !important; }
+.oa__fold-lista--punkt li{ display:block; position:relative; padding-left:var(--s4); }
+.oa__fold-lista--punkt li span{ text-align:left; white-space:normal; }
+.oa__fold-lista--punkt li::before{ content:""; position:absolute; left:0; top:.62em;
+  width:var(--s1); height:var(--s1); border-radius:50%; background:var(--teal); }
 /* Samma traffyta som lanken hade i finstilten: 44 px ar golvet, och de
    negativa marginalerna haller radhojden oforandrad. */
 .oa__fold a{ display:flex; align-items:center; width:fit-content; min-height:var(--z5);
@@ -269,38 +291,13 @@
   color:var(--teal-deep); font-weight:600; font-size:var(--t5);
   text-decoration:underline; text-underline-offset:3px; }
 
-/* --- next-steps: centred group, internally left-aligned --- */
-.oa__next{ width:fit-content; max-width:100%; margin-inline:auto; }
+/* --- STEGREMSAN AR BORTTAGEN, 29 oktober, pa agarorder. Kvar star bara
+   ogonbrynet, som ordersektionen ocksa anvander ("Det har accepterade du").
+   Reglerna for .oa__next, .oa__steps, .oa__step, .oa__node och .oa__step-text
+   ar borta med den, och sa ar tokens --nod och --steg-gap: de hade ingen
+   annan brukare. En regel utan element ar en regel som vantar pa att nagon
+   ateruppfinner elementet. --- */
 .oa__eyebrow{ margin:0 0 var(--rytm-block); font-size:var(--t7); font-weight:600; text-transform:uppercase; letter-spacing:.14em; color:var(--teal-deep); }
-.oa__steps{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:var(--steg-gap); }
-/* FYND: kopplingslinjen hade fast height:60px medan nod-till-nod-avståndet
-   varierar med radbrytningen. Uppmätt vid 390px: avstånden är 66px och 77px,
-   alltså synliga glapp på 6px och 17px, medan de vid 560px och uppåt är 35px
-   och linjen i stället sköt 25px förbi. Ankras nu i steget och sträcks från
-   nodens underkant till nästa nods överkant, vilket är exakt vid varje
-   texthöjd. align-items:flex-start ger noden samma linje som stegrubriken
-   i stället för att flyta mitt i textblocket. Rakningen star vid ::after
-   nedan och gors nu ur --nod och --steg-gap. */
-.oa__step{ position:relative; display:flex; align-items:flex-start; gap:var(--s4); }
-.oa__node{ position:relative; z-index:1; flex:0 0 auto; width:var(--nod); height:var(--nod); border-radius:50%;
-  display:grid; place-items:center; /* Vit text mot den ljusa änden av gradienten mätte 2,87:1. Mörkare släkte,
-     samma familj, med variablerna så färgerna inte kan glida isär igen. */
-  background:linear-gradient(145deg,var(--teal-deep),var(--teal-ink));
-  box-shadow:0 6px 16px rgba(0,169,145,.34), inset 0 0 0 3px rgba(255,255,255,.9); }
-/* KLASSEN, INTE INSTANSEN. Hojden var calc(100% - 12px) med top:42px, och
-   de tolv pixlarna var 42 minus luckan 30: tva matt bakade in i ett tredje.
-   Andrades luckan eller nodens storlek slutade linjen mota nasta nod, och
-   det ar precis vad som hande nar luckan gick fran 30 till --rytm-grupp.
-   Nu raknas linjen ur nodmattet och luckan, sa den ar exakt vid varje
-   kombination. */
-.oa__step:not(:last-child)::after{ content:""; position:absolute; z-index:0;
-  left:calc(var(--nod) / 2); margin-left:-1px; width:2px; top:var(--nod);
-  height:calc(100% - var(--nod) + var(--steg-gap));
-  background:linear-gradient(180deg, rgba(0,169,145,.42), rgba(0,169,145,.12)); }
-.oa__node span{ font-size:var(--t5); font-weight:600; color:#fff; line-height:1; }
-.oa__node svg{ width:var(--z2); height:var(--z2); fill:none; stroke:#fff; stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; }
-.oa__step-text{ font-size:var(--t4); line-height:1.35; font-weight:600; color:var(--ink); }
-.oa__step-text small{ display:block; font-size:var(--t5); font-weight:400; color:var(--ink-soft); line-height:1.4; margin-top:var(--s1); }
 
 /* --- trust + contact + close --- */
 .oa__trust{ display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:var(--s3) var(--s4); text-align:center; }

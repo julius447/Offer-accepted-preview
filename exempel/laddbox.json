@@ -1,161 +1,256 @@
 {
-  "_not": "FALL 1, LADDBOX. Ett paket, valda tillägg, mellanskillnad på en längdvariant, blandade potter: grön teknik på laddpunkten, ROT på spotlightsen. Varje tal är hämtat ur laddboxrepot, inget är skrivet här.",
-  "_kallor": {
-    "paket.belopp": "9170 = BAS 4450 (offerter/laddbox/skript.js rad 5) + paketnyckeln 4720 för Premium (offerter/laddbox/paket.json).",
-    "paket.spec": "'22 kW med Perific Max', ordagrant ur offerter/laddbox/paket.json nyckel 4720.",
-    "kabel22": "Mellanskillnad 200 = 10 meter 1850 minus 5 meter 1650, katalog/tillval.json rad 133 till 139. kabel22 ligger i Premiums ingar, så mellanskillnadsregeln gäller (offerter/laddbox/skript.js rad 207 till 220).",
-    "rfid": "175 = katalogpris för 5-pack, katalog/tillval.json rad 194. [ÄGARFRÅGA] katalogen rad 7: 175/300/600 står i sidan men saknas i prislistan.",
-    "spotlight": "4800 = styckpris 800 gånger 6, katalog/tillval.json rad 245. ROT enligt samma fil rad 264.",
-    "batteri-saj": "Intresseanmälan: katalogen bär 'fran': true och inget pris, avdrag 'inget' (rad 289 till 297). Priset går inte att sätta utan att se taket och förbrukningen.",
-    "total": "14345 = 9170 + 200 + 175 + 4800. Samma väg som motorn: sum = paketpris + deltan + valda rader, mitt = sum, calcNet = kr(mitt). Motorn drar aldrig ROT ur mitt (offerter/laddbox/skript.js rad 243 till 294).",
-    "grannrabatt": "Raden och dess ord är motorns egna, offerter/laddbox/skript.js: 'Grannrabatt, ' + antal + ' grannar inbjudna' och 'dras när de beställt'. Motorn komponerar dem i körning, så de står inte som hela strängar i någon fil. NOTEN ÄR BORTTAGEN 2026-10-25 PÅ ÄGARENS ORD, ordagrant om texten under raderna: \"Här vill jag att vi använder följande enbart: 'inkl. moms, efter skattereduktion. Avdragen dras direkt på fakturan.'\" Den löd: \"Upp till 1 500 kr av, 500 kr för varje granne som beställer. Ditt pris här ändras inte förrän det hänt.\" Med noten gick också fältet `not` och dess två poster i _tal (.order.utestaende[0].not#500 och #1500, som band taket 1 500 kr till de tre inbjudna grannarna). Posterna är borta för att strängen är borta, inte för att provet var obekvämt: talen.py stoppar bygget om en post bevakar ett tal som inte längre finns. Raden säger fortfarande själv att rabatten inte är dragen (\"dras när de beställt\").",
-    "bokare": "Rasmus, laddboxmallens bokare (gemensamt/block/skarm-accept.html rad 40).",
-    "giltig_till_lang": "Fylls av CRM:et. Saknas den renderas ingen mening om datum. Ingen hårdkodning finns i den här sidan.",
-    "accepterad": "[GAP] NAR kunden accepterade. Agarsvar 46, 25 oktober: \"Ja, lagg till datum\". Datumet uppstar i det ogonblick kunden trycker acceptera och finns darfor inte i offertrepot: inget av de fem exemplen ar accepterat av nagon. CRM:et satter ISO 8601 (2026-10-25) nar accepten registreras. null tar bort meningen i stallet for att hitta pa ett datum. Faltet finns sa att INGEN hardkodar det, vilket ar precis vad som hant med giltighetsdatumet i offertrepots elcentralmall."
+ "_not": "FALL 1, LADDBOX. Ett paket, valda tillägg, mellanskillnad på en längdvariant, blandade potter: grön teknik på laddpunkten, ROT på spotlightsen. Varje tal är hämtat ur laddboxrepot, inget är skrivet här.",
+ "_kallor": {
+  "paket.belopp": "9170 = BAS 4450 (offerter/laddbox/skript.js rad 5) + paketnyckeln 4720 för Premium (offerter/laddbox/paket.json).",
+  "paket.spec": "'22 kW med Perific Max', ordagrant ur offerter/laddbox/paket.json nyckel 4720.",
+  "kabel22": "Mellanskillnad 200 = 10 meter 1850 minus 5 meter 1650, katalog/tillval.json rad 133 till 139. kabel22 ligger i Premiums ingar, så mellanskillnadsregeln gäller (offerter/laddbox/skript.js rad 207 till 220).",
+  "rfid": "175 = katalogpris för 5-pack, katalog/tillval.json rad 194. [ÄGARFRÅGA] katalogen rad 7: 175/300/600 står i sidan men saknas i prislistan.",
+  "spotlight": "4800 = styckpris 800 gånger 6, katalog/tillval.json rad 245. ROT enligt samma fil rad 264.",
+  "batteri-saj": "Intresseanmälan: katalogen bär 'fran': true och inget pris, avdrag 'inget' (rad 289 till 297). Priset går inte att sätta utan att se taket och förbrukningen.",
+  "total": "14345 = 9170 + 200 + 175 + 4800. Samma väg som motorn: sum = paketpris + deltan + valda rader, mitt = sum, calcNet = kr(mitt). Motorn drar aldrig ROT ur mitt (offerter/laddbox/skript.js rad 243 till 294).",
+  "grannrabatt": "Raden och dess ord är motorns egna, offerter/laddbox/skript.js: 'Grannrabatt, ' + antal + ' grannar inbjudna' och 'dras när de beställt'. Motorn komponerar dem i körning, så de står inte som hela strängar i någon fil. NOTEN ÄR BORTTAGEN 2026-10-25 PÅ ÄGARENS ORD, ordagrant om texten under raderna: \"Här vill jag att vi använder följande enbart: 'inkl. moms, efter skattereduktion. Avdragen dras direkt på fakturan.'\" Den löd: \"Upp till 1 500 kr av, 500 kr för varje granne som beställer. Ditt pris här ändras inte förrän det hänt.\" Med noten gick också fältet `not` och dess två poster i _tal (.order.utestaende[0].not#500 och #1500, som band taket 1 500 kr till de tre inbjudna grannarna). Posterna är borta för att strängen är borta, inte för att provet var obekvämt: talen.py stoppar bygget om en post bevakar ett tal som inte längre finns. Raden säger fortfarande själv att rabatten inte är dragen (\"dras när de beställt\").",
+  "bokare": "Rasmus, laddboxmallens bokare (gemensamt/block/skarm-accept.html rad 40).",
+  "giltig_till_lang": "Fylls av CRM:et. Saknas den renderas ingen mening om datum. Ingen hårdkodning finns i den här sidan.",
+  "accepterad": "[GAP] NAR kunden accepterade. Agarsvar 46, 25 oktober: \"Ja, lagg till datum\". Datumet uppstar i det ogonblick kunden trycker acceptera och finns darfor inte i offertrepot: inget av de fem exemplen ar accepterat av nagon. CRM:et satter ISO 8601 (2026-10-25) nar accepten registreras. null tar bort meningen i stallet for att hitta pa ett datum. Faltet finns sa att INGEN hardkodar det, vilket ar precis vad som hant med giltighetsdatumet i offertrepots elcentralmall."
+ },
+ "_undantag_ordagrant": {
+  ".order.paket.namn": "KOMPONERAD I KORNING. offerter/laddbox/skript.js skriver summeringens huvudrad som 'Paket ' + p.namn, och paket.json nyckel 4720 heter 'Premium'. Ordet 'Paket' ar motorns, namnet ar katalogens, och hela strangen star darfor inte i nagon fil.",
+  ".order.utestaende[0].text": "KOMPONERAD I KORNING. offerter/laddbox/skript.js skriver 'Grannrabatt, ' + antal + (antal > 1 ? ' grannar inbjudna' : ' granne inbjuden'). Med tre grannar blir det den har."
+ },
+ "_kalla_villkor": "https://ampy.se/kopvillkor. Alla fem mallarna länkar dit med texten 'Läs våra köpvillkor' (offerter/laddbox/body.html rad 566, elcentral rad 264, batteri rad 160, service/offert.py rad 155). Kontrollerat 19 okt enligt noten i tillagg.html rad 71. ÄGARENS ORD 25 OKTOBER, GLOBAL NOTERING: länken ligger nu under en fold som heter Villkor längst ner på bekräftelsen, i samma form som offerternas egen villkorsfold (offerter/tillagg/body.html rad 60 till 67).",
+ "_tal": {
+  "_not": "HARLEDNINGEN FOR VARJE TAL KUNDEN SER, MED KALLAN I OFFERTREPOT. verktyg/talen.py raknar om uttrycket och slar upp varje operand i den namngivna filen vid varje korning, sa ett tal som rort sig i offertrepot gor det har provet rott. Formerna star i talen.py: fil#jsonvag, fil@ankare, .kontraktsvag och val: med skal. Agarsvar 60, 25 oktober: \"Bygg det nu.\"",
+  ".order.paket.belopp": {
+   "uttryck": "4450 + 4720",
+   "kallor": {
+    "4450": "offerter/laddbox/skript.js@var BAS=",
+    "4720": "offerter/laddbox/paket.json#[namn=Premium]$nyckel"
+   },
+   "_not": "Paketpriset ar BAS plus paketnyckeln. Nyckeln I paket.json AR pakettillagget over Bas, sa Premium kostar 4 720 over 4 450."
   },
-  "_undantag_ordagrant": {
-    ".order.paket.namn": "KOMPONERAD I KORNING. offerter/laddbox/skript.js skriver summeringens huvudrad som 'Paket ' + p.namn, och paket.json nyckel 4720 heter 'Premium'. Ordet 'Paket' ar motorns, namnet ar katalogens, och hela strangen star darfor inte i nagon fil.",
-    ".order.utestaende[0].text": "KOMPONERAD I KORNING. offerter/laddbox/skript.js skriver 'Grannrabatt, ' + antal + (antal > 1 ? ' grannar inbjudna' : ' granne inbjuden'). Med tre grannar blir det den har."
+  ".order.rader[0].belopp": {
+   "uttryck": "1850 - 1650",
+   "kallor": {
+    "1850": "katalog/tillval.json#kabel22.varianter.10 meter.pris",
+    "1650": "katalog/tillval.json#kabel22.varianter.5 meter.pris"
+   },
+   "_not": "MELLANSKILLNAD. Femmetersvarianten ingar i Premium och ar betald; kunden betalar skillnaden upp till tio meter. Skrivs bara 200 har kan ingen se att det inte ar en kabel som kostar 200 kr."
   },
-  "_kalla_villkor": "https://ampy.se/kopvillkor. Alla fem mallarna länkar dit med texten 'Läs våra köpvillkor' (offerter/laddbox/body.html rad 566, elcentral rad 264, batteri rad 160, service/offert.py rad 155). Kontrollerat 19 okt enligt noten i tillagg.html rad 71. ÄGARENS ORD 25 OKTOBER, GLOBAL NOTERING: länken ligger nu under en fold som heter Villkor längst ner på bekräftelsen, i samma form som offerternas egen villkorsfold (offerter/tillagg/body.html rad 60 till 67).",
-  "_tal": {
-    "_not": "HARLEDNINGEN FOR VARJE TAL KUNDEN SER, MED KALLAN I OFFERTREPOT. verktyg/talen.py raknar om uttrycket och slar upp varje operand i den namngivna filen vid varje korning, sa ett tal som rort sig i offertrepot gor det har provet rott. Formerna star i talen.py: fil#jsonvag, fil@ankare, .kontraktsvag och val: med skal. Agarsvar 60, 25 oktober: \"Bygg det nu.\"",
-    ".order.paket.belopp": {
-      "uttryck": "4450 + 4720",
-      "kallor": {
-        "4450": "offerter/laddbox/skript.js@var BAS=",
-        "4720": "offerter/laddbox/paket.json#[namn=Premium]$nyckel"
-      },
-      "_not": "Paketpriset ar BAS plus paketnyckeln. Nyckeln I paket.json AR pakettillagget over Bas, sa Premium kostar 4 720 over 4 450."
-    },
-    ".order.rader[0].belopp": {
-      "uttryck": "1850 - 1650",
-      "kallor": {
-        "1850": "katalog/tillval.json#kabel22.varianter.10 meter.pris",
-        "1650": "katalog/tillval.json#kabel22.varianter.5 meter.pris"
-      },
-      "_not": "MELLANSKILLNAD. Femmetersvarianten ingar i Premium och ar betald; kunden betalar skillnaden upp till tio meter. Skrivs bara 200 har kan ingen se att det inte ar en kabel som kostar 200 kr."
-    },
-    ".order.rader[1].belopp": {
-      "uttryck": "175",
-      "kallor": {
-        "175": "katalog/tillval.json#rfid.varianter.5-pack.pris"
-      }
-    },
-    ".order.rader[2].antal": {
-      "uttryck": "6",
-      "kallor": {
-        "6": "val: kunden valde sex spotlights i konfiguratorn. Antalet ar hennes, det star inte i nagon fil och ska inte latsas gora det."
-      }
-    },
-    ".order.rader[2].styckpris": {
-      "uttryck": "800",
-      "kallor": {
-        "800": "katalog/tillval.json#spotlight.styckpris"
-      }
-    },
-    ".order.rader[2].belopp": {
-      "uttryck": "800 * 6",
-      "kallor": {
-        "800": ".order.rader[2].styckpris",
-        "6": ".order.rader[2].antal"
-      },
-      "och_samma_som": [
-        "katalog/tillval.json#spotlight.varianter.6 stycken.pris"
-      ],
-      "_not": "TVA OBEROENDE VAGAR TILL SAMMA TAL. Katalogen bar bade ett styckpris och en variantstege, och de kan glida isar. Oraklet kraver att 800 ganger 6 ar samma tal som variantens eget."
-    },
-    ".order.total": {
-      "uttryck": "9170 + 200 + 175 + 4800",
-      "kallor": {
-        "9170": ".order.paket.belopp",
-        "200": ".order.rader[0].belopp",
-        "175": ".order.rader[1].belopp",
-        "4800": ".order.rader[2].belopp"
-      },
-      "_not": "Intresseanmalan pa solcellsbatteriet summeras aldrig: den har belopp null."
-    },
-    ".order.utestaende[0].text#3": {
-      "uttryck": "3",
-      "kallor": {
-        "3": "val: antalet grannar kunden bjudit in. Laddboxmotorn skriver in antalet i raden, det ar hennes eget val."
-      }
-    }
+  ".order.rader[1].belopp": {
+   "uttryck": "450",
+   "kallor": {
+    "450": "katalog/tillval.json#rfid.varianter.5-pack.pris"
+   }
   },
-  "kontrakt_version": 1,
-  "priser_ar": "netto",
-  "offert": {
-    "referens": "2026-0640",
-    "mall": "laddbox",
-    "titel": null,
-    "ar_tillagg": false,
-    "moderreferens": null,
-    "modertyp": null,
-    "giltig_till_lang": null,
-    "accepterad": null,
-    "villkor_url": "https://ampy.se/kopvillkor"
+  ".order.rader[2].antal": {
+   "uttryck": "6",
+   "kallor": {
+    "6": "val: kunden valde sex spotlights i konfiguratorn. Antalet ar hennes, det star inte i nagon fil och ska inte latsas gora det."
+   }
   },
-  "bokare": {
-    "fornamn": "Rasmus"
+  ".order.rader[2].styckpris": {
+   "uttryck": "800",
+   "kallor": {
+    "800": "katalog/tillval.json#spotlight.styckpris"
+   }
   },
-  "steg": [],
-  "order": {
-    "rubrik": "Zaptec Go",
-    "underrubrik": "22 kW med Perific Max",
-    "etikett": "Att betala",
-    "total": 14345,
-    "paket": {
-      "namn": "Paket Premium",
-      "spec": null,
-      "belopp": 9170,
-      "avdrag": "gron-teknik"
-    },
-    "rader": [
-      {
-        "typ": "mellanskillnad",
-        "namn": "Laddkabel 22 kW",
-        "variant": "10 meter",
-        "i_stallet_for": "5 meter",
-        "antal": 1,
-        "styckpris": null,
-        "belopp": 200,
-        "avdrag": "gron-teknik"
-      },
-      {
-        "typ": "tillagg",
-        "namn": "RFID-taggar",
-        "variant": "5-pack",
-        "antal": 1,
-        "styckpris": null,
-        "belopp": 175,
-        "avdrag": "gron-teknik"
-      },
-      {
-        "typ": "tillagg",
-        "namn": "Spotlights",
-        "variant": null,
-        "antal": 6,
-        "styckpris": 800,
-        "belopp": 4800,
-        "avdrag": "rot"
-      },
-      {
-        "typ": "intresseanmalan",
-        "namn": "Solcellsbatteri SAJ HS3",
-        "variant": null,
-        "antal": null,
-        "styckpris": null,
-        "belopp": null,
-        "avdrag": "inget",
-        "notis": "ingen kostnad nu"
-      }
-    ],
-    "ingar": [],
-    "utestaende": [
-      {
-        "text": "Grannrabatt, 3 grannar inbjudna",
-        "ord": "dras när de beställt"
-      }
-    ]
+  ".order.rader[2].belopp": {
+   "uttryck": "800 * 6",
+   "kallor": {
+    "800": ".order.rader[2].styckpris",
+    "6": ".order.rader[2].antal"
+   },
+   "och_samma_som": [
+    "katalog/tillval.json#spotlight.varianter.6 stycken.pris"
+   ],
+   "_not": "TVA OBEROENDE VAGAR TILL SAMMA TAL. Katalogen bar bade ett styckpris och en variantstege, och de kan glida isar. Oraklet kraver att 800 ganger 6 ar samma tal som variantens eget."
+  },
+  ".order.total": {
+   "uttryck": "9170 + 200 + 450 + 4800",
+   "kallor": {
+    "9170": ".order.paket.belopp",
+    "200": ".order.rader[0].belopp",
+    "450": ".order.rader[1].belopp",
+    "4800": ".order.rader[2].belopp"
+   },
+   "_not": "Intresseanmalan pa solcellsbatteriet summeras aldrig: den har belopp null."
+  },
+  ".order.utestaende[0].text#3": {
+   "uttryck": "3",
+   "kallor": {
+    "3": "val: antalet grannar kunden bjudit in. Laddboxmotorn skriver in antalet i raden, det ar hennes eget val."
+   }
+  },
+  ".kostnader[0].belopp": {
+   "uttryck": "245",
+   "kallor": {
+    "245": "katalog/tillkommande.json#rader[namn=Extra installationskabel, 22 kW].pris"
+   }
+  },
+  ".kostnader[1].belopp": {
+   "uttryck": "198",
+   "kallor": {
+    "198": "katalog/tillkommande.json#rader[namn=Extra installationskabel, 11 kW].pris"
+   }
+  },
+  ".kostnader[2].belopp": {
+   "uttryck": "180",
+   "kallor": {
+    "180": "katalog/tillkommande.json#rader[namn=Håltagning utöver två].pris"
+   }
+  },
+  ".kostnader[3].belopp": {
+   "uttryck": "1200",
+   "kallor": {
+    "1200": "katalog/tillkommande.json#rader[namn=Utbyggnad av elcentral].pris"
+   }
+  },
+  ".kostnader[4].belopp": {
+   "uttryck": "65",
+   "kallor": {
+    "65": "katalog/tillkommande.json#rader[namn=Markrör].pris"
+   }
+  },
+  ".kostnader[5].belopp": {
+   "uttryck": "215",
+   "kallor": {
+    "215": "katalog/tillkommande.json#rader[namn=Kabelskydd inklusive klammer].pris"
+   }
+  },
+  ".kostnader[6].belopp": {
+   "uttryck": "850",
+   "kallor": {
+    "850": "katalog/tillkommande.json#rader[namn=Löpande arbete].pris"
+   }
   }
+ },
+ "kontrakt_version": 1,
+ "priser_ar": "netto",
+ "offert": {
+  "referens": "2026-0640",
+  "mall": "laddbox",
+  "titel": null,
+  "ar_tillagg": false,
+  "moderreferens": null,
+  "modertyp": null,
+  "giltig_till_lang": null,
+  "accepterad": null,
+  "villkor_url": "https://ampy.se/kopvillkor"
+ },
+ "kostnader_ingress": "Behövs mer än standardinstallationen kostar det exakt så här. Allt bekräftas och godkänns av dig innan arbetet utförs.",
+ "kostnader": [
+  {
+   "namn": "Extra installationskabel, 22 kW",
+   "belopp": 245,
+   "enhet": "per meter",
+   "text": null
+  },
+  {
+   "namn": "Extra installationskabel, 11 kW",
+   "belopp": 198,
+   "enhet": "per meter",
+   "text": null
+  },
+  {
+   "namn": "Håltagning utöver två",
+   "belopp": 180,
+   "enhet": null,
+   "text": null
+  },
+  {
+   "namn": "Utbyggnad av elcentral",
+   "belopp": 1200,
+   "enhet": null,
+   "text": null
+  },
+  {
+   "namn": "Markrör",
+   "belopp": 65,
+   "enhet": "per meter",
+   "text": null
+  },
+  {
+   "namn": "Kabelskydd inklusive klammer",
+   "belopp": 215,
+   "enhet": "per styck",
+   "text": null
+  },
+  {
+   "namn": "Löpande arbete",
+   "belopp": 850,
+   "enhet": "per påbörjad timme",
+   "text": null
+  }
+ ],
+ "kostnader_fot": "Priserna är inklusive moms. Avdraget räknas som i offerten: grön teknik på laddpunkten, ROT på elcentralen.",
+ "forberedelser": [
+  "Om du har valt lastbalansering som ansluts via elmätarens HAN-port behöver du kontakta din nätägare och begära att kommunikationsporten aktiveras. Detta ska vara klart minst 48 timmar före installationen.",
+  "Om lastbalansering ska installeras behöver ett stabilt WiFi-nätverk på 2,4 GHz finnas tillgängligt vid elmätaren.",
+  "Om kabel ska dras mellan byggnader behöver eventuell grävning och förberedelse av kabelväg vara klar före installationen. Vi kan tillhandahålla markrör vid behov, men utför inte grävning. Är du osäker är du välkommen att kontakta oss före installationsdagen.",
+  "I vissa fall skickas material direkt till dig. Om du har fått information om detta ansvarar du för att paketet hämtas ut före installationen.",
+  "Se till att installationsplatsen och eventuell kabelväg är undanplockade och lätt åtkomliga."
+ ],
+ "_kalla_foldar": "Hamtat ordagrant ur den byggda offertsidan i offertrepot 29 oktober, inte avskrivet: verktyg/ordagrant.py jamfor varje kundstrang har mot den sidan, sa en avskrift som driftat hade fallit. Agardokument 29 oktober, 'Bokningsbekraftelse & Godkand offert': 'Det vi behover lagga till ar ovanfor villkor. 1: Kostnader som kan tillkomma (som en dropdown) hamtas fran offert mall laddbox. 2: Vad behover du gora innan installationen?'",
+ "order": {
+  "rubrik": "Zaptec Go",
+  "underrubrik": "22 kW med Perific Max",
+  "etikett": "Att betala",
+  "total": 14620,
+  "paket": {
+   "namn": "Paket Premium",
+   "spec": null,
+   "belopp": 9170,
+   "avdrag": "gron-teknik"
+  },
+  "rader": [
+   {
+    "typ": "mellanskillnad",
+    "namn": "Laddkabel 22 kW",
+    "variant": "10 meter",
+    "i_stallet_for": "5 meter",
+    "antal": 1,
+    "styckpris": null,
+    "belopp": 200,
+    "avdrag": "gron-teknik"
+   },
+   {
+    "typ": "tillagg",
+    "namn": "RFID-taggar",
+    "variant": "5-pack",
+    "antal": 1,
+    "styckpris": null,
+    "belopp": 450,
+    "avdrag": "gron-teknik"
+   },
+   {
+    "typ": "tillagg",
+    "namn": "Spotlights",
+    "variant": null,
+    "antal": 6,
+    "styckpris": 800,
+    "belopp": 4800,
+    "avdrag": "rot"
+   },
+   {
+    "typ": "intresseanmalan",
+    "namn": "Solcellsbatteri SAJ HS3",
+    "variant": null,
+    "antal": null,
+    "styckpris": null,
+    "belopp": null,
+    "avdrag": "inget",
+    "notis": "ingen kostnad nu"
+   }
+  ],
+  "ingar": [],
+  "utestaende": [
+   {
+    "text": "Grannrabatt, 3 grannar inbjudna",
+    "ord": "dras när de beställt"
+   }
+  ]
+ },
+ "_steg_och_bokare_bort": "AGARORDER 29 OKTOBER, ORDAGRANT: 'SAHAR GAR VI VIDARE och alla dess 1/2/3 steg och copy tar vi bort helt och hallet fran alla acceptera mallarna.' Falten steg och bokare fanns BARA for stegremsan: steg skrev om stegens copy, bokare.fornamn satte namnet i steg 2. Bada ar ute ur KONTRAKT.md med datum, och prov.py vaktar at andra hallet.",
+ "_glidning_29_okt": "GLIDNING MOT OFFERTREPOT, RATTAD 29 OKTOBER. Agarbesluten samma dag flyttade tre tal: RFID 5-pack 175 -> 450, overspanningsskyddet 1 200 -> 3 250, och extra dvargbrytare blev TVA rader (C10 A 180, C16 A 220) i stallet for en pa 500. verktyg/talen.py sag alla tre, for den slar upp varje operand i offertrepots egna filer vid varje korning. Exemplen bar nu de nya talen och totalen ar omraknad.",
+ "_kostnadsraden": "RADENS FORM AR TVA FORMER, for de tva mallsorterna sager olika saker. Laddbox och batteri har PRISSATTA rader: namn, belopp och enhet, dar beloppet gar genom verktyg/talen.py mot katalog/tillkommande.json och enheten genom verktyg/ordagrant.py. Elcentralen har VILLKORSTEXTER utan pris (Felix 29 oktober: 'svarare moment som inte kan prissattas utan gors som tillagg pa plats av elektriker'): namn och text, ingen siffra. Forsta versionen 29 oktober lade '245 kr per meter' i ett text-falt, och da provades ett PRIS som om det vore copy. verktyg/ordagrant.py sag det direkt: talet stod inte i mallens egna filer."
 }

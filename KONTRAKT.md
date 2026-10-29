@@ -62,9 +62,17 @@ leverans i de här fälten.** `prov.py` stoppar bygget om ett nytt dyker upp.
     "villkor_url":      "https://ampy.se/kopvillkor"
   },
 
-  "bokare": { "fornamn": "Rasmus" },
+  "kostnader_ingress": "Behövs mer än standardinstallationen kostar det exakt så här. Allt bekräftas och godkänns av dig innan arbetet utförs.",
+  "kostnader": [
+    { "namn": "Extra installationskabel, 22 kW", "belopp": 245,  "enhet": "per meter", "text": null },
+    { "namn": "Löpande arbete",                  "belopp": 850,  "enhet": "per påbörjad timme", "text": null },
+    { "namn": "Felsökning av jordfel.",          "belopp": null, "enhet": null, "text": "Vid installation av jordfelsbrytare kan ..." }
+  ],
+  "kostnader_fot": "Priserna är inklusive moms. Avdraget räknas som i offerten: grön teknik på laddpunkten, ROT på elcentralen.",
 
-  "steg": [],
+  "forberedelser": [
+    "Om du har valt lastbalansering som ansluts via elmätarens HAN-port behöver du ..."
+  ],
 
   "order": {
     "rubrik":      "Zaptec Go",
@@ -90,8 +98,10 @@ leverans i de här fälten.** `prov.py` stoppar bygget om ett nytt dyker upp.
 | `kontrakt_version` | heltal | ja | ingen rendering garanteras | CRM. Fem mallar som fyller samma objekt över tid måste kunna versionsstyras utan att gamla sparade bekräftelser slutar rendera. |
 | `priser_ar` | `"netto"` | ja | **inget belopp renderas alls**, inget kvitto, ingen prisrad | CRM. Fältet har **ingen default** med flit: det är exakt den tvetydigheten som gjorde att samma lilla elcentral kostade 5 990 kr på laddboxsidan och 4 552 kr på elcentralsidan. |
 | `offert` | objekt | ja | tomt objekt tolkas som allt saknas | CRM |
-| `bokare` | objekt | nej | steg 2 skrivs utan namn: "Vi ringer och bokar tid" | CRM |
-| `steg` | lista | nej | markupens godkända copy står kvar | mallen |
+| `kostnader` | lista | nej | **folden "Kostnader som kan tillkomma" visas inte alls** | mallen. Laddbox sju rader, batteri nio, elcentral tre villkorstexter utan pris. Service och tillägg: ingen. |
+| `kostnader_ingress` | sträng | folden står utan ingress | mallen |
+| `kostnader_fot` | sträng | folden står utan finstilt | mallen. Bara laddbox och batteri har en. |
+| `forberedelser` | lista med strängar | **folden "Vad behöver du göra före installationen?" visas inte alls** | mallen. Laddbox, elcentral och batteri. Service och tillägg: ingen. |
 | `order` | objekt | nej | ordersektionen visas inte alls | CRM |
 
 ### `offert`
@@ -108,40 +118,89 @@ leverans i de här fälten.** `prov.py` stoppar bygget om ett nytt dyker upp.
 | `accepterad` | sträng, ISO 8601, t.ex. `"2026-10-25"` | **ingen mening skrivs**. Aldrig en platshållare, aldrig ett gissat datum, och ordet "Accepterad" står inte där ensamt. | CRM, i det ögonblick kunden trycker acceptera. **ÄGARSVAR 46, 25 oktober: "Ja, lägg till datum."** Sidan skriver den svenska formen ("25 oktober 2026") ur ISO-datumet, så de fem mallarna inte kan visa fem former; `prov.py` skriver samma form själv i stället för att läsa sidans. Ett datum som inte finns i kalendern (2026-02-30) **stänger totalen**: ett kontrakt som har fel om datumet är ett kontrakt som har fel, och sidan väljer inte vilka fel den bryr sig om. **Ett acceptdatum drar inte med sig ett `giltig till`:** offerten har ingen giltighetstid (ägardirektiv 23 okt), och `prov.py` stoppar varje sida som skriver ett. |
 | `villkor_url` | URL | **ingen länk renderas, aldrig ett tomt `href`**, och villkorssektionen står kvar dold | CRM. `https://ampy.se/kopvillkor`, kontrollerad 19 okt, samma adress alla fem mallarna länkar till. Länktexten är deras, ordagrant: "Läs våra köpvillkor". **ÄGARENS GLOBALA NOTERING 25 OKTOBER:** länken ligger i en fold som heter **Villkor längst ner** på bekräftelsen, i samma form som offerternas egen villkorsfold (`offerter/tillagg/body.html` rad 60 till 67), inte längre i finstilten under raderna. På papper öppnas folden och adressen skrivs ut efter länken, så villkoren når papperet: en stängd fold döljer sitt innehåll genom `::details-content`, och det biter ingen display-regel på barnet. |
 
-### `bokare`
+### `bokare` och `steg` är BORTTAGNA, 29 oktober
 
-| Fält | Typ | Saknas, då | Fylls av |
-|---|---|---|---|
-| `fornamn` | sträng | steg 2 blir "Vi ringer och bokar tid" | mallen. Laddbox: Rasmus. Elcentral: Felix (`offerter/elcentral/offert.py` rad 56). Batteri: Rasmus. Service: Rasmus (`offerter/service/jobb.json` rad 31). Tillägg: **ingen**, elektrikern är på plats, och tilläggsmallens orakel stoppar bygget om Rasmus eller Felix står på sidan. **`[GAP]`** Elektrikerns namn finns inte i repot. |
+**ÄGARORDER 29 OKTOBER, ORDAGRANT:**
 
-**Platshållare får aldrig nå en kund.** Den publika spegeln bär i dag `[Bokare]` i hakparenteser
-på rad 46. Det är därför standardmeningen här är namnlös i stället för att vara en platshållare.
+> "SÅHÄR GÅR VI VIDARE och alla dess 1/2/3 steg och copy tar vi bort helt och hållet från
+> alla acceptera mallarna."
 
-### `steg`
+Beslutet togs i mötet samma dag. Ordagrant därifrån: *"de har ju accepterat offerten... Din
+offert är nu accepterad. Ja, men det kanske räcker."* Och skälet: *"för oss pingar det ju till
+så fort en offert är godkänd. Sen tar ju vi action på det. Jag tror inte många är så här, jaha,
+nu då. De kommer ju få en bokningsbekräftelse snart."*
 
-En lista med upp till tre poster som **skriver över** markupens godkända copy. En post är
-`null` när steget står som det är.
+Båda fälten fanns **bara** för stegremsan. `steg` skrev över stegens copy, och `bokare.fornamn`
+satte namnet i steg 2. Med remsan borta har de inget att fylla, och ett fält i ett kontrakt som
+ingenting läser är ett påstående om att något renderas.
+
+**En bekräftelse lovar inte en tid.** Det är bokningsbekräftelsens jobb, och den skickas ur
+CRM:et med datum, klockslag och elektrikerns namn. Sidan som säger "Rasmus ringer och bokar tid"
+ger ett löfte som ingen på Ampy har gett den dagen.
+
+`prov.py` vaktar åt andra hållet: `samma-mall` kräver att **ingen** av de fem har en steglista,
+och mutationen "29 okt, stegremsan tillbaka på en sida" bevisar att kravet faller. Kravet är
+alltså inte raderat utan vänt.
+
+Det som gick med dem: servicemallens två tal i steg 2 ("24 till 72 timmar"), som var de enda
+talen i remsan. `talen.py`-golvet följde med, från 30 till 28, och sedan upp till 44 när
+kostnadsfolden kom till.
+
+### `kostnader`, `kostnader_ingress`, `kostnader_fot`
+
+**ÄGARDOKUMENT 29 OKTOBER**, "Bokningsbekräftelse & Godkänd offert", ordagrant:
+
+> "Det vi behöver lägga till är ovanför villkor. **1: Kostnader som kan tillkomma (som en
+> dropdown) hämtas från offert mall laddbox.**"
+
+Folden ligger ovanför villkoren, i samma form som villkorsfolden. Innehållet kommer ur
+kontraktet och komponeras aldrig på sidan, för de fem mallarna säger olika saker.
 
 | Fält | Typ | Betyder |
 |---|---|---|
-| `rubrik` | sträng | ersätter stegets rubrik |
-| `under` | sträng eller `null` | ersätter underraden; `null` tar bort den |
-| `ta_bort` | `true` | tar bort hela steget, och de som står kvar numreras om |
+| `namn` | sträng | radens etikett, **ordagrant** ur offertmallen |
+| `belopp` | heltal eller `null` | priset. `null` betyder att raden är en **villkorstext utan pris** |
+| `enhet` | sträng eller `null` | "per meter", "per styck", "per påbörjad timme". Sidan skriver `kr(belopp) + " " + enhet` |
+| `text` | sträng eller `null` | meningen efter namnet, **bara** på villkorstexter |
 
-Varför fältet finns: "ringer och bokar tid" är **fel** på en tilläggsoffert där elektrikern
-redan står hos kunden. Tilläggsmallen gör redan bytet med en strängersättning och en regex
-(`offerter/tillagg/offert.py` rad 230 till 240). Med kontraktet behöver mall fyra och fem inte
-forka sidan.
+**Två former, för de två mallsorterna säger olika saker.** Laddbox och batteri har prissatta
+rader. Elcentralen har tre villkorstexter **utan pris**, på Felix besked 29 oktober: *"De ska
+ersättas med de nya texterna och har ingen fast prissättning som de tidigare då svårare moment
+som inte kan prissättas utan görs som tillägg på plats av elektriker."*
 
-> **Mätt mot uppdraget.** Påståendet "copyn *ringer och bokar tid* är fel när kunden betalat
-> för Express och tiden redan är överenskommen" **håller inte för Express**. Express är ett
-> tidsFÖNSTER, 24 till 72 timmar (`offerter/service/jobb.json` rad 59, `TID` i
-> `offerter/laddbox/skript.js` rad 10), inte en bokad tid. Samtalet ska alltså fortfarande
-> komma. Servicemallen skriver själv "Du har valt Express, 24 till 72 timmar. Vi hör av oss
-> för att boka tid." (`offerter/service/skript.js` rad 81), och det är den formuleringen
-> `exempel/service.json` använder: fönstret kunden betalat för namnges, samtalet lovas kvar.
-> Påståendet **håller för tilläggsofferten**, där elektrikern står i kundens hall, och där är
-> steg 2 utbytt och steg 3 borttaget.
+**Raden bär inget `avdrag`-fält och summeras aldrig.** Talen är styckpriser och villkor, inte
+poster i ordern. Ett belopp i ett fält som ser ut som `order.rader[]` hade bjudit in nästa
+läsare att räkna med det.
+
+**Varje `belopp` har en källa.** `verktyg/talen.py` slår upp det i
+`katalog/tillkommande.json#rader[namn=X].pris` i offertrepot vid varje körning, så ett pris som
+rör sig där gör det här provet rött. Första versionen 29 oktober lade "245 kr per meter" i ett
+`text`-fält, och då provades ett **pris** som om det vore copy; `verktyg/ordagrant.py` såg det
+direkt.
+
+**ÄGARDIREKTIV 29 OKTOBER:** priset för en bomkörning eller en ombokning skrivs aldrig där
+kunden ser det, bara i köpvillkoren.
+
+### `forberedelser`
+
+**ÄGARDOKUMENT 29 OKTOBER**, samma avsnitt:
+
+> "**2: Vad behöver du göra innan installationen?** Här vill vi sätta en standard för laddbox,
+> batteri och elcentral. Eftersom detta skiljer sig från produkt och offert."
+
+En lista med strängar, en per punkt, **ordagrant** ur ägarens dokument. Texten ligger i
+offertrepots `katalog/forberedelser.json` och är identisk tecken för tecken;
+`verktyg/ordagrant.py` kontrollerar det.
+
+**Listan är GLOBAL per produkt och villkoras inte av kundens val.** Ägarbeskedet i mötet, om
+laddboxen: *"den ska vara global. Den ska visas på alla oavsett vilken laddbox det är, oavsett
+om de har valt lastbalansering eller inte."* Därför börjar punkten om lastbalansering med "Om du
+har valt", vilket är ägarens egen formulering och lösningen på samma sak.
+
+**Laddbox, elcentral och batteri har den. Service och tillägg har ingen**, och då står
+sektionen kvar dold: en rubrik som lovar innehåll som inte finns är värre än ingen rubrik.
+`prov.py` kräver att sektionen är dold precis när fältet saknas, och mutationerna bevisar det
+åt båda håll.
 
 ### `order`
 
@@ -346,6 +405,14 @@ mall är lite annorlunda. Det jag hade sagt är att jag gillar servicemallen mes
 Orderbekräftelsen kommer inte att ha olika mallar. Det enda är ju tilläggsarbetet, eftersom
 'Så här går vi vidare' är annorlunda. Det är egentligen den enda skillnaden."*
 
+**UNDANTAGET FÖLL BORT 29 OKTOBER, och mätningen blev strängare av det.** Ägarordern samma dag
+tog bort stegremsan från alla fem. Fanns ingen steglista kvar finns inget att undanta, och
+ägarens egen mening blir sann **utan förbehåll**: alla fem sidorna är nu samma tecken, med noll
+undantag. `samma-mall` kräver dessutom att ingen av dem HAR en steglista, så kravet är vänt och
+inte raderat. De två nya foldarnas kroppar blankas som data, precis som `oaRader` och `oaIngar`:
+att de skiljer sig ÄR kontraktet. Att deras innehåll stämmer provas av `verktyg/ordagrant.py`
+och `verktyg/talen.py`.
+
 Det är ett påstående om **markup**, och det mäts därför i stället för att försäkras.
 `verktyg/samma-mall.py` tar varje byggd sida, blankar det som är DATA och jämför resten
 **tecken för tecken**:
@@ -449,8 +516,8 @@ offertrepots laddboxmotor.
 | `offert.titel` | | | | | "Ditt tillägg är nu accepterat!" |
 | `offert.referens` | 2026-0640 | 2026-0641 | 2026-0642 | 2026-0642 | `null` |
 | `ar_tillagg` / `moderreferens` | | | | | `true` / 2026-0640 |
-| `bokare.fornamn` | Rasmus | Felix | Rasmus | Rasmus | ingen |
-| `steg` | | | | steg 2 namnger tidsfönstret | steg 2 bytt, steg 3 borttaget |
+| `kostnader` | 7 prissatta rader | 3 villkorstexter utan pris | 9 prissatta rader | ingen | ingen |
+| `forberedelser` | 5 punkter | 2 punkter | 5 punkter | ingen | ingen |
 | `order.rubrik` | Zaptec Go | Elcentral + installation | SAJ HS3 | `null` | `null` |
 | `order.paket` | Paket Premium | storleken | lagringsstorleken | `null` | `null` |
 | `order.rader` | tillägg, mellanskillnad, intresseanmälan | tillägg | ö-drift | jobbet + tidsvalet | artiklarna |
@@ -475,11 +542,15 @@ offertrepots laddboxmotor.
    "inklusive moms". Frågan är dessutom tvetydig: ROT och grön teknik dras på det
    momsinklusive priset, så moms på brutto och moms på netto är två olika tal. Kontraktet har
    därför **inget momsfält**, och sidan säger bara "inkl. moms".
-6. **Bokare för batteri, service och tillägg.** Batteri och service pekar båda på Rasmus med
-   en notering om att namnet är en parameter per offert. Tillägget har ingen, och elektrikerns
-   namn finns inte i repot.
-7. **Är servicemallen planerat flöde eller akut eljour?** Styr steg 2 och 3. Är den
-   akutflödet lovar steg 3 ett lugnt schema till någon som har strömavbrott.
+6. ~~**Bokare för batteri, service och tillägg.**~~ **STÄNGD 29 oktober** när stegremsan togs
+   bort: det fanns ingen annan yta som namngav bokaren, så frågan har inget svar att ge.
+   Elektrikerns namn hör nu hemma i bokningsbekräftelsen, som skickas ur CRM:et.
+7. ~~**Är servicemallen planerat flöde eller akut eljour?**~~ **STÄNGD 29 oktober av samma
+   skäl**: frågan styrde steg 2 och 3, och de finns inte längre. Den kan komma tillbaka som en
+   fråga om bokningsbekräftelsens copy, men inte om den här sidan.
+7b. **Ska service som bokats ur en godkänd offert ha en egen förberedelsetext?** Ägardokumentet
+   29 oktober ger texter till laddbox, elcentral och batteri. Bokningsbekräftelsen gäller
+   också service som bokats ur en offert, och för den finns ingen text. `[GAP]`
 8. **Ö-driftens pott.** Byggd som grön teknik efter principen i ägarbeslut 11 (15 okt). Är
    den brutto utan avdrag ändras en rad i `exempel/batteri.json`.
 9. **Servicepriset 7 400 kr är ett exempel**, inte ett Ampy-pris

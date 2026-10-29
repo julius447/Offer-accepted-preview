@@ -22,7 +22,7 @@ tre sektioner som redan fanns.
 
 ```bash
 python3 bygg.py                 # bygger om fall/ ur index.html + exempel/
-python3 prov.py                 # oraklet: 690 kontroller
+python3 prov.py                 # oraklet: 766 kontroller
 python3 prov.py --snabb         # samma, utan webblasarproven och typmatningen
 python3 verktyg/samma-mall.py   # att de fem sidorna ar SAMMA markup, med en skillnad
 python3 verktyg/matt.py fall/laddbox.html 375        # sidledes scroll, träffytor
@@ -58,9 +58,14 @@ Sex punkter, alla byggda, alla mätta, var och en bevisad genom att defekten åt
    Global, alla fem. Länken står på ett ställe och `href` kommer ur kontraktet.
 4. **Kvittonoten under "Att betala"** säger *"inkl. moms, efter skattereduktion"*, utan
    parentes. Den är nu ord för ord offertrepots egen fasta text.
-5. **En mall, en skillnad.** De fem byggda sidorna har **identisk markup tecken för tecken**
-   utanför "Så här går vi vidare" och de namngivna datafacken, och exakt tilläggsmallens
-   steglista skiljer sig. Mätt av `verktyg/samma-mall.py`, se KONTRAKT.md §4b2.
+5. **En mall, INGEN skillnad** sedan 29 oktober. De fem byggda sidorna har **identisk markup
+   tecken för tecken** utanför de namngivna datafacken. Undantaget var tilläggsmallens
+   steglista, och ägarordern 29 oktober tog bort stegremsan från alla fem: nu kräver provet i
+   stället att ingen av dem HAR en steglista. Mätt av `verktyg/samma-mall.py`, se
+   KONTRAKT.md §4b2.
+5b. **Tre foldar, i ägardokumentets ordning:** kostnader, förberedelser, villkor. De två första
+   kom till 29 oktober och syns bara när kontraktet fyller dem; service och tillägg har ingen
+   av dem. Se KONTRAKT.md `kostnader` och `forberedelser`.
 6. **"Allt som ingår" är en ren punktlista** utan brödtext under punkterna. Fältet `spec`
    finns inte längre, och en post är en sträng.
 

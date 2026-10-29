@@ -180,15 +180,17 @@
   var platt = window.AMPY_OFFER;
 
   /* Det gamla platta objektet lever kvar: gemensamt/block/skarm-accept.html
-     fyller data-oa="offert.referens" och data-oa="bokare.namn" med det i dag.
-     Bär sidan ett kontrakt härleds de platta nycklarna ur det, så de två
-     vägarna inte kan säga olika. */
+     fyller data-oa="offert.referens" med det i dag. Bär sidan ett kontrakt
+     härleds de platta nycklarna ur det, så de två vägarna inte kan säga olika.
+     BOKARNAMNET ÄR BORTA HÄRIFRÅN 29 OKTOBER. Det fyllde data-oa="bokare.namn"
+     i acceptskärmens steg 2, och steg 2 finns inte längre på någondera ytan.
+     En härledning av ett fält som inte finns i kontraktet är ett tyst påstående
+     om att det gör det. */
   if (data && typeof data === 'object') {
-    var o = data.offert || {}, b = data.bokare || {};
+    var o = data.offert || {};
     platt = platt || {};
     if (platt['offert.referens'] == null && str(o.referens)) platt['offert.referens'] = str(o.referens);
     if (platt['offert.giltig_till_lang'] == null && str(o.giltig_till_lang)) platt['offert.giltig_till_lang'] = str(o.giltig_till_lang);
-    if (platt['bokare.namn'] == null && str(b.fornamn)) platt['bokare.namn'] = str(b.fornamn);
   }
 
   if (platt && typeof platt === 'object') {
@@ -206,7 +208,6 @@
 
   var offert = data.offert || {};
   var order  = data.order  || {};
-  var bokare = data.bokare || {};
 
   /* Felen samlas FRÅN FÖRSTA SEKTIONEN. Listan deklarerades tidigare nere vid
      ordern, och då hade ett fel i referensbrickan eller i acceptdatumet inte
@@ -247,43 +248,21 @@
     visa($('oaAccept'), true);
   }
 
-  /* ---- 2 · STEGEN -------------------------------------------------------
-     "ringer och bokar tid" är fel på ett tillägg där elektrikern redan står
-     hos kunden. Texterna kommer därför ur kontraktet, inte ur sidan. Saknas
-     de står markupens egna, som är den godkända copyn. Namnet sätts bara in
-     om det finns: [Bokare] i hakparenteser får aldrig nå en kund, och ett
-     namn vi inte har är ingen mening värd att skriva. */
-  var fornamn = str(bokare.fornamn);
-  if (fornamn) {
-    var s2 = root.querySelector('[data-oa-steg="2"]');
-    if (s2 && s2.textContent.indexOf('Vi ringer') === 0) {
-      s2.textContent = fornamn + ' ringer och bokar tid';
-    }
-  }
-  var steg = Array.isArray(data.steg) ? data.steg : [];
-  steg.forEach(function (st, i) {
-    if (!st || typeof st !== 'object') return;
-    var nr = String(i + 1);
-    var rub = root.querySelector('[data-oa-steg="' + nr + '"]');
-    var und = root.querySelector('[data-oa-steg-under="' + nr + '"]');
-    if (st.ta_bort === true) {
-      var li = rub && rub.closest('.oa__step');
-      if (li && li.parentNode) li.parentNode.removeChild(li);
-      return;
-    }
-    if (rub && str(st.rubrik)) rub.textContent = str(st.rubrik);
-    if (und) {
-      if (str(st.under)) und.textContent = str(st.under);
-      else if (st.under === null) und.remove();
-    }
-  });
-  /* Tas ett steg bort ska de som står kvar vara numrerade i ordning. Annars
-     läser kunden steg 1 och steg 3. */
-  var kvar = root.querySelectorAll('#oaSteps .oa__step');
-  Array.prototype.forEach.call(kvar, function (li, i) {
-    var sif = li.querySelector('.oa__node span');
-    if (sif && i > 0) sif.textContent = String(i + 1);
-  });
+  /* ---- 2 · STEGEN AR BORTTAGNA ----------------------------------------
+     AGARORDER 29 OKTOBER, ORDAGRANT: "SAHAR GAR VI VIDARE och alla dess
+     1/2/3 steg och copy tar vi bort helt och hallet fran alla acceptera
+     mallarna." Beslutet togs i motet samma dag: "de har ju accepterat
+     offerten... Din offert ar nu accepterad. Ja, men det kanske racker." Och
+     skalet: "for oss pingar det ju till sa fort en offert ar godkand. Sen tar
+     ju vi action pa det. De kommer ju fa en bokningsbekraftelse snart."
+
+     DET TOG MED SIG TVA KONTRAKTSFALT. `steg` fanns bara for att skriva om
+     stegen, och `bokare.fornamn` bara for att satta namnet i steg 2. Bada ar
+     ute ur KONTRAKT.md med datum. En bekraftelse far inte lova ett samtal,
+     en tid eller en ordning pa handelser: det ar bokningsbekraftelsens jobb,
+     och den skickas ur CRM:et.
+
+     prov.py vaktar at andra hallet, sa remsan inte kan komma tillbaka. */
 
   /* ---- 3 · ORDERN -------------------------------------------------------
      paket får vara null. Det är fallet service och tilläggsoffert: de har
@@ -460,6 +439,77 @@
   }
 
   visa($('oaOrder'), !!(poster.length || ingar.length || rubrik));
+
+  /* ---- 4b · KOSTNADER SOM KAN TILLKOMMA ---------------------------------
+     Agardokument 29 oktober: folden hamtas fran offertmallen och ligger
+     ovanfor villkoren. INNEHALLET KOMMER UR KONTRAKTET och komponeras inte
+     har, for de fem mallarna sager olika saker: laddboxen sju prissatta
+     rader, batteriet nio, elcentralen tre villkorstexter UTAN pris (Felix 29
+     okt: "svarare moment som inte kan prissattas utan gors som tillagg pa
+     plats av elektriker"), och service och tillagg ingen fold alls.
+
+     RADEN BAR INGET BELOPPSFALT, och det ar med flit. Ett tal i ett
+     belopp-falt hade bjudit in nasta lasare att summera det, och de har
+     talen ar styckpriser och villkor, inte poster i ordern. De ar text.
+
+     Agardirektiv 29 oktober: priset for en bomkorning eller ombokning skrivs
+     aldrig dar kunden ser det, bara i kopvillkoren. prov.py vaktar det. */
+  var kost = Array.isArray(data.kostnader) ? data.kostnader : null;
+  if (kost && kost.length) {
+    var kh = '';
+    var kIng = str(data.kostnader_ingress);
+    if (kIng) kh += '<p class="oa__fold-intro">' + txt(kIng) + '</p>';
+    /* TVA FORMER, for de tva mallsorterna sager olika saker.
+       PRISSATT RAD: namn till vanster, belopp plus enhet till hoger. Beloppet
+       formateras med sidans egen kr(), samma funktion som ordern anvander, sa
+       ett belopp inte kan skrivas pa tva satt pa samma sida.
+       VILLKORSTEXT: namn i fetstil och meningen efter, pa en rad som bryter.
+       Elcentralens tre rader har inget pris alls (Felix 29 okt: "svarare
+       moment som inte kan prissattas utan gors som tillagg pa plats"), och
+       ett tomt belopp far inte bli "0 kr". */
+    kh += '<ul class="oa__fold-lista">';
+    kost.forEach(function (r) {
+      if (!r || typeof r !== 'object') return;
+      var n = str(r.namn), x = str(r.text), e = str(r.enhet);
+      var b = (typeof r.belopp === 'number' && isFinite(r.belopp)) ? r.belopp : null;
+      if (!n && !x && b === null) return;
+      if (b !== null) {
+        kh += '<li><b>' + txt(n) + '</b><span>' + txt(kr(b) + (e ? ' ' + e : '')) + '</span></li>';
+      } else {
+        kh += '<li class="oa__fold-villkor"><b>' + txt(n) + '</b>'
+            + (x ? ' <span>' + txt(x) + '</span>' : '') + '</li>';
+      }
+    });
+    kh += '</ul>';
+    var kFot = str(data.kostnader_fot);
+    if (kFot) kh += '<p class="oa__fold-fot">' + txt(kFot) + '</p>';
+    $('oaKostnaderKropp').innerHTML = kh;
+    visa($('oaKostnader'), true);
+  }
+
+  /* ---- 4c · VAD BEHOVER DU GORA FORE INSTALLATIONEN ---------------------
+     Agardokument 29 oktober, avsnitt 2, och agarbesked i motet samma dag,
+     ordagrant: "den ska vara global. Den ska visas pa alla oavsett vilken
+     laddbox det ar, oavsett om de har valt lastbalansering eller inte."
+     Texten ar alltsa INTE villkorad av kundens val, och punkten om
+     lastbalansering borjar darfor med "Om du har valt", vilket ar agarens
+     egen formulering och losningen pa samma sak.
+
+     Dokumentet ger den till laddbox, elcentral och batteri. Service och
+     tillagg far ingen: saknas listan star sektionen kvar dold. */
+  var forb = Array.isArray(data.forberedelser) ? data.forberedelser : null;
+  if (forb && forb.length) {
+    var fh = '<ul class="oa__fold-lista oa__fold-lista--punkt">';
+    var n = 0;
+    forb.forEach(function (rad) {
+      var s = str(rad);
+      if (!s) return;
+      n++;
+      fh += '<li><span>' + txt(s) + '</span></li>';
+    });
+    fh += '</ul>';
+    if (n) { $('oaForberedKropp').innerHTML = fh; visa($('oaForbered'), true); }
+  }
 
   /* ---- 5 · VILLKOREN, I EN FOLD LÄNGST NER -----------------------------
      Ägarens ord 25 oktober, GLOBAL NOTERING: länken och "Läs våra

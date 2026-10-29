@@ -54,7 +54,7 @@
            rad 23 till 26, sa de tva kopiorna av skarmen inte drar isar.
            Ett tal, inte ett kort: raderna star i sin egen sektion under. -->
       <p class="oa__kvitto" id="oaKvitto">
-        <span class="oa__kvitto-rad"><span id="oaPaket">Att betala</span><b class="kr" id="oaTotal">8&nbsp;190&nbsp;kr</b></span>
+        <span class="oa__kvitto-rad"><span id="oaPaket">Att betala</span><b class="kr" id="oaTotal">9&nbsp;600&nbsp;kr</b></span>
         <span class="oa__kvitto-not" id="oaKvittoNot">inkl. moms, efter skattereduktion</span>
       </p>
     </section>
@@ -63,31 +63,47 @@
     <section class="oa__section oa__order" id="oaOrder">
       <h2 class="oa__eyebrow">Det här accepterade du</h2>
       <p class="oa__prod" id="oaProd"><b id="oaProdRubrik">Elcentral + installation</b><span id="oaProdUnder">Passar till lägenheter eller mindre hus, där centralen matar det som redan finns.</span></p>
-      <ul class="oa__rader" id="oaRader"><li class="oa__rad oa__rad--huvud"><span class="oa__rad-text">Liten</span><span class="oa__rad-pris kr">5&nbsp;990&nbsp;kr</span></li><li class="oa__rad"><span class="oa__rad-text">Överspänningsskydd<small>typ 2, i centralen</small></span><span class="oa__rad-pris kr">1&nbsp;200&nbsp;kr</span></li><li class="oa__rad"><span class="oa__rad-text">Extra dvärgbrytare<small>2 stycken, 500&nbsp;kr per styck, utöver det som ingår</small></span><span class="oa__rad-pris kr">1&nbsp;000&nbsp;kr</span></li></ul>
+      <ul class="oa__rader" id="oaRader"><li class="oa__rad oa__rad--huvud"><span class="oa__rad-text">Liten</span><span class="oa__rad-pris kr">5&nbsp;990&nbsp;kr</span></li><li class="oa__rad"><span class="oa__rad-text">Överspänningsskydd<small>typ 2, i centralen</small></span><span class="oa__rad-pris kr">3&nbsp;250&nbsp;kr</span></li><li class="oa__rad"><span class="oa__rad-text">Extra dvärgbrytare, C10&nbsp;A<small>2 stycken, 180&nbsp;kr per styck, utöver det som ingår</small></span><span class="oa__rad-pris kr">360&nbsp;kr</span></li></ul>
       <h3 class="oa__ingar-rubrik" id="oaIngarRubrik" hidden="">Allt som ingår</h3>
       <ul class="oa__ingar" id="oaIngar" hidden=""></ul>
       <p class="oa__fin" id="oaFin">inkl. moms, efter skattereduktion. Avdragen dras direkt på fakturan.</p>
     </section>
 
-    <!-- 3 · what happens next -->
-    <section class="oa__section">
-      <div class="oa__next">
-      <h2 class="oa__eyebrow">Så här går vi vidare</h2>
-      <ol class="oa__steps" id="oaSteps">
-        <li class="oa__step">
-          <span class="oa__node" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"></path></svg></span>
-          <span class="oa__step-text"><span data-oa-steg="1">Din accept är registrerad</span><small data-oa-steg-under="1">Klart, vi har tagit emot ditt godkännande.</small></span>
-        </li>
-        <li class="oa__step">
-          <span class="oa__node" aria-hidden="true"><span>2</span></span>
-          <span class="oa__step-text"><span data-oa-steg="2">Felix ringer och bokar tid</span><small data-oa-steg-under="2">Ni kommer överens om en tid som passar dig.</small></span>
-        </li>
-        <li class="oa__step">
-          <span class="oa__node" aria-hidden="true"><span>3</span></span>
-          <span class="oa__step-text"><span data-oa-steg="3">Ampys behöriga elektriker utför arbetet</span><small data-oa-steg-under="3">På avtalad tid, utan överraskningar</small></span>
-        </li>
-      </ol>
-      </div>
+    <!-- 3 · KOSTNADER SOM KAN TILLKOMMA, och 3b FORBEREDELSERNA.
+         AGARDOKUMENT 29 OKTOBER, "Bokningsbekraftelse & Godkand offert",
+         ordagrant: "Det vi behover lagga till ar ovanfor villkor. 1:
+         Kostnader som kan tillkomma (som en dropdown) hamtas fran offert
+         mall laddbox. 2: Vad behover du gora innan installationen? Har vill
+         vi satta en standard for laddbox, batteri och elcentral."
+         Ordningen ar darfor kostnader, forberedelser, villkor, och det ar
+         samma ordning acceptskarmen inne i offerten fick samma dag.
+
+         BADA KOMMER UR KONTRAKTET, inte ur markupen, och det ar inte en
+         formalitet: texterna skiljer sig mellan mallarna (laddbox har sju
+         prissatta rader, elcentralen tre villkorstexter utan pris, service
+         och tillagg ingen fold alls), och sidan komponerar ingenting at fem
+         mallar. Saknas listan star sektionen kvar dold, som villkoren gor
+         utan sin adress.
+
+         FORMEN AR VILLKORSFOLDENS, inte en ny: samma details.oa__fold, samma
+         pil, samma kropp. Tre folder i rad som ser olika ut hade lasts som
+         tre sorters innehall.
+
+         PA PAPPER OPPNAS DE, av samma skal som villkoren: en stangd fold
+         doljer sitt innehall med ::details-content, och det biter ingen
+         display-regel pa barnet. -->
+    <section class="oa__section oa__villkor" id="oaKostnader">
+      <details class="oa__fold">
+        <summary>Kostnader som kan tillkomma<svg class="oa__fold-pil" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+        <div class="oa__fold-kropp" id="oaKostnaderKropp"><p class="oa__fold-intro">Behövs mer än standardinstallationen tillkommer följande kostnader. Allt arbete och material bekräftas och godkänns av dig innan arbetet utförs.</p><ul class="oa__fold-lista"><li class="oa__fold-villkor"><b>Felsökning av jordfel.</b> <span>Vid installation av jordfelsbrytare kan befintliga fel i elanläggningen upptäckas. Felsökning och åtgärd av sådana fel ingår inte i offerten och debiteras separat.</span></li><li class="oa__fold-villkor"><b>Skadat eller för kort befintligt kablage.</b> <span>Byte, förlängning eller annan anpassning av kablage som inte kan återanvändas ingår inte i offerten och faktureras separat efter överenskommelse.</span></li><li class="oa__fold-villkor"><b>Seriekopplad inkommande matning.</b> <span>I vissa radhus och lägenheter kan inkommande matning vara seriekopplad mellan bostäder. Det är ovanligt, men kan förekomma. Om det upptäcks behöver fastighetsägare eller bostadsrättsförening samordna avstängning i berörda bostäder, och arbetet bokas om. Avgift för bomkörning och ombokning kan tillkomma enligt våra köpvillkor.</span></li></ul></div>
+      </details>
+    </section>
+
+    <section class="oa__section oa__villkor" id="oaForbered">
+      <details class="oa__fold">
+        <summary>Vad behöver du göra före installationen?<svg class="oa__fold-pil" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+        <div class="oa__fold-kropp" id="oaForberedKropp"><ul class="oa__fold-lista oa__fold-lista--punkt"><li><span>Se till att området vid elcentralen samt eventuell kabelväg är undanplockat och lätt åtkomligt.</span></li><li><span>I vissa lägenheter kan elmatningen vara seriekopplad, vilket innebär att flera bostäder kan påverkas av en avstängning. Om detta gäller din bostad behöver fastighetsägare, hyresvärd eller bostadsrättsförening avisera berörda grannar före arbetet. Vi kan inte alltid kontrollera detta i förväg. Är du osäker rekommenderar vi att du kontaktar din bostadsrättsförening, hyresvärd eller fastighetsskötare före installationsdagen.</span></li></ul></div>
+      </details>
     </section>
 
     <!-- 4 · VILLKOREN, I EN FOLD, LANGST NER.

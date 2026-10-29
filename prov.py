@@ -165,9 +165,21 @@ kolla("<form" not in index and "<button" not in index,
 # ett utdrag ur utskriftsregeln, och forsta versionen av den har kontrollen
 # raknade dem: tre <details> i en fil som har en. Samma mathal som sveptes
 # 24 oktober, dar en kontroll last den rATa markupen i stallet for sidan.
+# TRE FOLDAR SEDAN 29 OKTOBER, OCH DET AR EN BESTALLNING.
+# Agardokumentet samma dag: "Det vi behover lagga till ar ovanfor villkor.
+# 1: Kostnader som kan tillkomma (som en dropdown). 2: Vad behover du gora
+# innan installationen?" Kravet ar inte sankt utan preciserat: EXAKT tre
+# foldar, med EXAKT de har tre rubrikerna, i EXAKT den har ordningen. En
+# fjarde ar fortfarande ingen bestallning, och villkoren ska fortfarande
+# sta sist.
 _index_ren = re.sub(r"<!--.*?-->", " ", index, flags=re.S)
-kolla(_index_ren.count("<details") == 1 and _index_ren.count("<summary>Villkor") == 1,
-      "index.html har %d <details> och %d summary som heter Villkor, väntade 1 och 1."
+_FOLDAR = ["Kostnader som kan tillkomma", "Vad behöver du göra före installationen?", "Villkor"]
+_index_rub = [re.sub(r"<svg.*", "", s, flags=re.S).strip()
+              for s in re.findall(r"<summary>(.*?)</summary>", _index_ren, re.S)]
+kolla(_index_rub == _FOLDAR,
+      "index.html har foldarna %s, väntade %s i den ordningen." % (_index_rub, _FOLDAR))
+kolla(_index_ren.count("<details") == 3 and _index_ren.count("<summary>Villkor") == 1,
+      "index.html har %d <details> och %d summary som heter Villkor, väntade 3 och 1."
       % (_index_ren.count("<details"), _index_ren.count("<summary>Villkor")))
 # OCH INGEN LÄNKADRESS I MARKUPEN. href sätts av renderaren ur kontraktet:
 # ett tomt href i mallen är en trasig länk på varje sida som inte fylls.
@@ -483,26 +495,55 @@ for mall in MALLAR:
     # ---- VILLKOREN LIGGER I EN FOLD LÄNGST NER ---------------------------
     # Ägarens GLOBAL NOTERING 25 oktober. Fyra mått, för "det finns en
     # dropdown" är inte samma sak som "länken ligger i den".
+    # TRE FOLDAR, OCH VILLKOREN SIST. Kontrollen tog fram forsta <details>
+    # och provade den; sedan 29 oktober ar den forsta "Kostnader som kan
+    # tillkomma", sa den hade provat fel fold och sagt att folden heter fel.
+    # Den letar nu upp villkorsfolden PA SIN RUBRIK och kraver att den star
+    # sist, vilket ar det agaren faktiskt bad om ("langst ner").
     _ren = re.sub(r"<!--.*?-->", " ", html, flags=re.S)
-    kolla(_ren.count("<details") == 1 and _ren.count("<summary>") == 1,
-          "%s: sidan har %d <details> och %d <summary>, väntade 1 och 1."
-          % (mall, _ren.count("<details"), _ren.count("<summary>")))
-    _fold = re.search(r"<details[^>]*>(.*?)</details>", _ren, re.S)
-    kolla(bool(_fold) and _fold.group(1).lstrip().startswith("<summary>Villkor"),
-          "%s: folden heter inte Villkor." % mall)
-    kolla(bool(_fold) and "Läs våra köpvillkor" in _fold.group(1),
-          "%s: köpvillkorslänken ligger inte i folden." % mall)
+    _rub = [re.sub(r"<svg.*", "", s, flags=re.S).strip()
+            for s in re.findall(r"<summary>(.*?)</summary>", _ren, re.S)]
+    kolla(_rub == _FOLDAR,
+          "%s: sidan har foldarna %s, väntade %s i den ordningen." % (mall, _rub, _FOLDAR))
+    _foldar = re.findall(r"<details[^>]*>(.*?)</details>", _ren, re.S)
+    _fold = _foldar[-1] if _foldar else None
+    kolla(_fold is not None and _fold.lstrip().startswith("<summary>Villkor"),
+          "%s: sista folden heter inte Villkor." % mall)
+    kolla(_fold is not None and "Läs våra köpvillkor" in _fold,
+          "%s: köpvillkorslänken ligger inte i villkorsfolden." % mall)
+    # OCH DE TVA NYA FOLDARNA SYNS BARA NAR KONTRAKTET FYLLER DEM.
+    # Service och tillagg har ingen av dem (agardokumentet ger dem till
+    # laddbox, elcentral och batteri), och en rubrik som lovar innehall som
+    # inte finns ar varre an ingen rubrik.
+    for _id, _falt in (("oaKostnader", "kostnader"), ("oaForbered", "forberedelser")):
+        _sek = re.search(r'<section[^>]*id="%s"([^>]*)>' % _id, _ren)
+        _dold = bool(_sek) and "hidden" in _sek.group(1)
+        _har = bool(d.get(_falt))
+        kolla(bool(_sek) and _dold != _har,
+              "%s: sektionen %s är %s men kontraktet %s %s."
+              % (mall, _id, "dold" if _dold else "synlig",
+                 "har" if _har else "saknar", _falt))
     kolla(syn.count("Läs våra köpvillkor") == 1,
           "%s: 'Läs våra köpvillkor' står %d gånger, väntade 1. Länken flyttade till "
           "folden och ska inte stå kvar i finstilten också."
           % (mall, syn.count("Läs våra köpvillkor")))
     _url = d["offert"].get("villkor_url")
-    kolla(bool(_fold) and ('href="%s"' % _url) in _fold.group(1),
+    kolla(_fold is not None and ('href="%s"' % _url) in _fold,
           "%s: folden länkar inte till kontraktets villkor_url %r. Aldrig ett tomt href."
           % (mall, _url))
     # Och den ligger SIST bland kortets innehållsblock: under den står bara
     # avslutningen med telefonnumret, precis som offertens <footer class=
     # "o-fot"> står under villkorsfolden där.
+    # TRE SEKTIONER BAR NU .oa__villkor, sedan 29 oktober: kostnaderna,
+    # forberedelserna och villkoren delar form. Kontrollen tog [-2] och
+    # traffade da forberedelserna. Den ankrar nu pa SEKTIONENS ID, som sager
+    # vilken fold det ar, och kraver bade att villkoren ar nast sist och att
+    # de tre star i agardokumentets ordning.
+    _ids = re.findall(r'<section class="oa__section[^"]*" id="(oa\w+)"', _ren)
+    _foldids = [i for i in _ids if i in ("oaKostnader", "oaForbered", "oaVillkor")]
+    kolla(_foldids == ["oaKostnader", "oaForbered", "oaVillkor"],
+          "%s: foldsektionerna star som %s, väntade kostnader, förberedelser, villkor."
+          % (mall, _foldids))
     _sektioner = re.findall(r'<section class="oa__section([^"]*)"', _ren)
     kolla(len(_sektioner) >= 2 and " oa__villkor" in _sektioner[-2],
           "%s: villkorsfolden är inte näst sist bland sektionerna (%s). Den ska ligga "
@@ -960,7 +1001,16 @@ if NORDSTJARNA.exists():
     _n, _felt, _rakn = _talen.kor(NORDSTJARNA, tyst=True)
     for f in _felt:
         kolla(False, "talen: " + f)
-    kolla(_n >= 30, "talen: bara %d tal kontrollerade, väntade minst 30" % _n)
+    # GOLVET 30 -> 44, 29 OKTOBER, OCH DET GICK VIA 28.
+    # Golvet finns for att talprovet inte ska krympa i tysthet: en kontrakts-
+    # post som tas bort tar sin kontroll med sig. Tva saker hande samma dag.
+    # NED: agarordern tog bort stegremsan, och med den servicemallens tva tal
+    # i steg 2 ("24 till 72 timmar"). Tva tal farre var alltsa ratt.
+    # UPP: folden "Kostnader som kan tillkomma" kom till, och dess sexton
+    # prissatta rader ar tal kunden ser. ogonfalt() raknade bara order och sag
+    # dem inte; nu gor den det. Golvet star vid det faktiska talet, som det
+    # gjorde nar det skrevs.
+    kolla(_n >= 44, "talen: bara %d tal kontrollerade, väntade minst 44" % _n)
     kolla(_rakn["fil"] >= 20,
           "talen: bara %d operander slogs upp i offertrepots filer. Ett prov som bara "
           "jämför kontraktet mot sig självt är värdelöst." % _rakn["fil"])

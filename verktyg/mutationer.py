@@ -290,6 +290,21 @@ FALL = [
        '<h2 class="oa__eyebrow">Det här accepterade du</h2><p>Paket Premium</p>'),
   "order.paket.namn"),
 
+ # ---- KORTHOJDEN: K FAR INTE DRIFTA I TYSTHET ----------------------------
+ # styles.css fryser centreringen mot var(--oa-kort), som bygg.py mater och
+ # bakar in per sida. Det talet ar den enda delen av rattningen som kan bli
+ # fel UTAN att nagot annat gar sonder: andras kortets hojd och sidan inte
+ # byggs om star en gammal korthojd kvar. Bada mutationerna kraver den FULLA
+ # korningen, for grinden mater i webblasaren och ligger bakom --snabb.
+ ("korthojden driftar: designen andras utan att sidan byggs om",
+  text("styles.css", ".oa__card{\n  position:relative;",
+       ".oa__card{\n  padding-top:40px;\n  position:relative;"),
+  "har andrats utan att sidan byggts om", True),
+ ("korthojden driftar pa EN sida: innehall laggs till i den byggda filen",
+  text("fall/service.html", "  </main>",
+       '  <div style="height:60px"></div>\n  </main>'),
+  "bar --oa-kort", True),
+
  # ---- RORELSEN: BADA RIKTNINGARNA ----------------------------------------
  # Reglerna for prefers-reduced-motion fanns redan i styles.css. Provet som
  # vaktar dem ar nytt, och dessa tva visar att det faller bada vagarna.
@@ -330,9 +345,19 @@ for _post in FALL:
                            capture_output=True, text=True, env=MILJO)
         rader = [x.strip(" *") for x in r.stdout.split("\n") if vantat in x]
         ok = r.returncode != 0 and rader
-        print("  %-4s %-54s %s" % ("ROTT" if ok else "MISS", namn,
-              (" ".join(rader[0].split())[:120] if rader else
-               ("exit=%d, inget fel om %r" % (r.returncode, vantat)))))
+        # EN MISS SOM INTE SAGER VARFOR AR SJALV ETT MATFEL.
+        # Uppmatt 31 oktober: en mutation rapporterade MISS tva korningar i
+        # rad medan samma mutation kord for hand blev ROD pa sex sidor. Utan
+        # stderr i raden gick det inte att skilja "oraklet slapp forbi" fran
+        # "prov.py dog innan det hann dit", och det ar tre tillstand och inte
+        # tva: inget svar, avhugget svar, oraklet slapp forbi.
+        _varfor = (" ".join(rader[0].split())[:120] if rader else
+                   ("exit=%d, inget fel om %r%s" % (
+                       r.returncode, vantat,
+                       "  | STDERR: " + " ".join(r.stderr.split())[:160]
+                       if r.stderr.strip() else
+                       "  | stderr tomt, stdout %d tecken" % len(r.stdout))))
+        print("  %-4s %-54s %s" % ("ROTT" if ok else "MISS", namn, _varfor))
         trasigt += 0 if ok else 1
     finally:
         for i, fil in enumerate(filer):

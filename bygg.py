@@ -35,6 +35,127 @@ MALLAR = ["laddbox", "elcentral", "batteri", "service", "tillagg"]
 # for vad varje provfall provar och varifran dess provvarde kommer.
 PROVFALL = ["prov-acceptdatum"]
 
+# K: KORTETS STANGDA HOJD, MATT AV BYGGET OCH BAKAD IN I SIDAN.
+# Varfor den finns: styles.css centrerar kortet med
+#   padding-top:max(husets padding, calc((100dvh - var(--oa-kort))/2))
+# i stallet for justify-content:center. Centreringen beror da pa vyporten och
+# ett FRUSET matt, inte pa kortets aktuella hojd, sa den rakas inte om nar en
+# fold vaxer. Uppmatt 31 oktober: med justify-content:center flyttade sig
+# kortets topp -30 till -214 px nar en fold oppnades pa en skarm hogre an
+# kortet; med den har raden 0,0 px pa fem mallar och sju vyporter, och
+# vilopositionen ar oforandrad (varsta avvikelse 0,2 px, subpixelavrundning).
+#
+# INGET FALLBACK-VARDE. Gar matningen inte igenom VAGRAR bygget, for ett
+# fallback ar ett handhallet tal i forkladnad och det ar precis det talet som
+# ska bort. prov.py kraver dessutom att det inbakade talet ar lika med ett
+# FARSKT matt ur samma funktion, sa K inte kan drifta i tysthet.
+#
+# REFERENSVYPORTEN. Korthojden beror pa BREDDEN (laddbox: 1174,7 px vid 768,
+# 1222,8 vid 1180, 1268,3 vid 375 - uppmatt). Ett enda K kan darfor inte vara
+# exakt vid varje bredd. Det ar inte ett problem for SKIFTET, som ar 0,0 for
+# vilket konstant K som helst, bara for vilopositionen: och centreringen
+# engagerar bara nar vyporten ar hogre an kortet, vilket i praktiken bara
+# hander i det breda bandet (1180 till 1440, dar korthojden ror sig 8 px).
+# Smalare an sa ar kortet alltid hogre an skarmen och golvet vinner.
+REF_BREDD, REF_HOJD = 1180, 1440
+
+MATT_SKRIPT = """<script id="oaMatt">
+(function(){
+  var oa=document.querySelector('.oa'), k=document.querySelector('.oa__card');
+  if(!oa||!k) return;
+  /* STANGDA folder. Matet ar kortets VILOHOJD; en oppen fold hade bakat in
+     ett K som ar hogre an sidan nagon kund ser. */
+  document.querySelectorAll('.oa__fold').forEach(function(f){ f.open=false; });
+  function skriv(){
+    var h=k.getBoundingClientRect().height;
+    if(!isFinite(h)||h<=0) return;      /* ingen siffra ar battre an en falsk */
+    oa.style.setProperty('--oa-kort', h.toFixed(1)+'px');
+  }
+  /* FONTERNA MASTE VARA INNE. Inter ar sjalvhostad, och matt pa
+     fallback-metrik blir korthojden ett annat tal an den kunden far. */
+  if(document.fonts&&document.fonts.ready){document.fonts.ready.then(skriv);}else{skriv();}
+})();
+</script>"""
+
+
+def _chrome(sida, namn="_bygg", katalog=None):
+    """EN Chrome-start, EN uppsattning flaggor. Bade bygget och K-grinden i
+    prov.py gar genom den har funktionen: matte de pa tva olika satt vore
+    grinden brus i stallet for ett prov. --hide-scrollbars ar med for att en
+    klassisk rullist tar ~15 px av bredden och darmed ANDRAR korthojden.
+
+    Chrome kors med EGEN --user-data-dir och dodas med sin EGEN process-grupp.
+    Ror aldrig andra Chrome-processer: pkill "Google Chrome" stanger
+    anvandarens riktiga webblasare med alla flikar."""
+    TMP.mkdir(exist_ok=True)
+    # Provfilen MÅSTE ligga i reporoten. Låg den i .tmp/ pekade sidans egna
+    # relativa src="script.js" och href="styles.css" på .tmp/script.js, som
+    # inte finns: Chrome laddade alltså varken renderaren eller stilarna och
+    # dumpade en sida där ingenting var fyllt, utan ett enda felmeddelande.
+    # KATALOGEN AR INTE EN SMAKSAK. Sidans egna relativa lankar loses mot
+    # filens katalog: index.html pekar pa "styles.css" och maste darfor ligga
+    # i reporoten, medan en FARDIG fall/-sida pekar pa "../styles.css" och
+    # maste ligga i fall/. Uppmatt 31 oktober: en fardig sida kopierad till
+    # reporoten loste ../styles.css utanfor repot, laddade ingen CSS, och
+    # kortet mattes till 10 073,7 px. Rimlighetsspaerren i las_kort fangade
+    # det; utan den hade det talet bakats in som K.
+    prov = (katalog or HAR) / ("%s-%d.html" % (namn, time.time_ns()))
+    prov.write_text(sida, encoding="utf-8")
+    profil = TMP / ("cr-%d" % time.time_ns())
+    cmd = [CHROME, "--headless=new", "--disable-gpu", "--no-sandbox",
+           "--allow-file-access-from-files", "--force-prefers-reduced-motion",
+           "--hide-scrollbars",
+           "--window-size=%d,%d" % (REF_BREDD, REF_HOJD),
+           "--user-data-dir=" + str(profil), "--virtual-time-budget=6000",
+           "--dump-dom", "file://" + str(prov)]
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                         start_new_session=True)
+    try:
+        # 90 -> 180 SEKUNDER, 31 OKTOBER, OCH SKALET AR MATT.
+        # K-grinden lade sex Chrome-starter till den fulla prov.py och
+        # rorelseprovet tva. Vid 90 s foll en korning av mutationer.py pa en
+        # TIMEOUT och rapporterade MISS pa en mutation som vid omkorning blev
+        # ROD pa alla sex sidorna med +40,00 px. En hangning ar INGET SVAR och
+        # inte ett fynd; ett prov som inte kan skilja dem pa ar vardelost.
+        ut, _ = p.communicate(timeout=180)
+    except subprocess.TimeoutExpired:
+        os.killpg(os.getpgid(p.pid), signal.SIGKILL)   # BARA min egen grupp
+        raise SystemExit("Chrome svarade inte på 180 sekunder. Det ar INGET SVAR, "
+                         "inte ett matvarde: kor om innan du tror pa ett MISS.")
+    finally:
+        prov.unlink(missing_ok=True)
+        subprocess.run(["rm", "-rf", str(profil)], check=False)
+    return ut.decode("utf-8")
+
+
+def las_kort(dom, var):
+    """K ur en sida, som float. Inget fallback: saknas talet, eller ar det
+    orimligt, VAGRAR anroparen."""
+    m = re.search(r'<div class="oa"[^>]*style="[^"]*--oa-kort:\s*([\d.]+)px', dom)
+    if not m:
+        raise SystemExit("%s: korthojden (--oa-kort) star INTE i sidan. Matningen i "
+                         "MATT_SKRIPT gick inte igenom, och bygget skriver ingen sida "
+                         "med ett gissat varde." % var)
+    k = float(m.group(1))
+    if not (300.0 < k < 5000.0):
+        raise SystemExit("%s: korthojden mattes till %.1f px, vilket inte ar en sida. "
+                         "Ett tal som ar fel ar varre an inget tal." % (var, k))
+    return k
+
+
+def mat_kort(sida_html, var="sidan"):
+    """Korthojden for en FARDIG sida (fall/<mall>.html). Samma Chrome, samma
+    flaggor, samma matskript som bygget: prov.py kan darfor jamfora det
+    inbakade talet med ett farskt matt och lita pa skillnaden."""
+    if "</body>" not in sida_html:
+        raise SystemExit("%s: hittar inte </body> att mata i" % var)
+    # Sidans egen inbakade stil tas bort forst, sa matningen inte laser sitt
+    # eget svar: ett orakel som matar sig med facit i hand provar ingenting.
+    rensad = re.sub(r'(<div class="oa"[^>]*style="[^"]*)--oa-kort:\s*[\d.]+px;?',
+                    r"\1", sida_html)
+    return las_kort(_chrome(rensad.replace("</body>", MATT_SKRIPT + "</body>"),
+                            "_k", HAR / "fall"), var)
+
 
 def rendera(kontrakt_fil):
     """index.html + kontraktet, kört i Chrome, DOM:en tillbaka som text."""
@@ -45,30 +166,18 @@ def rendera(kontrakt_fil):
         raise SystemExit("index.html: hittar inte script-taggen att injicera före")
     injektion = ('<script id="oaKontrakt">window.AMPY_ORDER=%s;</script>\n'
                  % json.dumps(data, ensure_ascii=False))
-    sida = index.replace(nyckel, injektion + nyckel)
-
-    TMP.mkdir(exist_ok=True)
-    # Provfilen MÅSTE ligga i reporoten. Låg den i .tmp/ pekade sidans egna
-    # relativa src="script.js" och href="styles.css" på .tmp/script.js, som
-    # inte finns: Chrome laddade alltså varken renderaren eller stilarna och
-    # dumpade en sida där ingenting var fyllt, utan ett enda felmeddelande.
-    prov = HAR / ("_bygg-%d.html" % time.time_ns())
-    prov.write_text(sida, encoding="utf-8")
-    profil = TMP / ("cr-%d" % time.time_ns())
-    cmd = [CHROME, "--headless=new", "--disable-gpu", "--no-sandbox",
-           "--allow-file-access-from-files", "--force-prefers-reduced-motion",
-           "--user-data-dir=" + str(profil), "--virtual-time-budget=6000",
-           "--dump-dom", "file://" + str(prov)]
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-                         start_new_session=True)
-    try:
-        ut, _ = p.communicate(timeout=90)
-    except subprocess.TimeoutExpired:
-        os.killpg(os.getpgid(p.pid), signal.SIGKILL)   # BARA min egen grupp
-        raise SystemExit("Chrome svarade inte på 90 sekunder")
-    finally:
-        prov.unlink(missing_ok=True)
-    return ut.decode("utf-8")
+    # MATSKRIPTET LIGGER SIST, efter script.js: det ar en synkron IIFE som
+    # renderar vid parsning, sa kortet ar fyllt nar matningen kor.
+    sida = index.replace(nyckel, injektion + nyckel).replace(
+        "</body>", MATT_SKRIPT + "</body>")
+    dom = _chrome(sida)
+    dom, n = re.subn(r'<script id="oaMatt">.*?</script>\s*', "", dom, flags=re.S)
+    if n != 1:
+        raise SystemExit("bygget: matskriptet stod %d ganger i dumpen, vantade 1. "
+                         "Utan det bakas ingen korthojd in, och utan korthojd "
+                         "centreras sidan inte." % n)
+    las_kort(dom, kontrakt_fil.name)      # VAGRAR har om talet saknas
+    return dom
 
 
 def stada(dom, mall, kontrakt_fil):
@@ -81,6 +190,10 @@ def stada(dom, mall, kontrakt_fil):
                          % (mall, n1, n2))
     if "<script" in dom:
         raise SystemExit("%s: det står JavaScript kvar i den byggda sidan" % mall)
+    # OCH KORTHOJDEN STAR KVAR. Sidan som skrivs till fall/ ar statisk och har
+    # ingen JavaScript som kan rakna om den: star inte talet dar faller
+    # padding-top tillbaka till initialvardet 0 och sidan tappar sin toppspalt.
+    las_kort(dom, mall)
     # BYGGET SKRIVER ALDRIG EN SIDA RENDERAREN FLAGGAT.
     # Sidan STANGER vid ett fel i kontraktet: den visar inget totalbelopp och
     # satter data-oa-fel pa .oa. Men en stangd sida ar fortfarande en sida,

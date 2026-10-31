@@ -83,8 +83,32 @@
 
   position:relative; z-index:0;
   min-height:100vh; min-height:100dvh;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-start;
   gap:var(--s4); padding:clamp(var(--s6),5vw,var(--s8)) clamp(var(--s4),calc(1.25vw + var(--s3)),var(--s5));
+  /* CENTRERINGEN AR FRUSEN, OCH DET AR HELA POANGEN.
+     justify-content:center stod har till 31 oktober och raknade om sig vid
+     VARJE hojdandring: oppnade kunden en fold krympte den fria ytan och
+     kortets topp vandrade uppat. Uppmatt pa fem mallar och sju vyporter:
+     -30,0 till -214,2 px, alltsa agarens "allting expanderar over en".
+     Raden nedan ger samma viloposition men laser ett FRUSET matt i stallet
+     for kortets aktuella hojd, sa det finns ingenting att rakna om:
+       dagens topp = max(husets padding, (100dvh - korthojden) / 2)
+     och det ar exakt uttrycket. --oa-kort bakas in per sida av bygg.py, som
+     mater kortets stangda hojd i webblasaren; prov.py kraver att talet ar
+     lika med ett farskt matt, sa det inte kan drifta nar innehallet andras.
+     Uppmatt efterat: 0,0 px skifte pa alla 35 cellerna, och vilopositionen
+     oforandrad - varsta avvikelse 0,2 px, vilket ar subpixelavrundning.
+     TRE KANDIDATER SOM INTE DUGDE, alla uppmatta samma dag:
+       margin-block:auto pa kortet suger upp fri yta precis som
+         justify-content:center och gav IDENTISKA tal, alltsa en nollatgard;
+       justify-content:safe center likasa - "safe" biter bara vid NEGATIV
+         fri yta, och behallaren har min-height, sa det hander aldrig har;
+       justify-content:flex-start utan toppspalt star still men flyttar
+         vilopositionen upp till 284 px, och padding-block:clamp(.,8dvh,.)
+         upp till 247 px OCH 33 px pa mobilen dar ingen bugg fanns.
+     GOLVET AR HUSETS EGET clamp, inte ett tal: ett hardkodat 59px flyttade
+     mobilen 27 px i den forsta matningen. */
+  padding-top:max(clamp(var(--s6),5vw,var(--s8)), calc((100dvh - var(--oa-kort))/2));
   overflow:hidden; box-sizing:border-box;
   /* Samma stack som gemensamt/system.css rad 599, med Inter först. */
   font-family:"Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;

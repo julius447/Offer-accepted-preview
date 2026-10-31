@@ -65,12 +65,21 @@ DATA_FACK = ["oaTitel", "oaRefEtikett", "oaRefNr", "oaAcceptDatum",
 # oaRader och oaIngar redan har, och samma fel de en gang hade.
 FACK_MED_MARKUP = [("oaKostnaderKropp", "</div>"), ("oaForberedKropp", "</div>")]
 
+# OCH KORTHOJDEN, TILLAGD 31 OKTOBER. --oa-kort bakas in pa .oa av bygg.py och
+# ar ett MATT pa just den har sidans kort: 914,0 px pa tillagget, 1 280,1 pa
+# servicen. Att de skiljer sig AR kontraktet, pa exakt samma satt som oaTotal
+# skiljer sig, och inte tva mallar. Att talet ar RATT provas av K-grinden i
+# prov.py, som mater kortet farskt och jamfor; den har mataren provar struktur
+# och ska darfor inte se talet. Blankades det INTE rapporterade provet alla
+# fyra jamforelserna som "olika markup", alltsa ett matfel och inte ett fynd.
+
 
 def dela(html):
     """(skelettet utanför stegen, steglistans skelett)."""
     s = re.sub(r"<!-- BYGGD FIL.*?-->\n", "", html, flags=re.S)
     s = re.sub(r"<title>.*?</title>", "<title>DATA</title>", s, flags=re.S)
     s = s.replace(' hidden=""', "")
+    s = re.sub(r'(--oa-kort:\s*)[\d.]+px', r"\1DATA", s)
     for fack in DATA_FACK:
         s = re.sub(r'(id="%s"[^>]*>).*?(</)' % fack, r"\1DATA\2", s, flags=re.S)
     for fack, slut in FACK_MED_MARKUP:

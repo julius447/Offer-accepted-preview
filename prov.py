@@ -746,7 +746,15 @@ if _pf_k.exists() and _pf_h.exists():
     #    en sträng som laddboxsidan inte redan visar.
     import difflib as _difflib
     def _utan_huvud(h):
-        return re.sub(r"<!-- BYGGD FIL.*?-->\n", "", h, flags=re.S).split("\n")
+        h = re.sub(r"<!-- BYGGD FIL.*?-->\n", "", h, flags=re.S)
+        # KORTHOJDEN NORMALISERAS BORT, och det ar inte en uppmjukning.
+        # Provfallets kort ar 1 250,8 px mot laddboxens 1 222,8: acceptraden
+        # ar 28 px hog. Skillnaden ar alltsa en FOLJD av den enda mekanism
+        # provfallet visar, inte en andra nyttolast, och kravet star kvar vid
+        # TVA rader i stallet for att mjukas upp till fyra. Att provfallets
+        # egen korthojd ar ratt provas av K-grinden, som tacker det ocksa.
+        h = re.sub(r'(--oa-kort:\s*)[\d.]+px', r"\1DATA", h)
+        return h.split("\n")
     _d = [l for l in _difflib.unified_diff(
             _utan_huvud((HAR / "fall" / "laddbox.html").read_text(encoding="utf-8")),
             _utan_huvud(_pf_h.read_text(encoding="utf-8")),
@@ -958,6 +966,49 @@ kolla(any(sel.endswith(".oa__card") and px == 540 for _, sel, _, px in _langder)
       "styles.css: mätaren hittade inte .oa__card max-width 540px, alltså läser den fel")
 kolla(len(_langder) >= 20,
       "styles.css: mätaren hittade bara %d längder, väntade minst 20" % len(_langder))
+
+# INVARIANT 3a. KORTHOJDEN I SIDAN AR SIDANS EGEN, OCH KAN INTE DRIFTA.
+# styles.css fryser centreringen med
+#   padding-top:max(husets padding, calc((100dvh - var(--oa-kort))/2))
+# och --oa-kort bakas in per sida av bygg.py. Det talet ar den enda delen av
+# rattningen som kan bli FEL i tysthet: andrar nagon kortets innehall utan
+# att bygga om star en gammal korthojd kvar, och sidan centreras efter en
+# sida som inte finns langre. Toppen STAR fortfarande still - skiftet ar 0,0
+# for vilket konstant K som helst - men vilopositionen blir fel.
+#
+# GRINDEN MATER FARSKT genom bygg.mat_kort(), alltsa SAMMA funktion, samma
+# Chrome och samma flaggor som bygget bakade med. Matte de pa tva olika satt
+# vore skillnaden brus i stallet for ett prov.
+#
+# TOLERANSEN 0,5 PX, OCH DEN AR SKRIVEN FOR ATT DEN AR VALD:
+# matskriptet bakar in med toFixed(1), sa 0,05 px avrundning ar inbyggd.
+# 0,5 ar tio ganger det, och samtidigt langt under den minsta verkliga
+# innehallsandringen - en listpunkt ar ~24 px, en textrad ~20 px - sa grinden
+# slapper avrundning och fangar allt som ar en riktig andring. Uppmatt
+# 31 oktober: samma sida matt tre ganger gav 0,00 px spridning, och alla sex
+# sidorna matte +0,00 px mot sitt inbakade tal.
+if "--snabb" not in sys.argv:
+    import bygg as _bygg_k
+    K_TOLERANS = 0.5
+    for mall in MALLAR + ["prov-acceptdatum"]:
+        _f = HAR / "fall" / (mall + ".html")
+        if not _f.exists():
+            kolla(False, "korthojd: %s saknas" % _f)
+            continue
+        _t = _f.read_text(encoding="utf-8")
+        _m = re.search(r'<div class="oa"[^>]*style="[^"]*--oa-kort:\s*([\d.]+)px', _t)
+        kolla(bool(_m),
+              "korthojd: %s bar ingen --oa-kort. Utan den ar padding-top ogiltig vid "
+              "berakningen och sidan tappar sin toppspalt helt." % mall)
+        if not _m:
+            continue
+        _bakat = float(_m.group(1))
+        _farskt = _bygg_k.mat_kort(_t, mall)
+        kolla(abs(_farskt - _bakat) <= K_TOLERANS,
+              "korthojd: %s bar --oa-kort %.1f px men kortet mater %.1f px (%+.2f, "
+              "tolerans %.1f). Innehallet har andrats utan att sidan byggts om, och "
+              "centreringen utgar fran en sida som inte finns langre. Kor python3 "
+              "bygg.py." % (mall, _bakat, _farskt, _farskt - _bakat, K_TOLERANS))
 
 # INVARIANT 3b. RORELSEN GAR AV NAR ANVANDAREN BETT OM DET - OCH PA NAR HAN
 # INTE HAR. Raderna i styles.css rad 332 till 344 fanns redan; det har provet

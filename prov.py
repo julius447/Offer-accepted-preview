@@ -389,14 +389,31 @@ for mall in MALLAR:
     kort, hel = pottrad(potter)
     kolla(html.count('<span class="oa__kvitto-not" id="oaKvittoNot">%s</span>' % kort) == 1,
           "%s: kvittonoten säger inte %r" % (mall, kort))
-    kolla(hel in syn, "%s: finstilten säger inte %r" % (mall, hel))
-    # EN MENING OCH INGENTING MER UNDER RADERNA. Ägarens "enbart" 25 okt.
-    # Mätt mot elementets hela innehåll, inte med ett "finns i": en andra
-    # mening inskriven efter den rätta hade annars passerat.
-    _fin = re.search(r'<p class="oa__fin" id="oaFin"[^>]*>(.*?)</p>', html, re.S)
-    kolla(bool(_fin) and " ".join(_fin.group(1).split()) == hel,
-          "%s: finstilten står som %r, väntade exakt %r"
-          % (mall, " ".join(_fin.group(1).split()) if _fin else None, hel))
+    # FINSTILTEN UNDER RADERNA AR BORTTAGEN 31 OKTOBER, AGARORDER: forlagan
+    # (gemensamt/block/skarm-accept.html) bar villkoret EN gang, som
+    # kvittorutans egen not, och hedging-direktivet 2026-08-15 sager just EN
+    # gang. Har stod den pa TVA stallen. De tva kontrollerna som kravde
+    # hel-formen i elementet oaFin ar darfor pensionerade, och raden ovan -
+    # att kvittonoten sager kort-formen EXAKT en gang - ar den som haller.
+    # [GAP] Satsen "Avdragen dras direkt pa fakturan." foll darmed bort fran
+    # sidan helt. Den ar agargodkand och finns kvar i pottrad(), sa den kan
+    # laggas tillbaka; tills agaren sagt till star sidan utan den.
+    kolla('id="oaFin"' not in html,
+          "%s: elementet oaFin har kommit tillbaka. Finstilten under raderna togs "
+          "bort 31 oktober och villkoret star i kvittonoten; tva stallen blir tva "
+          "sanningar om samma mening." % mall)
+    # OCH PRODUKTRADEN AR BORTA. Falten order.rubrik och order.underrubrik star
+    # kvar i kontraktet med sin proveniens, av samma skal som
+    # offert.giltig_till_lang, och KONTRAKT.md pastar att prov.py kraver att
+    # ingen sida skriver dem. Det pastaendet var OSANT tills den har raden kom:
+    # enda stallet order.rubrik lastes var tillaggsmallens egen kontroll.
+    # MATT PA MARKUPEN och inte pa texten med flit: "SAJ HS3" ar batteriets
+    # order.rubrik OCH en radtext pa laddboxsidan, sa en textsokning hade
+    # stoppat en sida som var hel.
+    for _pid in ("oaProd", "oaProdRubrik", "oaProdUnder", "oaOrder", "oa__eyebrow"):
+        kolla(('id="%s"' % _pid) not in html and ('class="%s"' % _pid) not in html,
+              "%s: %s har kommit tillbaka. Produktraden, ordersektionen och ogonbrynet "
+              "togs bort 31 oktober pa agarorder: forlagan har dem inte." % (mall, _pid))
 
     # ---- INVARIANT 1. ETT BELOPP BRYTS ALDRIG MITT ITU. -------------------
     # Ägarbeslut A8, 24 oktober: hårdspatie (U+00A0) BÅDE som
@@ -515,12 +532,15 @@ for mall in MALLAR:
     # Service och tillagg har ingen av dem (agardokumentet ger dem till
     # laddbox, elcentral och batteri), och en rubrik som lovar innehall som
     # inte finns ar varre an ingen rubrik.
+    # FOLDARNA AR <details> I EN SEKTION SEDAN 31 OKTOBER, inte tre egna
+    # sektioner. Kontrollen laste <section id="oaKostnader"> och hittade
+    # ingenting, vilket gav "sektionen ar synlig" om en fold som var dold.
     for _id, _falt in (("oaKostnader", "kostnader"), ("oaForbered", "forberedelser")):
-        _sek = re.search(r'<section[^>]*id="%s"([^>]*)>' % _id, _ren)
+        _sek = re.search(r'<details[^>]*id="%s"([^>]*)>' % _id, _ren)
         _dold = bool(_sek) and "hidden" in _sek.group(1)
         _har = bool(d.get(_falt))
         kolla(bool(_sek) and _dold != _har,
-              "%s: sektionen %s är %s men kontraktet %s %s."
+              "%s: folden %s är %s men kontraktet %s %s."
               % (mall, _id, "dold" if _dold else "synlig",
                  "har" if _har else "saknar", _falt))
     kolla(syn.count("Läs våra köpvillkor") == 1,
@@ -534,20 +554,28 @@ for mall in MALLAR:
     # Och den ligger SIST bland kortets innehållsblock: under den står bara
     # avslutningen med telefonnumret, precis som offertens <footer class=
     # "o-fot"> står under villkorsfolden där.
-    # TRE SEKTIONER BAR NU .oa__villkor, sedan 29 oktober: kostnaderna,
-    # forberedelserna och villkoren delar form. Kontrollen tog [-2] och
-    # traffade da forberedelserna. Den ankrar nu pa SEKTIONENS ID, som sager
-    # vilken fold det ar, och kraver bade att villkoren ar nast sist och att
-    # de tre star i agardokumentets ordning.
-    _ids = re.findall(r'<section class="oa__section[^"]*" id="(oa\w+)"', _ren)
-    _foldids = [i for i in _ids if i in ("oaKostnader", "oaForbered", "oaVillkor")]
+    # EN SEKTION FOR FOLDARNA SEDAN 31 OKTOBER, agarorder: forlagan har
+    # section.oa__folds#oaFolds. Har lag de i tre .oa__villkor-sektioner.
+    # Kravet ar oforandrat i SAK - kostnader, forberedelser, villkor i den
+    # ordningen, och villkoren sist - men mats nu pa <details>-ordningen
+    # inne i sektionen i stallet for pa sektionsordningen.
+    _foldids = re.findall(r'<details[^>]*id="(oa\w+)"', _ren)
     kolla(_foldids == ["oaKostnader", "oaForbered", "oaVillkor"],
-          "%s: foldsektionerna star som %s, väntade kostnader, förberedelser, villkor."
+          "%s: foldarna star som %s, väntade kostnader, förberedelser, villkor."
           % (mall, _foldids))
     _sektioner = re.findall(r'<section class="oa__section([^"]*)"', _ren)
-    kolla(len(_sektioner) >= 2 and " oa__villkor" in _sektioner[-2],
-          "%s: villkorsfolden är inte näst sist bland sektionerna (%s). Den ska ligga "
+    kolla(len(_sektioner) >= 2 and " oa__folds" in _sektioner[-2],
+          "%s: foldsektionen är inte näst sist bland sektionerna (%s). Den ska ligga "
           "längst ner, med bara avslutningen under sig." % (mall, _sektioner))
+    # OCH SEKTIONEN AR DOLD NAR INGEN FOLD SYNS. Tillagget har bara
+    # villkorsfolden; en tom sektion hade burit sin kantlinje och sin spalt.
+    _fsek = re.search(r'<section[^>]*id="oaFolds"([^>]*)>', _ren)
+    _nagon = any('<details' in x and 'hidden' not in x.split('>')[0]
+                 for x in re.findall(r'(<details[^>]*>)', _ren))
+    kolla(bool(_fsek) and (("hidden" in _fsek.group(1)) != _nagon),
+          "%s: oaFolds är %s men %s fold syns."
+          % (mall, "dold" if _fsek and "hidden" in _fsek.group(1) else "synlig",
+             "minst en" if _nagon else "ingen"))
 
 
 # ------------------------------------- 3b. en accepterad offert, en bekräftelse
@@ -872,8 +900,17 @@ if "--snabb" not in sys.argv:
 
     # Och tvärtom: utan kontrakt står den godkända sidan kvar, utan ett enda tal.
     tom = rendera_med(lambda d: d.clear())
-    kolla('id="oaOrder" hidden' in tom and 'id="oaKvitto" hidden' in tom,
-          "ett tomt kontrakt ska lämna sidan som den var, utan ordersektion och utan kvitto")
+    # ORDERSEKTIONEN FINNS INTE LANGRE (31 oktober): raderna ligger i huvudet
+    # och foldarna i en egen sektion. Kravet ar detsamma - ett tomt kontrakt
+    # far inte visa ett tal eller en tom rubrik - men mats nu pa kvittot, pa
+    # att radlistan ar TOM, och pa att foldsektionen ar dold.
+    _tomma_rader = re.search(r'<ul class="oa__rader" id="oaRader"[^>]*>\s*</ul>', tom)
+    kolla('id="oaKvitto" hidden' in tom and bool(_tomma_rader)
+          and 'id="oaFolds" hidden' in tom,
+          "ett tomt kontrakt ska lämna sidan som den var: inget kvitto, inga rader, "
+          "ingen foldsektion. kvitto dolt=%s, rader tomma=%s, folds dold=%s"
+          % ('id="oaKvitto" hidden' in tom, bool(_tomma_rader),
+             'id="oaFolds" hidden' in tom))
 
 # ------------------------------------------------- 5. husets skalor
 # INVARIANT 2. SJU TYPSTORLEKAR, INTE FLER.
@@ -966,6 +1003,26 @@ kolla(any(sel.endswith(".oa__card") and px == 540 for _, sel, _, px in _langder)
       "styles.css: mätaren hittade inte .oa__card max-width 540px, alltså läser den fel")
 kolla(len(_langder) >= 20,
       "styles.css: mätaren hittade bara %d längder, väntade minst 20" % len(_langder))
+
+# INVARIANT 2b. DE FEM SIDORNA AR SAMMA MALL, MATT PA ELEMENTVAGARNA.
+# AGARENS ORD, ordagrant: "de ar inte likadana som alla bifogade: Gillar de
+# bifogade mer da det ar samma mall dar innehallet andras. Har namnt detta
+# till dig sa varfor ar det inte standarden?" Det ar ett pastaende om
+# struktur, alltsa matbart. verktyg/samma-mall.py jamfor normaliserad markup
+# tecken for tecken och ar strangare; den har sager VAD som skiljer, i
+# elementvagar, vilket ar det felmeddelande man kan agera pa.
+import importlib as _il
+_struktur = _il.import_module("samma-struktur")
+_s_antal, _s_fel = _struktur.kor(tyst=True)
+for f in _s_fel:
+    kolla(False, "samma-struktur: " + f)
+# GOLVET. Skelettet ar 34 element, UPPMATT 31 oktober. Krymper det utan att
+# nagon sagt till har mallen tappat ett element, och ett prov som ser farre
+# element blir gronare. Talet ar lagt vid det faktiska talet.
+kolla(_s_antal >= 34,
+      "samma-struktur: skelettet ar bara %d element, vantade minst 34. Mallen har "
+      "tappat ett element, eller matningen slutade se det." % _s_antal)
+_struktur_kord = _s_antal
 
 # INVARIANT 3a. KORTHOJDEN I SIDAN AR SIDANS EGEN, OCH KAN INTE DRIFTA.
 # styles.css fryser centreringen med
@@ -1138,6 +1195,8 @@ if NORDSTJARNA.exists():
     _talen_kord = (_n, _rakn)
 
 print("%d kontroller" % kontroller)
+print("struktur:  %d element i skelettet, identiskt pa alla fem mallarna"
+      % _struktur_kord)
 print("mappning:  %d kontroller av tillagg, villkor, kostnader och forberedelser "
       "i fem mallar" % _mappning_kord)
 if _ordagrant_kord:

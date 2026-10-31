@@ -79,8 +79,11 @@ FALL = [
      lambda d: d["order"].update(underrubrik=d["order"]["underrubrik"] + " " + RADEN)),
   "avdragsutrymme"),
  ("svar 48, meningen aterinford i MARKUPEN",
-  text("index.html", '<p class="oa__fin" id="oaFin" hidden></p>',
-       '<p class="oa__fin" id="oaFin" hidden>' + RADEN + '</p>'),
+  # ANKARET BYTT 31 OKTOBER: oaFin ar borttaget med sitt element. Provet ar
+  # detsamma - meningen far inte na sidan ens inne i nagot DOLT - och ankaret
+  # ar nu den dolda ingar-listan.
+  text("index.html", '<ul class="oa__ingar" id="oaIngar" hidden></ul>',
+       '<ul class="oa__ingar" id="oaIngar" hidden><li>' + RADEN + '</li></ul>'),
   "avdragsutrymme"),
  ("svar 48, meningen aterinford i RENDERAREN",
   text("script.js", "return [forsta, forsta + '. Avdragen dras direkt på fakturan.'];",
@@ -104,8 +107,11 @@ FALL = [
        text("fall/service.html", "2026-0643", "2026-0641")),
   "unik orderbekräftelse"),
  ("svar 56, moderoffertens total star pa tillaggets bekraftelse",
-  text("fall/tillagg.html", '<h2 class="oa__eyebrow">Det här accepterade du</h2>',
-       '<h2 class="oa__eyebrow">Det här accepterade du</h2><p>14 620 kr</p>'),
+  # ANKARET BYTT 31 OKTOBER: ogonbrynet "Det har accepterade du" ar borttaget
+  # med sitt element (agarorder: forlagan har inget ogonbryn). Raderna ligger
+  # nu direkt i huvudet, sa mutationen skjuter in sitt element fore dem.
+  text("fall/tillagg.html", '<ul class="oa__rader" id="oaRader">',
+       '<p>14 620 kr</p><ul class="oa__rader" id="oaRader">'),
   # TALET FOLJDE MED LADDBOXENS TOTAL 29 OKTOBER: 14 345 -> 14 620, efter att
   # RFID 5-pack gick 175 -> 450 i offertrepot. Mutationen skrev det GAMLA
   # talet, och da kande oraklet inte igen det som moderns total: sviten blev
@@ -151,8 +157,13 @@ FALL = [
        '<summary>Köpvillkor<svg class="oa__fold-pil"'),
   "heter inte Villkor"),
  ("25 okt 3, kopvillkorslanken star kvar i finstilten ocksa",
-  text("fall/batteri.html", "Avdragen dras direkt på fakturan.</p>",
-       'Avdragen dras direkt på fakturan. <a href="https://ampy.se/kopvillkor">'
+  # ANKARET BYTT 31 OKTOBER: finstilten under raderna ar borttagen med sitt
+  # element, sa lanken kan inte langre dubbleras DAR. Invarianten ar
+  # oforandrad - "Las vara kopvillkor" star EN gang, i folden - och mutationen
+  # lagger nu lanken i kvittonoten i stallet. Ett prov vars yta forsvinner ska
+  # flyttas, inte tas bort: kravet lever kvar, bara pa ett annat stalle.
+  text("fall/batteri.html", "inkl. moms, efter skattereduktion</span>",
+       'inkl. moms, efter skattereduktion <a href="https://ampy.se/kopvillkor">'
        "Läs våra köpvillkor</a></p>"),
   "står 2 gånger"),
  # ANKARET GJORDES UNIKT 29 OKTOBER. Klassen oa__villkor delas nu av tre
@@ -160,28 +171,30 @@ FALL = [
  # harnessen vagrade hellre an muterade fel stalle. Id:t sager vilken fold det
  # ar; klassen sager bara vilken form den har.
  ("25 okt 3, folden ligger inte langst ner",
-  text("fall/elcentral.html", '<section class="oa__section oa__villkor" id="oaVillkor"',
-       '<section class="oa__section" id="oaVillkor"'),
+  # EN FOLDSEKTION SEDAN 31 OKTOBER. Kravet "langst ner" mats nu pa
+  # sektionen oa__folds, sa mutationen tar klassen av DEN.
+  text("fall/elcentral.html", '<section class="oa__section oa__folds" id="oaFolds"',
+       '<section class="oa__section" id="oaFolds"'),
   "näst sist"),
 
  # 3b. DE TVA FOLDARNA FRAN 29 OKTOBER
  ("29 okt, stegremsan tillbaka pa en sida",
-  text("fall/laddbox.html", '<section class="oa__section oa__villkor" id="oaKostnader"',
+  text("fall/laddbox.html", '<section class="oa__section oa__folds" id="oaFolds"',
        '<section class="oa__section"><ol class="oa__steps"><li class="oa__step">'
        'Din accept ar registrerad</li></ol></section>'
-       '<section class="oa__section oa__villkor" id="oaKostnader"'),
+       '<section class="oa__section oa__folds" id="oaFolds"'),
   "steglista igen"),
  ("29 okt, foldarna i fel ordning",
   text("fall/batteri.html", '<summary>Kostnader som kan tillkomma',
        '<summary>Vad behöver du göra före installationen?'),
   "foldarna"),
  ("29 okt, kostnadsfolden syns utan innehall i kontraktet",
-  text("fall/service.html", '<section class="oa__section oa__villkor" id="oaKostnader" hidden=""',
-       '<section class="oa__section oa__villkor" id="oaKostnader"'),
+  text("fall/service.html", '<details class="oa__fold" id="oaKostnader" hidden=""',
+       '<details class="oa__fold" id="oaKostnader"'),
   "oaKostnader"),
  ("29 okt, forberedelsefolden goms trots att kontraktet har texten",
-  text("fall/elcentral.html", '<section class="oa__section oa__villkor" id="oaForbered"',
-       '<section class="oa__section oa__villkor" id="oaForbered" hidden=""'),
+  text("fall/elcentral.html", '<details class="oa__fold" id="oaForbered"',
+       '<details class="oa__fold" id="oaForbered" hidden=""'),
   "oaForbered"),
  ("29 okt, ett kostnadsbelopp driftar fran katalogen",
   text("exempel/laddbox.json", '"belopp": 245,', '"belopp": 240,'),
@@ -189,8 +202,14 @@ FALL = [
 
  # 4. FINSTILTEN UTAN PARENTES
  ("25 okt 4, parentesen tillbaka i finstilten",
-  text("fall/batteri.html", "inkl. moms, efter skattereduktion. Avdragen",
-       "inkl. moms, efter skattereduktion (Grön teknik). Avdragen"),
+  # ANKARET BYTT 31 OKTOBER: finstilten under raderna ar borttagen, sa
+  # parentesen kan inte komma tillbaka DAR. Kravet lever - ingen pottparentes
+  # nagonstans i den synliga texten - och mutationen satter den nu i
+  # batteriets kvittonot. Det ar en ANNAN mall och en ANNAN pottform an
+  # mutationen under (service, "(ROT)"), sa tackningen krymper inte.
+  text("fall/batteri.html",
+       '<span class="oa__kvitto-not" id="oaKvittoNot">inkl. moms, efter skattereduktion</span>',
+       '<span class="oa__kvitto-not" id="oaKvittoNot">inkl. moms, efter skattereduktion (Grön teknik)</span>'),
   "utgick 25 oktober"),
  ("25 okt 4, kvittonoten sager nagot annat",
   text("fall/service.html",
@@ -200,8 +219,11 @@ FALL = [
 
  # 5. EN MALL, EN SKILLNAD
  ("25 okt 5, en mall far egen markup utanfor stegen",
-  text("fall/service.html", '<h2 class="oa__eyebrow">Det här accepterade du</h2>',
-       '<h2 class="oa__eyebrow">Det här accepterade du</h2><p class="oa__extra"></p>'),
+  # ANKARET BYTT 31 OKTOBER: ogonbrynet "Det har accepterade du" ar borttaget
+  # med sitt element (agarorder: forlagan har inget ogonbryn). Raderna ligger
+  # nu direkt i huvudet, sa mutationen skjuter in sitt element fore dem.
+  text("fall/service.html", '<ul class="oa__rader" id="oaRader">',
+       '<p class="oa__extra"></p><ul class="oa__rader" id="oaRader">'),
   "olika markup utanför"),
  # MUTATIONEN "en andra mall byter sin steglista" AR AVVECKLAD 29 OKTOBER,
  # och ersatt i stallet for raderad. Den bevisade att samma-mall sag nar en
@@ -258,9 +280,9 @@ FALL = [
   text("fall/batteri.html", 'href="https://ampy.se/kopvillkor"', 'href=""'),
   "TOMT href"),
  ("mappning, en fold star kvar SYNLIG utan sitt falt",
-  text("fall/service.html", '<section class="oa__section oa__villkor" id="oaKostnader" hidden="">',
-       '<section class="oa__section oa__villkor" id="oaKostnader">'),
-  "sektionen ar synlig men kontraktet saknar"),
+  text("fall/service.html", '<details class="oa__fold" id="oaKostnader" hidden="">',
+       '<details class="oa__fold" id="oaKostnader">'),
+  "folden ar synlig men kontraktet saknar"),
  ("mappning, kopvillkorslankens lydelse byts",
   text("fall/laddbox.html", ">Läs våra köpvillkor<", ">Läs villkoren<"),
   "lanktexten ar"),
@@ -286,9 +308,42 @@ FALL = [
        '<span id="oaRefEtikett">Offert</span>'),
   "brickans etikett"),
  ("svar 56, moderns paketnamn star pa tillaggets sida",
-  text("fall/tillagg.html", '<h2 class="oa__eyebrow">Det här accepterade du</h2>',
-       '<h2 class="oa__eyebrow">Det här accepterade du</h2><p>Paket Premium</p>'),
+  # ANKARET BYTT 31 OKTOBER: ogonbrynet "Det har accepterade du" ar borttaget
+  # med sitt element (agarorder: forlagan har inget ogonbryn). Raderna ligger
+  # nu direkt i huvudet, sa mutationen skjuter in sitt element fore dem.
+  text("fall/tillagg.html", '<ul class="oa__rader" id="oaRader">',
+       '<p>Paket Premium</p><ul class="oa__rader" id="oaRader">'),
   "order.paket.namn"),
+
+ # ---- PRODUKTRADEN OCH FINSTILTEN FAR INTE KOMMA TILLBAKA ---------------
+ ("produktraden aterinford pa en sida",
+  text("fall/elcentral.html", '<ul class="oa__rader" id="oaRader">',
+       '<p class="oa__prod" id="oaProd"><b id="oaProdRubrik">Elcentral + installation</b>'
+       '</p><ul class="oa__rader" id="oaRader">'),
+  "har kommit tillbaka"),
+ ("finstilten under raderna aterinford",
+  text("fall/batteri.html", '<p class="oa__accept" id="oaAccept"',
+       '<p class="oa__fin" id="oaFin">inkl. moms, efter skattereduktion.</p>'
+       '<p class="oa__accept" id="oaAccept"'),
+  "oaFin har kommit tillbaka"),
+
+ # ---- EN MALL, FEM SIDOR: STRUKTUREN ------------------------------------
+ # Agarens krav gjort matbart. En mall som far ett eget element, eller som
+ # tappar ett de andra har, ska falla provet - det ar hela poangen med
+ # "samma mall dar innehallet andras".
+ ("en mall far ett element de fyra andra inte har",
+  text("fall/tillagg.html", '<p class="oa__contact">',
+       '<div class="oa__nytt"></div><p class="oa__contact">'),
+  "samma-struktur"),
+ ("en mall tappar en rubrik de andra har",
+  # FORSTA VERSIONEN LA BARA TILL ETT ATTRIBUT (data-x), och skelettet laser
+  # tagg + class + id med flit - attributvarden sager vad DEN HAR ordern
+  # innehaller, inte vilken mall sidan ar. Mutationen andrade alltsa
+  # ingenting provet tittar pa och rapporterade MISS om ett prov som var
+  # helt i ordning. Nu TAS elementet bort, vilket ar det provet vaktar.
+  text("fall/service.html",
+       '<h3 class="oa__ingar-rubrik" id="oaIngarRubrik">Allt som ingår</h3>', ''),
+  "OLIKA struktur"),
 
  # ---- KORTHOJDEN: K FAR INTE DRIFTA I TYSTHET ----------------------------
  # styles.css fryser centreringen mot var(--oa-kort), som bygg.py mater och

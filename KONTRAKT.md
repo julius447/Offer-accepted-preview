@@ -102,7 +102,7 @@ leverans i de här fälten.** `prov.py` stoppar bygget om ett nytt dyker upp.
 | `kostnader_ingress` | sträng | folden står utan ingress | mallen |
 | `kostnader_fot` | sträng | folden står utan finstilt | mallen. Bara laddbox och batteri har en. |
 | `forberedelser` | lista med strängar | **folden "Vad behöver du göra före installationen?" visas inte alls** | mallen. Laddbox, elcentral, batteri och **service** (ägarsvar 15, 30 oktober). Tillägg: ingen. |
-| `order` | objekt | nej | ordersektionen visas inte alls | CRM |
+| `order` | objekt | nej | **inget kvitto, inga rader** | CRM. **ORDERSEKTIONEN FINNS INTE LÄNGRE, 31 oktober:** raderna ligger i huvudet, direkt under kvittorutan, som på förlagan. |
 
 ### `offert`
 
@@ -237,8 +237,8 @@ står flaggad i offertrepots `katalog/forberedelser.json` (`service._inledning_g
 
 | Fält | Typ | Saknas, då | Fylls av |
 |---|---|---|---|
-| `rubrik` | sträng | produktraden visas inte | mallen. Laddbox: modellnamnet (`prodName`). Elcentral: "Elcentral + installation", ägarbesked 19 okt. Batteri: modellnamnet. **Service och tillägg: `null`** (ingen produkt, ingen bild). |
-| `underrubrik` | sträng | produktraden står utan underrad | mallen. Laddbox: paketets `spec`. Elcentral: storlekens `passar`-text. Batteri: "20 kWh, monterad och driftsatt". |
+| `rubrik` | sträng | **INGEN YTA LÄSER FÄLTET, mätt 31 oktober** | mallen. Laddbox: modellnamnet (`prodName`). Elcentral: "Elcentral + installation", ägarbesked 19 okt. Batteri: modellnamnet. **Service och tillägg: `null`**. **PRODUKTRADEN RENDERAS INTE LÄNGRE:** ägarordern 31 oktober säger att bekräftelsen ska vara acceptskärmen, och förlagan (`gemensamt/block/skarm-accept.html`) har ingen produktrad — under kvittorutan står raderna och ingenting annat. Fältet står kvar med sin proveniens av **samma skäl som `offert.giltig_till_lang`**: ett fält som ingen yta läser får inte tystna, för då hårdkodar nästa person det. `prov.py` kräver att ingen sida bär produktradens element (`oaProd`, `oaProdRubrik`, `oaProdUnder`) — mätt på markupen och inte på texten, för "SAJ HS3" är batteriets `order.rubrik` OCH en radtext på laddboxsidan. [GAP] Vill ägaren ha produktnamnet tillbaka i en lättare form finns talet kvar. |
+| `underrubrik` | sträng | **INGEN YTA LÄSER FÄLTET, mätt 31 oktober** | mallen. Laddbox: paketets `spec`. Elcentral: storlekens `passar`-text. Batteri: "20 kWh, monterad och driftsatt". Samma sak som `rubrik` ovan: produktraden är borttagen 31 oktober, fältet står kvar så att ingen hårdkodar det. |
 | `etikett` | sträng | "Att betala" | mallen. Etiketten bredvid totalen. **Får aldrig vara ett radnamn**: "Paket Premium 14 345 kr" i huvudet och "Paket Premium 9 170 kr" i raden under säger två saker om samma namn. "Att betala" är den etikett alla fem mallarna redan sätter bredvid sin total (`offerter/laddbox/body.html` rad 388, elcentral rad 210, batteri rad 114, service rad 72, tillagg rad 35). |
 | `total` | heltal, netto | **inget totalbelopp renderas**, kvittot visas inte | CRM |
 | `paket` | objekt eller **`null`** | ingen huvudrad; radlistan står ensam | mallen. **`null` är ett giltigt och vanligt värde**: service och tilläggsoffert har ingen paketlogik. |
@@ -585,6 +585,24 @@ offertrepots laddboxmotor.
    HÄRLEDD text, se `forberedelser` ovan. Kvar som en liten lucka: den inledande satsen
    "Arbetet i din bokning är:" är mina ord, inte ägarens, och står flaggad i offertrepots
    `katalog/forberedelser.json` (`service._inledning_gap`).
+7c. **BEKRÄFTELSEN ÄR ACCEPTSKÄRMEN SEDAN 31 OKTOBER, OCH TVÅ SAKER ÄR ÖPPNA.**
+   Ägaren, ordagrant: *"de är inte likadana som alla bifogade: Gillar de bifogade mer då
+   det är samma mall där innehållet ändras. Har nämnt detta till dig så varför är det inte
+   standarden?"* Förlagan är `gemensamt/block/skarm-accept.html`. Byggt: kvittorutan
+   indragen till 440 px, raderna som en lätt lista i huvudet, acceptdatumet sist i huvudet,
+   och de tre folderna som `<details>` i **EN** sektion (`oa__folds`) i stället för tre.
+   Borttaget: ordersektionen, ögonbrynet "Det här accepterade du", produktraden och
+   finstilten under raderna. **De tre folderna är fortfarande PER FALL** — var och en fylls
+   ur sitt eget kontraktsfält, och en fold utan innehåll är dold; `verktyg/mappning.py`
+   mäter det, 135 kontroller.
+   **ÖPPET 1: "Allt som ingår" står kvar.** Förlagan har ingen plats för listan, men den är
+   ägargodkänd (25 okt, *"bara vara en punktlista"*) och för **service** är den åtta punkter
+   mot två rader — tas den bort säger servicebekräftelsen nästan ingenting. En radering av
+   kundtext är en enkelriktad dörr, så den står kvar tills ägaren sagt till. `[GAP]`
+   **ÖPPET 2: satsen "Avdragen dras direkt på fakturan." föll bort** med finstilten.
+   Villkoret står nu EN gång, i kvittorutans not, vilket är hedging-direktivet 2026-08-15 —
+   men just den satsen finns inte längre på sidan. Den ligger kvar i `pottrad()` i
+   `script.js` och kan läggas i noten. `[GAP]`
 8. **Ö-driftens pott.** Byggd som grön teknik efter principen i ägarbeslut 11 (15 okt). Är
    den brutto utan avdrag ändras en rad i `exempel/batteri.json`.
 9. **Servicepriset 7 400 kr är ett exempel**, inte ett Ampy-pris

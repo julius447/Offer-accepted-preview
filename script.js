@@ -380,14 +380,15 @@
 
   $('oaRader').innerHTML = html.join('');
 
-  /* Produktraden. Service och tillägg har ingen produkt och ingen bild: då
-     står raden inte där, den står inte tom. */
-  var rubrik = str(order.rubrik), under2 = str(order.underrubrik);
-  if (rubrik) {
-    $('oaProdRubrik').textContent = rubrik;
-    if (under2) $('oaProdUnder').textContent = under2; else $('oaProdUnder').remove();
-    visa($('oaProd'), true);
-  }
+  /* PRODUKTRADEN RENDERAS INTE LANGRE, 31 OKTOBER, AGARORDER.
+     Forlagan ar acceptskarmen (gemensamt/block/skarm-accept.html), och den
+     har ingen produktrad: under kvittorutan star raderna och ingenting
+     annat. Falten order.rubrik och order.underrubrik star KVAR i kontraktet
+     med sin proveniens, av samma skal som offert.giltig_till_lang: ett falt
+     som ingen yta laser far inte tystna, for da hardkodar nasta person det.
+     prov.py kraver att ingen sida skriver dem. [GAP] Agaren kan vilja ha
+     produktnamnet tillbaka i en lattare form; da finns talet kvar. */
+  var rubrik = str(order.rubrik);
 
   /* "Allt som ingår." Serviceofferten är den mall som inte konfigurerar
      något: kunden läser en lista och svarar ja eller nej. Då är listan hela
@@ -429,16 +430,15 @@
     visa($('oaKvitto'), true);
   }
 
-  /* Finstilten. Villkoret står EN gång, här, och inte en gång per rad:
-     hedging-direktivet 2026-08-15. EN mening och ingenting mer under
-     raderna: ägarens "enbart" 25 oktober. Köpvillkorslänken har flyttat
-     härifrån till folden längst ner. */
-  if (netto && (poster.length || total != null)) {
-    $('oaFin').textContent = kort[1];
-    visa($('oaFin'), true);
-  }
-
-  visa($('oaOrder'), !!(poster.length || ingar.length || rubrik));
+  /* FINSTILTEN UNDER RADERNA AR BORTA, 31 OKTOBER, AGARORDER. Forlagan bar
+     villkoret EN gang, som kvittorutans egen not (oa__kvitto-not), och
+     hedging-direktivet 2026-08-15 sager just EN gang. Meningen stod till i
+     dag pa BADA stallena: "inkl. moms, efter skattereduktion" i noten och
+     "inkl. moms, efter skattereduktion. Avdragen dras direkt pa fakturan."
+     i finstilten. Nu star den dar forlagan har den.
+     [GAP] Satsen "Avdragen dras direkt pa fakturan." foll darmed bort fran
+     sidan. Den ar agargodkand och star kvar i kort[1] i texterna, sa den
+     kan laggas i noten om agaren vill ha den tillbaka. */
 
   /* ---- 4b · KOSTNADER SOM KAN TILLKOMMA ---------------------------------
      Agardokument 29 oktober: folden hamtas fran offertmallen och ligger
@@ -523,6 +523,19 @@
     $('oaVillkorKropp').innerHTML = '<p class="oa__villkor-rad"><a href="' + txt(vUrl)
       + '" target="_blank" rel="noopener">Läs våra köpvillkor</a></p>';
     visa($('oaVillkor'), true);
+  }
+
+  /* SEKTIONEN SOM BAR FOLDARNA visas nar minst en fold gor det, och doljs
+     annars helt. Till 31 oktober lag foldarna i tre egna sektioner och
+     doldes var for sig; nu ar de tre <details> i EN sektion, som forlagan.
+     Utan den har raden stod en tom sektion kvar med sin kantlinje och sin
+     spalt pa tillaggsmallen, som bara har villkorsfolden. */
+  var _folds = $('oaFolds');
+  if (_folds) {
+    var _nagon = ['oaKostnader', 'oaForbered', 'oaVillkor'].some(function (i) {
+      var e = $(i); return e && !e.hidden;
+    });
+    visa(_folds, _nagon);
   }
 
   /* Kontraktsfel hör i byggets logg, inte på kundens sida. prov.py läser

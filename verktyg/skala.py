@@ -60,6 +60,15 @@ UNDANTAG = {
     ".oa__aurora--bottom": {150: "aurorafigurens egen bredd", 280: "aurorafigurens egen bredd"},
     ".oa__bock svg": {10: "husets eget matt i .o-bock svg"},
     ".oa__step:not(:last-child)::after": {1: "harlinje", 2: "harlinje"},
+    # KVITTORUTANS INDRAG, 31 OKTOBER. Agarorder: bekraftelsen ska vara
+    # acceptskarmen, och den rutan ar 440 px bred i forlagan
+    # (gemensamt/system.css rad 2438: max-width:440px). Talet ar alltsa
+    # FORLAGANS matt och inte ett nytt pahitt - men det ar ocksa ett av de
+    # 28 varden skalpasset 24 oktober tog bort, och 440 star namngivet i den
+    # har filens egen docstring som ett av dem. Det kommer darfor tillbaka
+    # som ett BESLUT med en kalla, inte som glidning. Ett tal utanfor skalan
+    # utan rad har ar fortfarande en bugg.
+    ".oa__kvitto": {440: "kvittorutans indrag, forlagans eget matt"},
 }
 
 

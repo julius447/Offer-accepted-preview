@@ -43,7 +43,6 @@
            ETT ACCEPTDATUM DRAR INTE MED SIG ETT GILTIG TILL. Ägardirektiv
            23 oktober: offerten har ingen giltighetstid. prov.py stoppar varje
            sida som skriver ett giltighetsdatum här. -->
-      <p class="oa__accept" id="oaAccept" hidden>Accepterad <span id="oaAcceptDatum"></span></p>
       <!-- KVITTOT. Sidan visade noll forekomster av "kr": kunden tryckte
            acceptera pa ett belopp och fick tillbaka en bock utan tal.
            Formen ar laddboxrepots egen, gemensamt/block/skarm-accept.html
@@ -53,16 +52,33 @@
         <span class="oa__kvitto-rad"><span id="oaPaket"></span><b class="kr" id="oaTotal"></b></span>
         <span class="oa__kvitto-not" id="oaKvittoNot"></span>
       </p>
-    </section>
+      <!-- RADERNA LIGGER I HUVUDET, DIREKT UNDER RUTAN, OCH DET AR AGARENS
+           ORDER. Hans ord om de bifogade skarmbilderna, ordagrant: "de ar
+           inte likadana som alla bifogade: Gillar de bifogade mer da det ar
+           samma mall dar innehallet andras. Har namnt detta till dig sa
+           varfor ar det inte standarden?" Forlagan ar acceptskarmen inne i
+           offerten, gemensamt/block/skarm-accept.html: dar star raderna som
+           en latt lista i oa__head, under kvittorutan, och acceptdatumet
+           sist. TRE SAKER AR BORTA harifran av samma skal, for de finns inte
+           pa forlagan: sektionsomslaget oa__order, ogonbrynet "Det har
+           accepterade du", och produktraden med sin beskrivning.
 
-    <!-- 2 · det kunden faktiskt accepterade -->
-    <section class="oa__section oa__order" id="oaOrder" hidden>
-      <h2 class="oa__eyebrow">Det här accepterade du</h2>
-      <p class="oa__prod" id="oaProd" hidden><b id="oaProdRubrik"></b><span id="oaProdUnder"></span></p>
+           ALLT SOM INGAR STAR KVAR, OCH DET AR EN FLAGGA OCH INTE ETT
+           FORBISEENDE. Forlagan har ingen plats for listan, men den ar
+           agargodkand text (25 oktober, ordagrant: "bara vara en
+           punktlista"), och for SERVICE ar den atta punkter mot tva rader -
+           tas den bort sager servicebekraftelsen nastan ingenting. En
+           radering av kundtext ar en enkelriktad dorr, sa den star kvar
+           tills agaren sagt till. [GAP] -->
       <ul class="oa__rader" id="oaRader"></ul>
       <h3 class="oa__ingar-rubrik" id="oaIngarRubrik" hidden>Allt som ingår</h3>
       <ul class="oa__ingar" id="oaIngar" hidden></ul>
-      <p class="oa__fin" id="oaFin" hidden></p>
+      <!-- ACCEPTDATUMET SIST I HUVUDET, som forlagans p.oa__datum. Det stod
+           OVANFOR kvittorutan till 31 oktober. Saknas datumet skrivs ingen
+           mening alls, aldrig en platshallare och aldrig ett gissat datum.
+           ETT ACCEPTDATUM DRAR INTE MED SIG ETT GILTIG TILL. Agardirektiv
+           23 oktober: offerten har ingen giltighetstid. -->
+      <p class="oa__accept" id="oaAccept" hidden>Accepterad <span id="oaAcceptDatum"></span></p>
     </section>
 
     <!-- 3 · KOSTNADER SOM KAN TILLKOMMA, och 3b FORBEREDELSERNA.
@@ -88,19 +104,23 @@
          PA PAPPER OPPNAS DE, av samma skal som villkoren: en stangd fold
          doljer sitt innehall med ::details-content, och det biter ingen
          display-regel pa barnet. -->
-    <section class="oa__section oa__villkor" id="oaKostnader" hidden>
-      <details class="oa__fold">
+    <!-- EN SEKTION FOR ALLA TRE FOLDARNA, som forlagans
+         section.oa__folds#oaFolds. Till 31 oktober lag de i TRE separata
+         oa__villkor-sektioner, vilket gav tre kantlinjer och tre
+         sektionsspalter dar forlagan har en. Folderna sjalva ar fortfarande
+         PER FALL: kostnaderna, forberedelserna och villkoren fylls var och en
+         ur sitt eget kontraktsfalt, och en fold utan innehall ar DOLD.
+         Agarens krav: samma mall, innehallet byter. -->
+    <section class="oa__section oa__folds" id="oaFolds" hidden>
+      <details class="oa__fold" id="oaKostnader" hidden>
         <summary>Kostnader som kan tillkomma<svg class="oa__fold-pil" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
         <div class="oa__fold-kropp" id="oaKostnaderKropp"></div>
       </details>
-    </section>
 
-    <section class="oa__section oa__villkor" id="oaForbered" hidden>
-      <details class="oa__fold">
+      <details class="oa__fold" id="oaForbered" hidden>
         <summary>Vad behöver du göra före installationen?<svg class="oa__fold-pil" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
         <div class="oa__fold-kropp" id="oaForberedKropp"></div>
       </details>
-    </section>
 
     <!-- 4 · VILLKOREN, I EN FOLD, LANGST NER.
          AGARENS ORD 25 OKTOBER, ORDAGRANT: "Under det har vi kopvillkor.
@@ -125,8 +145,7 @@
          ::details-content, och en display-regel pa barnet biter inte.
          Samma matning som offertrepots egen: villkoren saknades helt i en
          riktig utskrifts-PDF innan den regeln kom pa plats. -->
-    <section class="oa__section oa__villkor" id="oaVillkor" hidden>
-      <details class="oa__fold">
+      <details class="oa__fold" id="oaVillkor" hidden>
         <summary>Villkor<svg class="oa__fold-pil" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></summary>
         <div class="oa__fold-kropp" id="oaVillkorKropp"></div>
       </details>

@@ -22,9 +22,12 @@ tre sektioner som redan fanns.
 
 ```bash
 python3 bygg.py                 # bygger om fall/ ur index.html + exempel/
-python3 prov.py                 # oraklet: 766 kontroller
+python3 prov.py                 # oraklet: 817 kontroller
 python3 prov.py --snabb         # samma, utan webblasarproven och typmatningen
 python3 verktyg/samma-mall.py   # att de fem sidorna ar SAMMA markup, med en skillnad
+python3 verktyg/samma-struktur.py            # samma krav, matt pa elementvagarna
+python3 verktyg/mappning.py                  # tillagg/villkor/kostnader/forberedelser per mall
+python3 verktyg/foldskifte.py fall/laddbox.html 1180 1440   # att en fold inte flyttar toppen
 python3 verktyg/matt.py fall/laddbox.html 375        # sidledes scroll, träffytor
 python3 verktyg/typ.py fall/laddbox.html 390         # husets sju typstorlekar
 python3 verktyg/skala.py                             # varje längd ur husets skalor
@@ -46,7 +49,7 @@ aldrig Chrome med `pkill`: det stänger användarens riktiga webbläsare med all
 ## Ägarens genomgång 25 oktober
 
 Sex punkter, alla byggda, alla mätta, var och en bevisad genom att defekten återinfördes
-(`python3 verktyg/mutationer.py`: 32 mutationer, 0 slapp förbi).
+(`python3 verktyg/mutationer.py`: 52 mutationer, 0 slapp förbi).
 
 1. **Raderna visar bara rubrik och pris.** Pottmärkningarna ("Grön teknik-avdrag",
    "ROT-avdrag") under varje rad är borta ur renderaren, ur CSS och ur sidorna. Specen står

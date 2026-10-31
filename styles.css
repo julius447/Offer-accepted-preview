@@ -171,7 +171,12 @@
    INGEN EGEN MARGINAL: .oa__head är en flexkolumn med gap var(--s3), alltså
    husets rytm. En margin-top här hade lagt sig OVANPÅ gapet och gett ett
    avstånd som inte finns på skalan. */
-.oa__accept{ margin:0; font-size:var(--t6); font-weight:400; color:var(--ink-soft); }
+/* Acceptdatumet star SIST i huvudet och centrerat, som forlagans
+   p.oa__datum. Forlagan satter margin-top; har star margin:0 kvar med
+   flit, for .oa__head ar en flexkolumn med gap var(--s3) och en
+   margin-top hade lagt sig OVANPA gapet - ett avstand utanfor skalan. */
+.oa__accept{ margin:0; font-size:var(--t6); font-weight:400; color:var(--ink-soft);
+  text-align:center; font-variant-numeric:tabular-nums; }
 
 /* --- kvittot i huvudet -------------------------------------------------
    Ett tal, inte ett kort: sidan ar en bekraftelse och inte en andra offert.
@@ -191,7 +196,16 @@
    Talen staplas under varandra och ska vara lodratt i linje. Bredden styrs
    nu av sektionens innermatt, som ar samma matt raderna far. Efter: 811,8
    mot 811,8 vid 1180 och 348,1 mot 348,1 vid 390. */
-.oa__kvitto{ width:100%; display:flex; flex-direction:column; gap:var(--s1);
+/* RUTAN AR INDRAGEN TILL 440 px, 31 OKTOBER, AGARORDER. Forlagan ar
+   acceptskarmen, gemensamt/system.css rad 2437: max-width:440px.
+   DET UPPHAVER EN MATT RATTNING, och det ska sagas rakt ut: rutan gjordes
+   FULLBREDD med flit, for da matte kvittots hogerkant 810,0 och radernas
+   811,8, alltsa 1,8 px isar, och tal som staplas ska sta lodratt i linje.
+   Med indraget ar de inte langre i linje - det ar forlagans form, dar
+   rutan ar en ruta och raderna star under den.
+   Ramens #d5d9e4 och notens #5b6480 ar rava varden och inte husets token;
+   de stod sa redan fore det har passet. */
+.oa__kvitto{ width:100%; max-width:440px; display:flex; flex-direction:column; gap:var(--s1);
   margin:var(--s3) auto 0; padding:var(--s3) var(--s4); text-align:left;
   background:#fff; border:1px solid #d5d9e4; border-radius:var(--r1); }
 .oa__kvitto-rad{ display:flex; justify-content:space-between; align-items:baseline; gap:var(--s4);
@@ -212,10 +226,12 @@
    700, så ingen såg det. Inter bär 300 till 800 och hade renderat 800,
    alltså tyngre än någon annan text på sidan utom totalen. Husets .t-h3 är
    17/600, och det är vad produktraden är. Skrivet, inte ärvt. */
-.oa__prod{ margin:0 0 var(--s3); font-size:var(--t4); line-height:1.35; font-weight:600; color:var(--ink); }
-.oa__prod b{ font-weight:600; }
-.oa__prod span{ display:block; font-size:var(--t6); font-weight:400; color:var(--ink-soft); margin-top:var(--s1); }
-.oa__rader{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; }
+/* .oa__prod AR BORTTAGEN 31 OKTOBER med sitt element: forlagan har ingen
+   produktrad under kvittorutan. Filens egen regel galler - en regel utan
+   element ar en regel som vantar pa att nagon ateruppfinner elementet. */
+/* RADERNA LIGGER NU I HUVUDET, under kvittorutan, som forlagan
+   (gemensamt/system.css rad 956: margin-top:var(--s4)). */
+.oa__rader{ list-style:none; margin:var(--s4) 0 0; padding:0; display:flex; flex-direction:column; }
 .oa__rader:empty{ display:none; }
 .oa__rad{ display:flex; align-items:baseline; justify-content:space-between; gap:var(--s3);
   padding:var(--rytm-rad) 0; border-top:1px solid var(--line); font-size:var(--t5); line-height:1.35; }
@@ -257,7 +273,9 @@
   stroke-width:1.9; stroke-linecap:round; stroke-linejoin:round; }
 /* Finstilten. Villkoret star EN gang, har, och inte en gang per rad:
    hedging-direktivet 2026-08-15. */
-.oa__fin{ margin:var(--rytm-block) 0 0; font-size:var(--t6); line-height:1.5; color:var(--ink-soft); }
+/* .oa__fin AR BORTTAGEN 31 OKTOBER med sitt element. Villkoret star EN
+   gang, nu i kvittorutans egen not, som pa forlagan - och
+   hedging-direktivet 2026-08-15 sager just EN gang. Det stod pa tva. */
 /* Finstilten bar kopvillkorslanken till 25 oktober. Den har flyttat till
    folden langst ner (se .oa__fold), pa agarens ord. Har star nu EN mening
    och ingenting annat. */
@@ -272,7 +290,12 @@
    PILEN RITAS SOM SVG, inte som en roterad CSS-ram. Sidan ritar redan bocken
    och stjarnorna i svg, och en 1,8 px bred ram hade varit en langd till
    utanfor husets skalor. */
-.oa__villkor{ padding-top:var(--s5); padding-bottom:var(--s5); }
+/* EN SEKTION, TRE FOLDER, 31 OKTOBER. Forlagan har section.oa__folds med
+   gap var(--s2), gemensamt/system.css rad 966. Har lag foldarna i tre egna
+   .oa__villkor-sektioner, alltsa tre kantlinjer och tre sektionsspalter
+   dar forlagan har en. .oa__villkor-rad lever kvar: det ar lankstycket. */
+.oa__folds{ padding-top:var(--s5); padding-bottom:var(--s5);
+  display:flex; flex-direction:column; gap:var(--s2); }
 .oa__fold{ background:#fff; border:1px solid var(--line); border-radius:var(--r2); overflow:hidden; }
 .oa__fold > summary{ list-style:none; cursor:pointer; display:flex; align-items:center;
   justify-content:space-between; gap:var(--s3); min-height:var(--z6);
@@ -321,7 +344,8 @@
    ar borta med den, och sa ar tokens --nod och --steg-gap: de hade ingen
    annan brukare. En regel utan element ar en regel som vantar pa att nagon
    ateruppfinner elementet. --- */
-.oa__eyebrow{ margin:0 0 var(--rytm-block); font-size:var(--t7); font-weight:600; text-transform:uppercase; letter-spacing:.14em; color:var(--teal-deep); }
+/* .oa__eyebrow AR BORTTAGEN 31 OKTOBER med sitt enda element, ogonbrynet
+   "Det har accepterade du". Forlagan har inget ogonbryn. */
 
 /* --- trust + contact + close --- */
 .oa__trust{ display:flex; flex-wrap:wrap; align-items:center; justify-content:center; gap:var(--s3) var(--s4); text-align:center; }

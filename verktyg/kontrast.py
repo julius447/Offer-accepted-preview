@@ -35,9 +35,15 @@ JS = r"""
     ytor har kommit till i de tva foldarna. Listan foljer med bada vagarna,
     precis som den gjorde 25 oktober: en selektor som inte traffar nagot
     rapporteras, och en ny yta utan matning ar en yta utan kontrastdom. */
- var YTOR=['.oa__rad-text small','.oa__kvitto-not','.oa__fin','.oa__prod span',
+ /* TRE YTOR BORTTAGNA 31 OKTOBER: .oa__fin, .oa__prod span och
+    .oa__eyebrow. Agarorder - bekraftelsen ska vara acceptskarmen, och den
+    har ingen finstilt fot, ingen produktrad och inget ogonbryn. Mataren sa
+    ifran sjalv: "selektorerna [...] traffade ingen yta pa nagon av de tre
+    sidorna", vilket ar precis vad den finns for. En selektor som star kvar
+    utan yta later provet se farre ytor utan att nagon marker det. */
+ var YTOR=['.oa__rad-text small','.oa__kvitto-not',
   '.oa__ingar li span','.oa__rad-pris--ord','.oa__trust-item',
-  '.oa__eyebrow','.oa__ref','.oa__accept','.oa__contact','.oa__contact a',
+  '.oa__ref','.oa__accept','.oa__contact','.oa__contact a',
   '.oa__fold > summary','.oa__villkor-rad','.oa__fold a','.oa__rad','.oa__title',
   '.oa__fold-intro','.oa__fold-fot','.oa__fold-lista li','.oa__fold-lista li b',
   '.oa__fold-lista li span'];

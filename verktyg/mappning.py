@@ -65,13 +65,19 @@ def taggbort(s):
 
 
 def sektion(html, _id):
-    """(attributen, innehallet) for <section id=...> eller None."""
-    m = re.search(r'<section[^>]*id="%s"([^>]*)>' % _id, html)
-    if not m:
-        return None
-    # Sektionerna ar inte nastlade i den har sidan: ta till nasta </section>.
-    slut = html.find("</section>", m.end())
-    return (m.group(1), html[m.end():slut if slut > 0 else len(html)])
+    """(attributen, innehallet) for <section id=...> ELLER <details id=...>.
+
+    SEDAN 31 OKTOBER AR FOLDARNA <details> I EN SEKTION, inte tre egna
+    sektioner (agarorder: forlagan ar acceptskarmen). Den forsta versionen
+    laste bara <section och hittade da ingenting for oaKostnader, oaForbered
+    och oaVillkor - och "hittade ingenting" blev "sektionen ar synlig" om en
+    fold som var dold. Alltsa femton falska roda pa en sida som var hel."""
+    for tagg, slutt in (("section", "</section>"), ("details", "</details>")):
+        m = re.search(r'<%s[^>]*id="%s"([^>]*)>' % (tagg, _id), html)
+        if m:
+            slut = html.find(slutt, m.end())
+            return (m.group(1), html[m.end():slut if slut > 0 else len(html)])
+    return None
 
 
 def kropp(html, _id):
@@ -132,7 +138,7 @@ def mat(mall, d=None, html=None, skriv=True):
     sek = sektion(html, "oaKostnader")
     dold = bool(sek) and "hidden" in sek[0]
     kolla(bool(sek) and dold != bool(k),
-          "%s: KOSTNADER. sektionen ar %s men kontraktet %s faltet."
+          "%s: KOSTNADER. folden ar %s men kontraktet %s faltet."
           % (mall, "dold" if dold else "synlig", "har" if k else "saknar"))
     kr = kropp(html, "oaKostnaderKropp") or ""
     # TVA FORMER (script.js rad 476 till 481): prissatt rad <li>, och
@@ -165,7 +171,7 @@ def mat(mall, d=None, html=None, skriv=True):
     sek = sektion(html, "oaForbered")
     dold = bool(sek) and "hidden" in sek[0]
     kolla(bool(sek) and dold != bool(f),
-          "%s: FORBEREDELSER. sektionen ar %s men kontraktet %s faltet."
+          "%s: FORBEREDELSER. folden ar %s men kontraktet %s faltet."
           % (mall, "dold" if dold else "synlig", "har" if f else "saknar"))
     fk = kropp(html, "oaForberedKropp") or ""
     punkter = [taggbort(x) for x in re.findall(r"<li[^>]*>(.*?)</li>", fk, re.S)]
@@ -186,7 +192,7 @@ def mat(mall, d=None, html=None, skriv=True):
     sek = sektion(html, "oaVillkor")
     dold = bool(sek) and "hidden" in sek[0]
     kolla(bool(sek) and dold != bool(url),
-          "%s: VILLKOR. sektionen ar %s men kontraktet %s villkor_url."
+          "%s: VILLKOR. folden ar %s men kontraktet %s villkor_url."
           % (mall, "dold" if dold else "synlig", "har" if url else "saknar"))
     vk = kropp(html, "oaVillkorKropp") or ""
     href = re.search(r'href="([^"]*)"', vk)

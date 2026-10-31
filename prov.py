@@ -959,6 +959,76 @@ kolla(any(sel.endswith(".oa__card") and px == 540 for _, sel, _, px in _langder)
 kolla(len(_langder) >= 20,
       "styles.css: mätaren hittade bara %d längder, väntade minst 20" % len(_langder))
 
+# INVARIANT 3b. RORELSEN GAR AV NAR ANVANDAREN BETT OM DET - OCH PA NAR HAN
+# INTE HAR. Raderna i styles.css rad 332 till 344 fanns redan; det har provet
+# finns for att de BITER, matt pa den renderade sidan och inte last ur filen.
+# TRE TILLSTAND, INTE TVA: provet kraver bade att de fyra rorelserna ar
+# NAMNGIVNA och gar nar rorelse ar tillaten, och att de ar none nar den ar
+# reducerad. Bara det forsta hade godkant en sida dar nagon rakat stanga av
+# animationerna helt; bara det andra hade godkant en sida dar reduced-motion
+# inte bet. Mats med verktyg/foldskifte.py, som ger getComputedStyle-varden.
+if "--snabb" not in sys.argv:
+    import subprocess as _sp2
+
+    def _rorelse(extra):
+        r = _sp2.run([sys.executable, str(HAR / "verktyg" / "foldskifte.py"),
+                      "fall/laddbox.html", "1180", "1440"] + extra,
+                     capture_output=True, text=True, cwd=str(HAR),
+                     env=dict(__import__("os").environ, PYTHONDONTWRITEBYTECODE="1"))
+        if r.returncode != 0:
+            return None
+        return json.loads(r.stdout)["rorelse"]
+
+    _pa = _rorelse(["--rorelse"])
+    _av = _rorelse([])
+    kolla(_pa is not None and _av is not None,
+          "rorelse: foldskifte.py gav inga matvarden. Provet ar INTE kort.")
+    if _pa and _av:
+        kolla(_pa["reducerad"] is False and _av["reducerad"] is True,
+              "rorelse: mediefragan svarade %r / %r, vantade False / True. Matningen "
+              "provade inte de tva lagen." % (_pa["reducerad"], _av["reducerad"]))
+        # MED RORELSE: alla fyra ska faktiskt ga.
+        for _n, _vantat in (("disc", "oa-disc"), ("tick", "oa-tick"), ("halo", "oa-halo")):
+            kolla(_pa[_n]["namn"] == _vantat and _pa[_n]["tid"] != "0s",
+                  "rorelse: med rorelse tillaten heter %s:s animation %r pa %s. "
+                  "Vantade %r. Nagon har stangt av den for alla."
+                  % (_n, _pa[_n]["namn"], _pa[_n]["tid"], _vantat))
+        kolla(_pa["pil"]["transition"] != "0s",
+              "rorelse: foldpilens transition ar %s med rorelse tillaten."
+              % _pa["pil"]["transition"])
+        # REDUCERAD: alla fyra ska vara slackta.
+        for _n in ("disc", "tick", "halo"):
+            kolla(_av[_n]["namn"] == "none" and _av[_n]["tid"] == "0s",
+                  "rorelse: med reducerad rorelse gar %s anda (%r, %s). Reglerna i "
+                  "styles.css biter inte." % (_n, _av[_n]["namn"], _av[_n]["tid"]))
+        kolla(_av["pil"]["transition"] == "0s",
+              "rorelse: foldpilens transition ar %s med reducerad rorelse, vantade 0s."
+              % _av["pil"]["transition"])
+
+# INVARIANT 3c. DE FYRA SAKERNA MAPPAS FRAN KONTRAKTET TILL SIDAN.
+# AGARENS ORD 31 oktober, ordagrant: "Sakerstall en sista gang att alla
+# orderbekraftelser fungerar for alla mallar, sa ifall man valjer tillagg oso
+# eller villkor sa mappas det korrekt, samma sak med kostnader som kan
+# tillkomma & vad du behover gora innan."
+# ordagrant.py provar LYDELSEN mot offertrepot. Det har provar VAGEN: att
+# varje post kommer med, i kontraktets ordning, och att en fold utan innehall
+# ar DOLD och inte en rubrik med tomhet under. Tva olika fel, tva olika prov.
+# Den tredje delen RENDERAR en variant utan faltet, for att lasa en mall som
+# redan har faltet bevisar ingenting om fallet dar det saknas; den gar darfor
+# bara i den fulla korningen.
+import mappning as _mappning
+_m_antal, _m_fel = _mappning.kor(tyst=True, rendera_ocksa="--snabb" not in sys.argv)
+for f in _m_fel:
+    kolla(False, "mappning: " + f)
+# GOLVET. En post som tas bort ur ett kontrakt tar sin kontroll med sig, och
+# ett prov som ser mindre blir gronare. Talen ar UPPMATTA 31 oktober, inte
+# gissade: 105 utan renderingarna, 135 med dem.
+_m_golv = 105 if "--snabb" in sys.argv else 135
+kolla(_m_antal >= _m_golv,
+      "mappning: bara %d kontroller, vantade minst %d. Provet har krympt."
+      % (_m_antal, _m_golv))
+_mappning_kord = _m_antal
+
 # INVARIANT 4. VARJE STRÄNG KUNDEN SER ÄR OFFERTENS EGEN, ORDAGRANT.
 # Det här provet läser OFFERTREPOT. Ett orakel som bara läser sitt eget repo
 # kan inte upptäcka att sanningskällan rört sig, och det var precis så tre fel
@@ -1017,6 +1087,8 @@ if NORDSTJARNA.exists():
     _talen_kord = (_n, _rakn)
 
 print("%d kontroller" % kontroller)
+print("mappning:  %d kontroller av tillagg, villkor, kostnader och forberedelser "
+      "i fem mallar" % _mappning_kord)
 if _ordagrant_kord:
     print("ordagrant: %d kundsträngar kontrollerade mot offertrepot" % _ordagrant_kord)
 else:

@@ -230,6 +230,41 @@ FALL = [
             "<span>%s</span>" % SERVICE_RAD1.replace("6", "7", 1))),
   "star inte ordagrant i offertrepot"),
 
+ # ---- MAPPNINGEN: DE FYRA SAKERNA FRAN KONTRAKT TILL SIDA -----------------
+ # Agarens ord 31 oktober: tillagg, villkor, kostnader och "vad du behover
+ # gora innan" ska mappas korrekt i alla fem mallarna. Kontrollerna sitter i
+ # verktyg/mappning.py och kors av prov.py. De muteras HAR, pa disk, for att
+ # mappning.py:s eget --sjalvprov muterar i minnet och alltsa inte bevisar
+ # att prov.py:s vag in i dem haller.
+ ("mappning, en kostnadspost tas bort ur kontraktet",
+  js("exempel/laddbox.json", lambda d: d.update(kostnader=d["kostnader"][1:])),
+  "kontraktet har 6 poster, folden visar 7"),
+ ("mappning, tva kostnadsposter byter plats",
+  js("exempel/batteri.json",
+     lambda d: d["kostnader"].insert(0, d["kostnader"].pop(1))),
+  "KOSTNADER post 0"),
+ ("mappning, en forberedelsepunkt tas bort",
+  js("exempel/elcentral.json", lambda d: d.update(forberedelser=d["forberedelser"][:-1])),
+  "kontraktet har 1 punkter, folden visar 2"),
+ ("mappning, en ordrad tas bort ur kontraktet",
+  js("exempel/tillagg.json",
+     lambda d: d["order"].update(rader=d["order"]["rader"][1:])),
+  "RADERNA"),
+ ("mappning, villkor_url pekar nagon annanstans an sidan",
+  js("exempel/service.json",
+     lambda d: d["offert"].update(villkor_url="https://ampy.se/nagot-annat")),
+  "folden lankar till"),
+ ("mappning, villkorsfolden far ett TOMT href",
+  text("fall/batteri.html", 'href="https://ampy.se/kopvillkor"', 'href=""'),
+  "TOMT href"),
+ ("mappning, en fold star kvar SYNLIG utan sitt falt",
+  text("fall/service.html", '<section class="oa__section oa__villkor" id="oaKostnader" hidden="">',
+       '<section class="oa__section oa__villkor" id="oaKostnader">'),
+  "sektionen ar synlig men kontraktet saknar"),
+ ("mappning, kopvillkorslankens lydelse byts",
+  text("fall/laddbox.html", ">Läs våra köpvillkor<", ">Läs villkoren<"),
+  "lanktexten ar"),
+
  # ---- PROVEN AGAREN BAD OM ------------------------------------------------
  ("svar 46, provfallet bar nagot mer an datumet",
   js("exempel/prov-acceptdatum.json", lambda d: d["order"].update(etikett="Summa")),
@@ -255,6 +290,20 @@ FALL = [
        '<h2 class="oa__eyebrow">Det här accepterade du</h2><p>Paket Premium</p>'),
   "order.paket.namn"),
 
+ # ---- RORELSEN: BADA RIKTNINGARNA ----------------------------------------
+ # Reglerna for prefers-reduced-motion fanns redan i styles.css. Provet som
+ # vaktar dem ar nytt, och dessa tva visar att det faller bada vagarna.
+ ("reduced-motion slutar bita (!important-blocket tas bort)",
+  text("styles.css",
+       ".oa__disc,.oa__tick,.oa__halo{ animation:none !important; }",
+       ".oa__disc,.oa__tick,.oa__halo{ /* animation:none !important; */ }"),
+  "biter inte", True),
+ ("nagon stanger av bockens animation for ALLA",
+  text("styles.css",
+       ".oa__disc{ transform-origin:center; animation:oa-disc 640ms var(--ease) both; }",
+       ".oa__disc{ transform-origin:center; }"),
+  "Nagon har stangt av den for alla", True),
+
  # ---- OCH SKARMJAMFORELSEN, SOM VAR ROD UTAN ATT NAGON SAG DET ------------
  ("skarmen glider utan en post i AVSIKT",
   text("index.html", '<p class="oa__contact">',
@@ -264,13 +313,20 @@ FALL = [
 
 sak = tempfile.mkdtemp(prefix="oa-sakerhet-")
 trasigt = 0
-for namn, (filer, muter), vantat in FALL:
+for _post in FALL:
+    # Tre- ELLER fyrapost: den fjarde sager att mutationen kraver den fulla
+    # korningen. Rorelseprovet mater i webblasaren och ligger darfor bakom
+    # --snabb; en mutation som bara kor --snabb hade rapporterat MISS om ett
+    # prov som ar helt i ordning, alltsa ett matfel och inte ett fynd.
+    namn, (filer, muter), vantat = _post[0], _post[1], _post[2]
+    full = len(_post) > 3 and _post[3]
     for i, fil in enumerate(filer):
         shutil.copy2(HAR / fil, pathlib.Path(sak) / ("backup%d" % i))
     try:
         muter()
         rensa_bytekod()
-        r = subprocess.run([sys.executable, "-B", "prov.py", "--snabb"], cwd=HAR,
+        r = subprocess.run([sys.executable, "-B", "prov.py"]
+                           + ([] if full else ["--snabb"]), cwd=HAR,
                            capture_output=True, text=True, env=MILJO)
         rader = [x.strip(" *") for x in r.stdout.split("\n") if vantat in x]
         ok = r.returncode != 0 and rader

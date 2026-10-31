@@ -11,7 +11,8 @@
   "bokare": "Felix, elcentralmallens bokare. EL_BOKARE_FORNAMN = 'Felix', offerter/elcentral/offert.py rad 56.",
   "referens": "2026-0641, EL_OFFERTNR i offerter/elcentral/offert.py.",
   "ARBETSANDEL": "[GAP] 0,8 står som öppet gap i offerter/elcentral/paket.json med Felix som ägare. Den har INGEN konsument längre: ingenting i det här kontraktet härleds ur den, eftersom inget avdrag räknas eller visas.",
-  "accepterad": "[GAP] NAR kunden accepterade. Agarsvar 46, 25 oktober: \"Ja, lagg till datum\". Datumet uppstar i det ogonblick kunden trycker acceptera och finns darfor inte i offertrepot: inget av de fem exemplen ar accepterat av nagon. CRM:et satter ISO 8601 (2026-10-25) nar accepten registreras. null tar bort meningen i stallet for att hitta pa ett datum. Faltet finns sa att INGEN hardkodar det, vilket ar precis vad som hant med giltighetsdatumet i offertrepots elcentralmall."
+  "accepterad": "[GAP] NAR kunden accepterade. Agarsvar 46, 25 oktober: \"Ja, lagg till datum\". Datumet uppstar i det ogonblick kunden trycker acceptera och finns darfor inte i offertrepot: inget av de fem exemplen ar accepterat av nagon. CRM:et satter ISO 8601 (2026-10-25) nar accepten registreras. null tar bort meningen i stallet for att hitta pa ett datum. Faltet finns sa att INGEN hardkodar det, vilket ar precis vad som hant med giltighetsdatumet i offertrepots elcentralmall.",
+  "dvargbrytarens_skrivsatt": "AGARSVAR 07, 30 OKTOBER, ORDAGRANT: \"C10A ar korrekt\", alltsa utan mellanslag mellan bokstav och tal. Raden stod har som 'Extra dvargbrytare, C10 A' med hardspatie, vilket var offertrepots lydelse till den 30:e. Uppmatt samma dag i elcentral.html: sidan skriver 'Extra dvargbrytare, C10A' och 'C16A'. verktyg/ordagrant.py var ROD pa precis den raden, och det ar exakt vad verktyget finns for: en strang som andras i offertrepot andras inte har, och det ar ett eget repo dar ingen matning las den."
  },
  "_kalla_villkor": "https://ampy.se/kopvillkor. Alla fem mallarna länkar dit med texten 'Läs våra köpvillkor' (offerter/laddbox/body.html rad 566, elcentral rad 264, batteri rad 160, service/offert.py rad 155). Kontrollerat 19 okt enligt noten i tillagg.html rad 71. ÄGARENS ORD 25 OKTOBER, GLOBAL NOTERING: länken ligger nu under en fold som heter Villkor längst ner på bekräftelsen, i samma form som offerternas egen villkorsfold (offerter/tillagg/body.html rad 60 till 67).",
  "_tal": {
@@ -21,7 +22,7 @@
    "kallor": {
     "5990": "offerter/elcentral/paket.json#[namn=Liten]$nyckel"
    },
-   "_not": "Storlekens pris AR nyckeln i paket.json. Agarlast, beslut C4 19 okt, och NETTO: agarbesked 22 okt."
+   "_not": "Storlekens pris AR nyckeln i paket.json. Agarlast, beslut C4 19 okt, och NETTO: agarbesked 22 okt. TALET GICK 5 990 -> 5 850 DEN 30 OKTOBER OCH TILLBAKA TILL 5 990 DEN 31:a, och BADA gangerna sa verktyget ifran sjalvt. Den 30:e lastes 5 850 in har pa kravspec §7; den 31:a rattade offertrepot (ee477f2) tillbaka till 5 990, for fyra kallor sager 5 990 och bara kravspecen, den aldsta, sa 5 850: motet 29/10 ordagrant 'Det ar 5990 som stammer. Genomgaende pa alla', kravspecsvar u12 ordagrant '5990kr stammer.' (5 850 stod i FRAGANS rubrik, alltsa en inverterad citering), avstamnings-JSON:en punkt 12 och INVENTARIE A12. Uppmatt har 31 oktober: talen.py lod 'operanden 5850.0 star inte i strangen 5990 pa [namn=Liten]$nyckel'. Det ar precis vad verktyget ar till for, och nu i bada riktningarna: utan det hade bekraftelsen visat 5 850 medan offerten visade 5 990, alltsa 140 kr isar pa tva Ampy-ytor, och 'genomgaende pa alla' galler den har ytan ocksa."
   },
   ".order.rader[0].belopp": {
    "uttryck": "3250",
@@ -89,7 +90,7 @@
    "namn": "Seriekopplad inkommande matning.",
    "belopp": null,
    "enhet": null,
-   "text": "I vissa radhus och lägenheter kan inkommande matning vara seriekopplad mellan bostäder. Det är ovanligt, men kan förekomma. Om det upptäcks behöver fastighetsägare eller bostadsrättsförening samordna avstängning i berörda bostäder, och arbetet bokas om. Avgift för bomkörning och ombokning kan tillkomma enligt våra köpvillkor."
+   "text": "I vissa radhus och lägenheter kan inkommande matning vara seriekopplad mellan bostäder. Detta är ovanligt, men kan förekomma. Om det upptäcks behöver fastighetsägare eller bostadsrättsförening samordna avstängning i berörda bostäder. Arbetet bokas då om. Avgift för bomkörning och ombokning kan tillkomma enligt våra köpvillkor."
   }
  ],
  "forberedelser": [
@@ -121,7 +122,7 @@
    },
    {
     "typ": "tillagg",
-    "namn": "Extra dvärgbrytare, C10 A",
+    "namn": "Extra dvärgbrytare, C10A",
     "variant": null,
     "spec": "utöver det som ingår",
     "antal": 2,

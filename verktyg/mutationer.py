@@ -21,6 +21,16 @@ import json, os, pathlib, shutil, subprocess, sys, tempfile
 HAR = pathlib.Path(__file__).resolve().parent.parent
 RADEN = "ROT förutsätter att du har avdragsutrymme kvar."
 
+# SERVICERADENS FORSTA PUNKT, PA ETT STALLE.
+# Tva mutationer harunder ankrar pa den. Den 30 oktober fick servicens rader
+# arbetet OCH materialet pa samma rad (agarsvar 22, kravspec §4), och raden
+# gick fran "Byte av 6 strombrytare" till lydelsen nedan. Ankarna skrevs INTE
+# om, sa text() traffade noll och harnessen avbrot - vilket var ratt av den,
+# men mutationerna hade inte korts sedan den 29:e. Namnd konstant nu, sa
+# nasta lydelsebyte traffar ETT stalle och inte tva.
+SERVICE_RAD1 = ("Byte av 6 strömbrytare inklusive brytare och "
+                "erforderligt installationsmaterial")
+
 # INGEN BYTEKOD, OCH INGEN GAMMAL BYTEKOD KVAR.
 # Tva mutationer som inte andrar filens storlek kan annars kora .pyc fran
 # forra varvet: Pythons cache jamfor mtime och storlek, och en mutation som
@@ -204,8 +214,8 @@ FALL = [
 
  # 6. ALLT SOM INGAR AR EN REN PUNKTLISTA
  ("25 okt 6, brodtext tillbaka under en punkt",
-  text("fall/service.html", "<span>Byte av 6 strömbrytare</span>",
-       "<span>Byte av 6 strömbrytare<span>hall, vardagsrum och kök</span></span>"),
+  text("fall/service.html", "<span>%s</span>" % SERVICE_RAD1,
+       "<span>%s<span>hall, vardagsrum och kök</span></span>" % SERVICE_RAD1),
   "brödtext under sig"),
  ("25 okt 6, en ingar-post blir ett objekt igen",
   js("exempel/service.json",
@@ -214,9 +224,10 @@ FALL = [
   "inte en sträng"),
  ("25 okt 6, en ingar-strang som inte star i offertrepot",
   bada(js("exempel/service.json",
-          lambda d: d["order"].update(ingar=["Byte av 7 strömbrytare"] + d["order"]["ingar"][1:])),
-       text("fall/service.html", "<span>Byte av 6 strömbrytare</span>",
-            "<span>Byte av 7 strömbrytare</span>")),
+          lambda d: d["order"].update(ingar=[SERVICE_RAD1.replace("6", "7", 1)]
+                                            + d["order"]["ingar"][1:])),
+       text("fall/service.html", "<span>%s</span>" % SERVICE_RAD1,
+            "<span>%s</span>" % SERVICE_RAD1.replace("6", "7", 1))),
   "star inte ordagrant i offertrepot"),
 
  # ---- PROVEN AGAREN BAD OM ------------------------------------------------

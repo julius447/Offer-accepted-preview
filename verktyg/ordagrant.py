@@ -120,7 +120,17 @@ def las_nordstjarnan(rot):
 # alltsa provas mot offertrepot, och provet blev gronare av att se mindre.
 # Namnen star har, inte i en generell regel: en lista vars poster ar
 # kundtext ska namnges, annars provas nasta lista inte heller.
-STRANGLISTOR = {"ingar"}
+# OCH "forberedelser", TILLAGD 30 OKTOBER, for noten over var en SPADE.
+# KONTRAKT.md pastod om forberedelsefolden: "Texten ligger i offertrepots
+# katalog/forberedelser.json och ar identisk tecken for tecken;
+# verktyg/ordagrant.py kontrollerar det." UPPMATT 30 oktober: den gjorde
+# inte det. Faltet ar en lista med bara strangar och stod inte i den har
+# mangden, sa de TOLV punkterna pa laddbox, elcentral och batteri provades
+# aldrig en enda gang mot offertrepot, fran den dag folden byggdes
+# 29 oktober. Kommentaren ovanfor beskriver exakt det felet for "ingar" och
+# slutar med "en lista vars poster ar kundtext ska namnges, annars provas
+# nasta lista inte heller" - och nasta lista provades inte heller.
+STRANGLISTOR = {"ingar", "forberedelser"}
 
 
 def strangar(o, vag=""):

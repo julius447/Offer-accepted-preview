@@ -57,14 +57,6 @@ AVSIKT = [
      'skiljer" döljer att LYDELSEN drar isär. Den här raden gjorde precis det: den '
      'citerade "inkl. moms, efter avdrag" i fem dagar efter att offertrepot bytt till '
      '"inkl. moms, efter skattereduktion".'),
-    (('data-oa-steg', 'class="oa__step-text">', 'data-oa="bokare.namn"'),
-     'Stegen har datakrokar här, så en mall kan byta eller ta bort ett steg utan att forka '
-     'sidan. Tilläggsmallen gör redan bytet med strängersättningar och en regex i '
-     'offerter/tillagg/offert.py rad 230 till 240.'),
-    (('Vi ringer och bokar tid',),
-     'Standardmeningen bär inget namn här. Där står "Rasmus" och i den publika spegeln '
-     '"[Bokare]". En platshållare i hakparenteser får aldrig nå en kund: saknas namnet '
-     'skrivs meningen utan det.'),
     (('oa__order', 'Det här accepterade du', '</section>'),
      'Ordersektionen finns bara här. Acceptskärmen inne i offerten har hela offerten en '
      'skärm upp; den fristående bekräftelsen har inget annat.'),
@@ -96,8 +88,20 @@ AVSIKT = [
      'offertsidan har redan sin egen villkorsfold en skärm upp, och två folder med samma '
      'namn på samma sida hade varit två villkor. Formen är offertens egen '
      '(offerter/tillagg/body.html rad 60 till 67), i den här sidans klassnamn.'),
-    (('id="oaSteps"', '<ol class="oa__steps">'),
-     'Steglistan har id här, så ett borttaget steg kan hittas utan att gissa.'),
+    # TRE POSTER OM STEGREMSAN AR BORTTAGNA, 30 OKTOBER, OCH DET VAR ETT HAL
+    # OCH INTE EN STADNING. De forklarade en glidning som inte finns langre:
+    # stegremsan togs bort ur BADA repon (acceptskarmen 29 okt pa agarorder,
+    # avbojsskarmen 30 okt pa agarsvar 11, ordagrant "Ta aven bort den.").
+    # Kvar som AVSIKT betydde att en remsa som kom tillbaka i ETT av repon
+    # hade matchat 'id="oaSteps"', '<ol class="oa__steps">', 'data-oa-steg'
+    # eller 'Vi ringer och bokar tid' och rapporterats som AVSIKTLIG
+    # skillnad. Alltsa precis den defekt det har verktyget finns for att
+    # fanga, insmugen i verktygets egen undantagslista. Borttagna:
+    #   ('data-oa-steg', 'class="oa__step-text">', 'data-oa="bokare.namn"')
+    #   ('Vi ringer och bokar tid',)
+    #   ('id="oaSteps"', '<ol class="oa__steps">')
+    # Kommer nagon av dem tillbaka i en diff ar den nu OFORKLARAD, och
+    # verktyget avslutar med 1.
 ]
 
 diff = [l for l in difflib.unified_diff(b, a, "offertrepot", "det här repot", lineterm="", n=0)

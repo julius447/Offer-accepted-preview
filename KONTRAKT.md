@@ -101,7 +101,7 @@ leverans i de här fälten.** `prov.py` stoppar bygget om ett nytt dyker upp.
 | `kostnader` | lista | nej | **folden "Kostnader som kan tillkomma" visas inte alls** | mallen. Laddbox sju rader, batteri nio, elcentral tre villkorstexter utan pris. Service och tillägg: ingen. |
 | `kostnader_ingress` | sträng | folden står utan ingress | mallen |
 | `kostnader_fot` | sträng | folden står utan finstilt | mallen. Bara laddbox och batteri har en. |
-| `forberedelser` | lista med strängar | **folden "Vad behöver du göra före installationen?" visas inte alls** | mallen. Laddbox, elcentral och batteri. Service och tillägg: ingen. |
+| `forberedelser` | lista med strängar | **folden "Vad behöver du göra före installationen?" visas inte alls** | mallen. Laddbox, elcentral, batteri och **service** (ägarsvar 15, 30 oktober). Tillägg: ingen. |
 | `order` | objekt | nej | ordersektionen visas inte alls | CRM |
 
 ### `offert`
@@ -114,7 +114,7 @@ leverans i de här fälten.** `prov.py` stoppar bygget om ett nytt dyker upp.
 | `ar_tillagg` | bool | `false` | mallen. `true` byter brickans etikett till "Tillägg till offert" och visar `moderreferens` i stället för `referens`. |
 | `moderreferens` | sträng | **`ar_tillagg: true` utan den stänger totalen** | mallen. Utan den ser kunden två orelaterade nummer. |
 | `modertyp` | sträng | ingen effekt i dag | mallen, för spårbarhet. `MODERTYP` i `offerter/tillagg/offert.py` rad 64. |
-| `giltig_till_lang` | sträng, t.ex. "27 oktober 2026" | meningen renderas **utan datum**. Aldrig en platshållare, aldrig ett gissat datum. | CRM. Används av avböjsskärmens tvilling (`skarm-avboj.html` rad 40). Den accepterade sidan skriver inget datum i dag: offerten är accepterad, och ett giltighetsdatum där är en ägargrind. Fältet finns så att **ingen hårdkodar det**, vilket är precis vad som hänt i dag ("27 oktober 2026" står som bokstavlig sträng i markupen och byts med `str.replace` i `offerter/elcentral/offert.py` rad 697). |
+| `giltig_till_lang` | sträng, t.ex. "27 oktober 2026" | meningen renderas **utan datum**. Aldrig en platshållare, aldrig ett gissat datum. | CRM. **INGEN YTA LÄSER FÄLTET LÄNGRE, mätt 30 oktober.** Noten sa att avböjsskärmens tvilling använder det (`skarm-avboj.html` rad 40). Det var sant till den 23 oktober, när ägaren svarade "Nej, ingen giltighetstid" och meningen togs ur blocket; den 30 oktober togs hela stegremsan ur avböjsskärmen på ägarsvar 11, ordagrant "Ta även bort den". Uppmätt samma dag: noll träffar på `giltig` i `gemensamt/block/skarm-avboj.html`, i `skarm-accept.html` och i de byggda `service.html`, `elcentral.html` och `tillagg.html`, och noll på "27 oktober 2026" i `offerter/elcentral/offert.py` (`str.replace`-bytet som noten citerade finns inte kvar). Fältet står med flit kvar som `null` i alla fem kontrakten, **så att ingen hårdkodar ett giltighetsdatum den dag det kommer tillbaka**, och `prov.py` stoppar bygget om det sätts. Att en not pekar på en rad i ett ANNAT repo är precis varför den hann bli falsk: ingen mätning här läser den filen. |
 | `accepterad` | sträng, ISO 8601, t.ex. `"2026-10-25"` | **ingen mening skrivs**. Aldrig en platshållare, aldrig ett gissat datum, och ordet "Accepterad" står inte där ensamt. | CRM, i det ögonblick kunden trycker acceptera. **ÄGARSVAR 46, 25 oktober: "Ja, lägg till datum."** Sidan skriver den svenska formen ("25 oktober 2026") ur ISO-datumet, så de fem mallarna inte kan visa fem former; `prov.py` skriver samma form själv i stället för att läsa sidans. Ett datum som inte finns i kalendern (2026-02-30) **stänger totalen**: ett kontrakt som har fel om datumet är ett kontrakt som har fel, och sidan väljer inte vilka fel den bryr sig om. **Ett acceptdatum drar inte med sig ett `giltig till`:** offerten har ingen giltighetstid (ägardirektiv 23 okt), och `prov.py` stoppar varje sida som skriver ett. |
 | `villkor_url` | URL | **ingen länk renderas, aldrig ett tomt `href`**, och villkorssektionen står kvar dold | CRM. `https://ampy.se/kopvillkor`, kontrollerad 19 okt, samma adress alla fem mallarna länkar till. Länktexten är deras, ordagrant: "Läs våra köpvillkor". **ÄGARENS GLOBALA NOTERING 25 OKTOBER:** länken ligger i en fold som heter **Villkor längst ner** på bekräftelsen, i samma form som offerternas egen villkorsfold (`offerter/tillagg/body.html` rad 60 till 67), inte längre i finstilten under raderna. På papper öppnas folden och adressen skrivs ut efter länken, så villkoren når papperet: en stängd fold döljer sitt innehåll genom `::details-content`, och det biter ingen display-regel på barnet. |
 
@@ -192,15 +192,46 @@ En lista med strängar, en per punkt, **ordagrant** ur ägarens dokument. Texten
 offertrepots `katalog/forberedelser.json` och är identisk tecken för tecken;
 `verktyg/ordagrant.py` kontrollerar det.
 
+**Den raden var falsk i ett dygn, och det är mätt.** `ordagrant.py` gick bara in i de listor
+som stod namngivna i dess `STRANGLISTOR`, och där stod bara `ingar`. Fältet är en lista med
+bara strängar, så de **tolv punkterna** på laddbox, elcentral och batteri provades aldrig en
+enda gång mot offertrepot, från den dag folden byggdes 29 oktober till den 30:e. Verktygets
+egen kommentar beskriver precis det felet för `ingar` och slutar med *"en lista vars poster är
+kundtext ska namnges, annars provas nästa lista inte heller"* — och nästa lista provades inte
+heller. Rättat: `forberedelser` står i mängden, antalet kontrollerade strängar gick från 67
+till 81, och tre mutationer (en härledd punkt, ägarens egen mening på service, ägarens punkt 2
+på batteri) bevisar att provet faller.
+
 **Listan är GLOBAL per produkt och villkoras inte av kundens val.** Ägarbeskedet i mötet, om
 laddboxen: *"den ska vara global. Den ska visas på alla oavsett vilken laddbox det är, oavsett
 om de har valt lastbalansering eller inte."* Därför börjar punkten om lastbalansering med "Om du
 har valt", vilket är ägarens egen formulering och lösningen på samma sak.
 
-**Laddbox, elcentral och batteri har den. Service och tillägg har ingen**, och då står
+**Laddbox, elcentral, batteri och service har den. Tillägget har ingen**, och då står
 sektionen kvar dold: en rubrik som lovar innehåll som inte finns är värre än ingen rubrik.
 `prov.py` kräver att sektionen är dold precis när fältet saknas, och mutationerna bevisar det
 åt båda håll.
+
+**SERVICE FICK SIN DEN 30 OKTOBER, OCH DEN ÄR HÄRLEDD, INTE SKRIVEN.** Ägarsvar 15, ordagrant,
+på frågan om service som bokats ur en godkänd offert ska ha en egen förberedelsetext:
+
+> "Den ska baseras på arbete/material kolummnen som alltid används, oavsett om den är offert
+> eller direktbokad."
+
+De tre produkttexterna är ägarens egna ord, punkt för punkt. Servicens är två punkter som
+**räknas fram** ur arbete- och materialkolumnen (`offerter/service/jobb.json` `jobb.rader`,
+det CRM:et kallar "Arbete + Material") vid varje bygge i offertrepot: punkt 1 är katalogens
+inledande sats plus kolumnen ordagrant, punkt 2 är ägarens egen mening, ordagrant densamma som
+står sist i laddboxens och batteriets listor. Skälet att den härleds är ägarens eget:
+servicemallen är **restmängden** (ägarbeslut 11, 26 oktober), så det finns ingen uppräknad
+tjänsteflora att skriva en standardtext för, och kolumnen är det enda som ALLTID finns i båda
+fallen han nämner. Fältet här är därför en **avskrift av en härledning**, och
+`verktyg/ordagrant.py` är det som håller de två repona överens: ändras kolumnen i offertrepot
+blir raden här röd.
+
+Den inledande satsen "Arbetet i din bokning är:" är **inte ägarens ord utan mina**, och den
+står flaggad i offertrepots `katalog/forberedelser.json` (`service._inledning_gap`). Ägarsvar
+15 ger regeln, inte orden.
 
 ### `order`
 
@@ -517,7 +548,7 @@ offertrepots laddboxmotor.
 | `offert.referens` | 2026-0640 | 2026-0641 | 2026-0642 | 2026-0642 | `null` |
 | `ar_tillagg` / `moderreferens` | | | | | `true` / 2026-0640 |
 | `kostnader` | 7 prissatta rader | 3 villkorstexter utan pris | 9 prissatta rader | ingen | ingen |
-| `forberedelser` | 5 punkter | 2 punkter | 5 punkter | ingen | ingen |
+| `forberedelser` | 5 punkter | 2 punkter | 5 punkter | **2 punkter, härledda** | ingen |
 | `order.rubrik` | Zaptec Go | Elcentral + installation | SAJ HS3 | `null` | `null` |
 | `order.paket` | Paket Premium | storleken | lagringsstorleken | `null` | `null` |
 | `order.rader` | tillägg, mellanskillnad, intresseanmälan | tillägg | ö-drift | jobbet + tidsvalet | artiklarna |
@@ -548,9 +579,12 @@ offertrepots laddboxmotor.
 7. ~~**Är servicemallen planerat flöde eller akut eljour?**~~ **STÄNGD 29 oktober av samma
    skäl**: frågan styrde steg 2 och 3, och de finns inte längre. Den kan komma tillbaka som en
    fråga om bokningsbekräftelsens copy, men inte om den här sidan.
-7b. **Ska service som bokats ur en godkänd offert ha en egen förberedelsetext?** Ägardokumentet
-   29 oktober ger texter till laddbox, elcentral och batteri. Bokningsbekräftelsen gäller
-   också service som bokats ur en offert, och för den finns ingen text. `[GAP]`
+7b. ~~**Ska service som bokats ur en godkänd offert ha en egen förberedelsetext?**~~
+   **STÄNGD 30 oktober.** Ägarsvar 15, ordagrant: *"Den ska baseras på arbete/material
+   kolummnen som alltid används, oavsett om den är offert eller direktbokad."* Byggd som en
+   HÄRLEDD text, se `forberedelser` ovan. Kvar som en liten lucka: den inledande satsen
+   "Arbetet i din bokning är:" är mina ord, inte ägarens, och står flaggad i offertrepots
+   `katalog/forberedelser.json` (`service._inledning_gap`).
 8. **Ö-driftens pott.** Byggd som grön teknik efter principen i ägarbeslut 11 (15 okt). Är
    den brutto utan avdrag ändras en rad i `exempel/batteri.json`.
 9. **Servicepriset 7 400 kr är ett exempel**, inte ett Ampy-pris

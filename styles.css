@@ -231,7 +231,20 @@
    element ar en regel som vantar pa att nagon ateruppfinner elementet. */
 /* RADERNA LIGGER NU I HUVUDET, under kvittorutan, som forlagan
    (gemensamt/system.css rad 956: margin-top:var(--s4)). */
-.oa__rader{ list-style:none; margin:var(--s4) 0 0; padding:0; display:flex; flex-direction:column; }
+/* RADERNA ar VANSTERSTALLDA, och det ar en rattning med ett matvarde.
+   .oa__head satter text-align:center, och det arvs in i radens textblock.
+   Boxarna linjerade redan - listan ar shrink-to-fit och centrerad, precis
+   som forlagan - men GLYFERNA inne i boxarna vandrade: en kort text ('Liten')
+   fick ett smalt block och sag vansterstalld ut, en lang ('Extra dvargbrytare,
+   C10A' med tvarads undertext) fick ett brett och sag INDRAGEN ut. Tre rader,
+   tre intryck, i samma kvittolista.
+   UPPMATT FORE: namnens text spred 48,59 px pa laddbox, 60,47 pa elcentral
+   vid 1180, 27,08 pa batteri, 21,03 pa service. EFTER: 0,00 px pa alla fem
+   och alla tre bredderna. verktyg/radgeometri.py mater GLYFKANTEN och inte
+   boxkanten - forsta versionen matte boxarna och rapporterade noll spridning
+   om precis den defekt den skrevs for. */
+.oa__rader{ list-style:none; margin:var(--s4) 0 0; padding:0; display:flex;
+  flex-direction:column; text-align:left; }
 .oa__rader:empty{ display:none; }
 .oa__rad{ display:flex; align-items:baseline; justify-content:space-between; gap:var(--s3);
   padding:var(--rytm-rad) 0; border-top:1px solid var(--line); font-size:var(--t5); line-height:1.35; }
@@ -244,7 +257,17 @@
    priset." Regeln .oa__rad-pott stod har och gav etiketten 11 px och lite
    bredare sattning. Den ar borta ur CSS och inte bara ur renderingen: en
    klass som finns kvar ar en inbjudan att anvanda den igen. */
-.oa__rad-pris{ flex:0 0 auto; font-weight:600; font-variant-numeric:tabular-nums; white-space:nowrap; }
+/* Priset staplas lodratt i linje, och det gor det av FLEXLAYOUTEN: boxen ar
+   flex:0 0 auto med nowrap, alltsa exakt sa bred som talet, och raderna ar
+   lika breda - sa hogerkanterna sammanfaller. Uppmatt: bade boxens och
+   glyfens hogerkant sprider 0,00 px over alla rader, fem mallar, tre bredder.
+   HAR STOD text-align:right EN STUND, OCH DEN TOGS BORT IGEN: en mutation som
+   byter den mot left gor INGEN skillnad - boxen hugger texten, sa det finns
+   ingen yta att stalla nagot i. En deklaration vars borttagning inte gar att
+   mata gor ingenting, och da ska den inte sta har och pasta att den gor det.
+   tabular-nums rader siffrornas BREDD, vilket ar det som faktiskt behovs. */
+.oa__rad-pris{ flex:0 0 auto; font-weight:600; font-variant-numeric:tabular-nums;
+  white-space:nowrap; }
 /* "ingen kostnad nu" och "dras nar de bestallt" ar ord, inte tal. De far
    darfor inte brodtextens vikt eller sifferbredden: en intresseanmalan som
    ser ut som en prisrad laser som nagot kunden har kopt. */

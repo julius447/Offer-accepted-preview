@@ -64,12 +64,23 @@ cmd = [CHROME, "--headless=new", "--disable-gpu", "--no-sandbox",
        "--allow-file-access-from-files", "--force-prefers-reduced-motion", "--hide-scrollbars",
        "--user-data-dir=" + str(profil), "--virtual-time-budget=12000",
        "--window-size=%d,1200" % (bredd + 80), "--dump-dom", yttre.as_uri()]
-p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, start_new_session=True)
-try:
-    out, _ = p.communicate(timeout=120)
-except subprocess.TimeoutExpired:
-    os.killpg(os.getpgid(p.pid), signal.SIGKILL)      # BARA min egen grupp
-    raise SystemExit("Chrome svarade inte")
+# ETT FORSOK TILL, EN GANG, 31 OKTOBER. Den fulla prov.py startar ett
+# tjugotal Chrome och agarens egen webblasare kor samtidigt (uppmatt:
+# 73 processer). En timeout dar ar INGET SVAR och inte ett matvarde.
+# Ett riktigt hang faller BADA forsoken; en resurskonflikt gor det inte,
+# sa raden doljer inget fel - den skiljer de tva at.
+out = None
+for _forsok in (1, 2):
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                         start_new_session=True)
+    try:
+        out, _ = p.communicate(timeout=120)
+        break
+    except subprocess.TimeoutExpired:
+        os.killpg(os.getpgid(p.pid), signal.SIGKILL)  # BARA min egen grupp
+        if _forsok == 2:
+            raise SystemExit("Chrome svarade inte pa tva forsok. INGET SVAR, "
+                             "inte ett matvarde.")
 inner.unlink(missing_ok=True); yttre.unlink(missing_ok=True)
 subprocess.run(["rm", "-rf", str(profil)], check=False)
 m = re.search(r"<title>MATT(.*?)</title>", out.decode("utf-8", "replace"), re.S)

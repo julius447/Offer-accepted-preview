@@ -26,6 +26,9 @@ import subprocess
 import sys
 import time
 
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent / "verktyg"))
+import strippa
+
 HAR = pathlib.Path(__file__).resolve().parent
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 TMP = HAR / ".tmp"
@@ -108,23 +111,21 @@ def _chrome(sida, namn="_bygg", katalog=None):
            "--window-size=%d,%d" % (REF_BREDD, REF_HOJD),
            "--user-data-dir=" + str(profil), "--virtual-time-budget=6000",
            "--dump-dom", "file://" + str(prov)]
-    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
-                         start_new_session=True)
-    try:
-        # 90 -> 180 SEKUNDER, 31 OKTOBER, OCH SKALET AR MATT.
-        # K-grinden lade sex Chrome-starter till den fulla prov.py och
-        # rorelseprovet tva. Vid 90 s foll en korning av mutationer.py pa en
-        # TIMEOUT och rapporterade MISS pa en mutation som vid omkorning blev
-        # ROD pa alla sex sidorna med +40,00 px. En hangning ar INGET SVAR och
-        # inte ett fynd; ett prov som inte kan skilja dem pa ar vardelost.
-        ut, _ = p.communicate(timeout=180)
-    except subprocess.TimeoutExpired:
-        os.killpg(os.getpgid(p.pid), signal.SIGKILL)   # BARA min egen grupp
-        raise SystemExit("Chrome svarade inte på 180 sekunder. Det ar INGET SVAR, "
-                         "inte ett matvarde: kor om innan du tror pa ett MISS.")
-    finally:
-        prov.unlink(missing_ok=True)
-        subprocess.run(["rm", "-rf", str(profil)], check=False)
+    for _forsok in (1, 2):
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                             start_new_session=True)
+        try:
+            ut, _ = p.communicate(timeout=180)
+            break
+        except subprocess.TimeoutExpired:
+            os.killpg(os.getpgid(p.pid), signal.SIGKILL)       # BARA min egen grupp
+            if _forsok == 2:
+                prov.unlink(missing_ok=True)
+                subprocess.run(["rm", "-rf", str(profil)], check=False)
+                raise SystemExit("Chrome svarade inte pa tva forsok a 180 s. INGET "
+                                 "SVAR, inte ett matvarde.")
+    prov.unlink(missing_ok=True)
+    subprocess.run(["rm", "-rf", str(profil)], check=False)
     return ut.decode("utf-8")
 
 
@@ -206,9 +207,13 @@ def stada(dom, mall, kontrakt_fil):
     if flagga:
         raise SystemExit("%s: renderaren flaggade kontraktsfel och sidan skrevs INTE: %s"
                          % (mall, flagga.group(1)))
-    # fall/ ligger ett steg ner.
-    for gammal, ny in (('href="styles.css"', 'href="../styles.css"'),
-                       ('href="fonts/', 'href="../fonts/')):
+    # fall/ ligger ett steg ner. STILEN PEKAS INTE OM sedan 31 oktober: den
+    # publiceras som en STRIPPAD kopia i fall/ bredvid sidan, sa allt en kund
+    # laddar fran en bekraftelse ar strippat. Kallan styles.css i reporoten
+    # behaller sina kommentarer och ar den utvecklaren laser.
+    if 'href="styles.css"' not in dom:
+        raise SystemExit("%s: hittar inte stilmallens href" % mall)
+    for gammal, ny in (('href="fonts/', 'href="../fonts/'),):
         if gammal not in dom:
             raise SystemExit("%s: hittar inte %s att peka om" % (mall, gammal))
         dom = dom.replace(gammal, ny)
@@ -220,6 +225,54 @@ def stada(dom, mall, kontrakt_fil):
     return dom.replace("<!DOCTYPE html>\n", "<!DOCTYPE html>\n" + huvud, 1)
 
 
+# ----------------------------------------------------------- EN VAG UT
+# AGARBESLUT 31 OKTOBER, ORDAGRANT: "Kund ska inte se interna kommenterar."
+# Uppmatt pa det kunden laddar: 48 % av byten var kommentar, med citerade
+# agarbeslut, namngivna personer och vara egna defektdiskussioner i klartext.
+#
+# TRE KRAV, samma som i offertrepot:
+#  1. KALLAN RORS INTE. index.html, styles.css och script.js behaller varje
+#     kommentar - de ar det utvecklaren laser, och projektets dyrast byggda
+#     tillgang. Bara det BYGGDA stripas.
+#  2. EN VAG UT. Varje fil som publiceras skrivs genom lagg_ut(), ocksa
+#     kopior. I offertrepot missade sex handkopplade skrivstallen
+#     shutil.copy-slingan, och tio filer gick ut med kommentarerna kvar.
+#  3. EN GRIND SOM VAGRAR. grind() ar backstoppet: ett missat skrivstalle blir
+#     OSHIPPBART i stallet for tyst.
+def grind(mal, text):
+    """VAGRAR skriva en publicerad fil som fortfarande bar en kommentar.
+
+    TVA OBEROENDE PROV, for att ett prov dar strippern domer sitt eget arbete
+    bara sager att den ar konsekvent:
+      a) FIXPUNKT: en ny strippning tar inte bort en enda byte till.
+      b) BOKSTAVLIG SOKNING efter sekvenser som inte kan sta nagon
+         annanstans i DE HAR filerna - '<!--' i html, '/*' i css. Finns de i
+         en strang (CSS content:"/*") vagrar grinden anda, och det ar med
+         flit: da ska en manniska titta, inte en regel gissa.
+    """
+    namn, fynd = str(mal), []
+    om = strippa.strip_fil(mal, text)
+    if om != text:
+        fynd.append("strippern tar bort %d byte till: inte en fixpunkt"
+                    % (len(text.encode()) - len(om.encode())))
+    if namn.endswith(".html") and "<!--" in text:
+        fynd.append("'<!--' star kvar i markupen")
+    if namn.endswith(".css") and "/*" in text:
+        fynd.append("'/*' star kvar i stilen")
+    if fynd:
+        raise SystemExit("PUBLICERAS INTE: %s bar en kommentar. %s\n"
+                         "Agarbeslut 31 oktober: kund ska inte se interna kommentarer."
+                         % (pathlib.Path(namn).name, " | ".join(fynd)))
+
+
+def lagg_ut(mal, text):
+    """ENDA STALLET DAR EN PUBLICERAD FIL SKRIVS. Strippar, grindar, skriver."""
+    s = strippa.strip_fil(mal, text)
+    grind(mal, s)
+    mal.write_text(s, encoding="utf-8")
+    return s
+
+
 def main(vilka):
     (HAR / "fall").mkdir(exist_ok=True)
     for mall in vilka:
@@ -227,8 +280,32 @@ def main(vilka):
         if not k.exists():
             raise SystemExit("hittar inte " + str(k))
         ut = HAR / "fall" / (mall + ".html")
-        ut.write_text(stada(rendera(k), mall, k.relative_to(HAR)), encoding="utf-8")
+        lagg_ut(ut, stada(rendera(k), mall, k.relative_to(HAR)))
         print("%-10s -> %s  (%d rader)" % (mall, ut.relative_to(HAR), len(ut.read_text(encoding='utf-8').splitlines())))
+    # OVERSIKTEN, OCKSA GENOM EN VAG UT. Kallan ar fall-index.html i
+    # reporoten och behaller sina kommentarer; fall/index.html genereras.
+    # GRINDEN FANGADE DEN PA FORSTA KORNINGEN: filen var handskriven DIREKT i
+    # fall/, bar 514 byte kommentar och gick aldrig genom lagg_ut. Att
+    # undanta den hade varit att avveckla grinden pa den enda fil den tog.
+    _ovr = HAR / "fall-index.html"
+    if not _ovr.exists():
+        raise SystemExit("hittar inte fall-index.html, kallan till fall/index.html")
+    _o = _ovr.read_text(encoding="utf-8")
+    if '"../styles.css"' not in _o:
+        raise SystemExit("fall-index.html: hittar inte stilmallens href att peka om")
+    lagg_ut(HAR / "fall" / "index.html", _o.replace('"../styles.css"', '"styles.css"'))
+    print("%-10s -> fall/index.html  (ur fall-index.html)" % "oversikt")
+
+    # STILEN, STRIPPAD, BREDVID SIDORNA. Fontsokvagarna ar relativa mot
+    # CSS-filen, sa de maste peka ett steg upp nar filen ligger i fall/.
+    _css = (HAR / "styles.css").read_text(encoding="utf-8")
+    if _css.count("url(fonts/") != 2:
+        raise SystemExit("styles.css: vantade 2 url(fonts/, hittade %d. Pekas de om "
+                         "fel laddar sidan ingen font och ingen sager till."
+                         % _css.count("url(fonts/"))
+    lagg_ut(HAR / "fall" / "styles.css", _css.replace("url(fonts/", "url(../fonts/"))
+    print("%-10s -> fall/styles.css  (strippad kopia)" % "styles")
+
     # Profilerna är skräp efter bygget.
     for d in TMP.glob("cr-*"):
         subprocess.run(["rm", "-rf", str(d)], check=False)

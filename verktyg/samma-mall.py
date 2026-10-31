@@ -76,6 +76,10 @@ FACK_MED_MARKUP = [("oaKostnaderKropp", "</div>"), ("oaForberedKropp", "</div>")
 
 def dela(html):
     """(skelettet utanför stegen, steglistans skelett)."""
+    # HUVUDET STRIPAS NUMERA BORT av bygg.lagg_ut (agarbeslut 31 oktober:
+    # kund ska inte se interna kommentarer), sa raden traffar ingenting.
+    # Den star kvar for att en sida byggd UTAN strippning - vilket gar vid
+    # felsokning - fortfarande ska normaliseras likadant.
     s = re.sub(r"<!-- BYGGD FIL.*?-->\n", "", html, flags=re.S)
     s = re.sub(r"<title>.*?</title>", "<title>DATA</title>", s, flags=re.S)
     s = s.replace(' hidden=""', "")

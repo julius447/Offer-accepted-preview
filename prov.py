@@ -7,6 +7,7 @@ felande kontroll säger VILKEN fil och VILKET värde som bröt den.
 import json
 import pathlib
 import re
+import os
 import sys
 import unicodedata
 
@@ -24,6 +25,31 @@ NYA_LOFTEN = ["skickad", "skickat", "mejlad", "mejlat", "bekräftelse på mejl",
 
 fel = []
 kontroller = 0
+
+
+# VILKA TUNGA WEBBLASARPROV SOM KORS. Default: ALLA.
+# VARFOR VALJAREN FINNS. En full korning startar ett tjugotal Chrome (K-grinden
+# sex, ekvivalensen fyra, radgeometrin tre, rorelsen tva, plus typ/matt/
+# kontrast). mutationer.py kor HELA prov.py per mutation, och agarens egen
+# webblasare kor samtidigt: UPPMATT 31 oktober timeoutade samma mutation i tre
+# korningar i rad medan den ENSKILT blev ROD pa forsta forsoket. En timeout ar
+# INGET SVAR, och ett prov som inte gar att kora palitligt ar inte ett prov.
+# En mutation som vaktar ETT orakel behover bara DET oraklet, sa mutationer.py
+# satter OA_BARA och korningen gar fran tretton Chrome till ett par.
+# VALJAREN KAN INTE GORA EN KORNING GRONARE: utan OA_BARA kors allt, och
+# prov.py SKRIVER UT vilka block som hoppades over. En tyst delmangd vore
+# precis det matfel den har filen finns for att stanga.
+_BARA = [x for x in (os.environ.get("OA_BARA") or "").split(",") if x]
+_HOPPADE = []
+
+
+def tungt(nyckel):
+    if "--snabb" in sys.argv:
+        return False
+    if _BARA and nyckel not in _BARA:
+        _HOPPADE.append(nyckel)
+        return False
+    return True
 
 
 def kolla(ok, text):
@@ -774,6 +800,10 @@ if _pf_k.exists() and _pf_h.exists():
     #    en sträng som laddboxsidan inte redan visar.
     import difflib as _difflib
     def _utan_huvud(h):
+        # HUVUDET STRIPAS NUMERA BORT av bygg.lagg_ut (agarbeslut 31 oktober:
+        # kund ska inte se interna kommentarer), sa raden traffar ingenting.
+        # Den star kvar for att en sida byggd UTAN strippning - vilket gar vid
+        # felsokning - fortfarande ska normaliseras likadant.
         h = re.sub(r"<!-- BYGGD FIL.*?-->\n", "", h, flags=re.S)
         # KORTHOJDEN NORMALISERAS BORT, och det ar inte en uppmjukning.
         # Provfallets kort ar 1 250,8 px mot laddboxens 1 222,8: acceptraden
@@ -796,7 +826,10 @@ if _pf_k.exists() and _pf_h.exists():
     kolla(PROVFALL not in MALLAR, "provfallet står i MALLAR och räknas som en mall")
 
 
-# GRANSKNINGSSIDAN ÄR OCKSÅ EN KOPIA. fall/index.html är skriven för hand och
+# GRANSKNINGSSIDAN ÄR OCKSÅ EN KOPIA. Källan är fall-index.html i reporoten
+# (flyttad dit 31 oktober: filen låg handskriven DIREKT i fall/, bar 514 byte
+# kommentar och gick aldrig genom bygg.lagg_ut - kommentargrinden tog den på
+# sin första körning). fall/index.html genereras nu och är
 # bär de fem totalerna som text. Den är ingen kundyta, men den är en andra
 # plats där samma tal står, och en andra plats är en plats som kan drifta.
 # Samma skäl som hela talprovet finns av, en våning ner.
@@ -1024,6 +1057,85 @@ kolla(_s_antal >= 34,
       "tappat ett element, eller matningen slutade se det." % _s_antal)
 _struktur_kord = _s_antal
 
+# INVARIANT 1b. INGEN PUBLICERAD FIL BAR EN KOMMENTAR.
+# AGARBESLUT 31 OKTOBER, ORDAGRANT: "Kund ska inte se interna kommenterar."
+# Uppmatt pa det kunden laddade: 48 % av byten var kommentar.
+#
+# GRINDEN AR INNEHALLSBASERAD, inte skrivstallesbaserad, och det ar med flit.
+# bygg.py har EN vag ut (lagg_ut), men ett prov som raknar skrivstallen i
+# kallkoden fangar inte en ny hand-kopplad write_text. Det har provet laser
+# FILERNA pa disk: har nagon skrivit en publicerad fil utan att ga genom
+# lagg_ut sa syns det har, oavsett hur. I offertrepot var det precis det som
+# hande - sex handkopplade stallen missade shutil.copy-slingan och tio filer
+# gick ut med kommentarerna kvar.
+import strippa as _strippa
+_pub = sorted((HAR / "fall").glob("*.html")) + [HAR / "fall" / "styles.css"]
+for _f in _pub:
+    if not _f.exists():
+        kolla(False, "publicerat: %s saknas, kor python3 bygg.py" % _f.name)
+        continue
+    _t = _f.read_text(encoding="utf-8")
+    if _f.name.endswith(".html"):
+        kolla("<!--" not in _t,
+              "publicerat: %s bar '<!--'. Kund ska inte se interna kommentarer "
+              "(agarbeslut 31 oktober)." % _f.name)
+    if _f.name.endswith(".css"):
+        kolla("/*" not in _t,
+              "publicerat: %s bar '/*'." % _f.name)
+    _om = _strippa.strip_fil(_f, _t)
+    kolla(_om == _t,
+          "publicerat: %s ar inte en fixpunkt - strippern tar bort %d byte till. "
+          "Filen har skrivits utan att ga genom bygg.lagg_ut()."
+          % (_f.name, len(_t.encode()) - len(_om.encode())))
+# OCH STRIPPARNA SJALVA FALSIFIERAS. Tio prov foljer med filen: en
+# kommentarsekvens inne i en strang, en regexliteral och en mallstrang ska
+# lamnas OROR D. Ett monster som tar // till radslut ater annars in i
+# /[^/\n\\]+/g, och det hade tagit bort kod i stallet for en kommentar.
+_sp_fel = 0
+for _namn, _fn, _inne, _vantat in _strippa.PROV:
+    if _fn(_inne) != _vantat:
+        _sp_fel += 1
+        kolla(False, "strippa: falsifieringen %r foll: fick %r" % (_namn, _fn(_inne)))
+kolla(len(_strippa.PROV) >= 10,
+      "strippa: bara %d falsifieringar, vantade minst 10" % len(_strippa.PROV))
+_strippa_kord = len(_strippa.PROV) - _sp_fel
+
+# OCH EN BORTTAGEN KOMMENTAR FAR INTE FLYTTA EN PIXEL.
+# Att en fil blev 60 % mindre bevisar ingenting om att den ser likadan ut.
+# verktyg/ekvivalens.py renderar varje mall TVA ganger - ostrippad och
+# strippad - och jamfor kortets hojd och varje elements rect.
+_ekv_kord = 0
+if tungt("ekvivalens"):
+    _ekv = _il.import_module("ekvivalens")
+    _e_antal, _e_fel = _ekv.kor(tyst=True)
+    for f in _e_fel:
+        kolla(False, "ekvivalens: " + f)
+    kolla(_e_antal >= 10,
+          "ekvivalens: bara %d jamforelser, vantade minst 10 (fem mallar x tva "
+          "bredder)." % _e_antal)
+    _ekv_kord = _e_antal
+
+# INVARIANT 2c. RADERNA LINJERAR, MATT PA GLYFERNA.
+# Agaren matte pa live: forlagan centrerar raderna som en GRUPP, och en
+# kvittolista vars tal inte star lodratt i linje ar ingen kvittolista.
+# MATS PA GLYFKANTEN och inte pa boxkanten: boxarna linjerade redan, men
+# .oa__head:s text-align:center arvdes in och flyttade TEXTEN inne i dem -
+# upp till 60,47 px pa elcentral vid 1180. Ett prov som mater boxen
+# rapporterar noll spridning om precis den defekten.
+if tungt("radgeom"):
+    _rg = _il.import_module("radgeometri")
+    _rg_antal, _rg_fel = _rg.kor(tyst=True)
+    for f in _rg_fel:
+        kolla(False, "radgeometri: " + f)
+    # GOLVET: fem mallar x tre bredder = 15 matningar. Krymper det har en
+    # bredd eller en mall slutat matas.
+    kolla(_rg_antal >= 15,
+          "radgeometri: bara %d matningar, vantade minst 15 (fem mallar x tre "
+          "bredder). Provet har krympt." % _rg_antal)
+    _rg_kord = _rg_antal
+else:
+    _rg_kord = 0
+
 # INVARIANT 3a. KORTHOJDEN I SIDAN AR SIDANS EGEN, OCH KAN INTE DRIFTA.
 # styles.css fryser centreringen med
 #   padding-top:max(husets padding, calc((100dvh - var(--oa-kort))/2))
@@ -1044,7 +1156,7 @@ _struktur_kord = _s_antal
 # slapper avrundning och fangar allt som ar en riktig andring. Uppmatt
 # 31 oktober: samma sida matt tre ganger gav 0,00 px spridning, och alla sex
 # sidorna matte +0,00 px mot sitt inbakade tal.
-if "--snabb" not in sys.argv:
+if tungt("korthojd"):
     import bygg as _bygg_k
     K_TOLERANS = 0.5
     for mall in MALLAR + ["prov-acceptdatum"]:
@@ -1075,7 +1187,7 @@ if "--snabb" not in sys.argv:
 # reducerad. Bara det forsta hade godkant en sida dar nagon rakat stanga av
 # animationerna helt; bara det andra hade godkant en sida dar reduced-motion
 # inte bet. Mats med verktyg/foldskifte.py, som ger getComputedStyle-varden.
-if "--snabb" not in sys.argv:
+if tungt("rorelse"):
     import subprocess as _sp2
 
     def _rorelse(extra):
@@ -1194,9 +1306,20 @@ if NORDSTJARNA.exists():
           "jämför kontraktet mot sig självt är värdelöst." % _rakn["fil"])
     _talen_kord = (_n, _rakn)
 
+if _HOPPADE:
+    print("HOPPADE OVER (OA_BARA=%s): %s"
+          % (os.environ.get("OA_BARA"), ", ".join(_HOPPADE)))
 print("%d kontroller" % kontroller)
+print("strippa:   %d falsifieringar, %d publicerade filer utan en kommentar"
+      % (_strippa_kord, len(_pub)))
+if _ekv_kord:
+    print("ekvivalens: %d av %d IDENTISK, strippningen flyttade inte en pixel"
+          % (_ekv_kord, _ekv_kord))
 print("struktur:  %d element i skelettet, identiskt pa alla fem mallarna"
       % _struktur_kord)
+if _rg_kord:
+    print("radgeom:   %d matningar, namnen och prisen linjerar pa glyfkanten"
+          % _rg_kord)
 print("mappning:  %d kontroller av tillagg, villkor, kostnader och forberedelser "
       "i fem mallar" % _mappning_kord)
 if _ordagrant_kord:

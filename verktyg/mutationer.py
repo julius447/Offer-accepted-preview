@@ -315,7 +315,46 @@ FALL = [
        '<p>Paket Premium</p><ul class="oa__rader" id="oaRader">'),
   "order.paket.namn"),
 
- # ---- PRODUKTRADEN OCH FINSTILTEN FAR INTE KOMMA TILLBAKA ---------------
+ # ---- INGEN PUBLICERAD FIL BAR EN KOMMENTAR -----------------------------
+ # Agarbeslut 31 oktober: "Kund ska inte se interna kommenterar." Grinden ar
+ # INNEHALLSBASERAD, sa den fangar en fil som skrivits utan att ga genom
+ # bygg.lagg_ut() - oavsett hur den skrevs. Det var precis sa tio filer gick
+ # ut med kommentarerna kvar i offertrepot.
+ ("en kommentar skrivs in i en publicerad sida",
+  text("fall/laddbox.html", '<main class="oa__card">',
+       '<!-- AGARFRAGA: ska den har sta kvar? --><main class="oa__card">'),
+  "bar '<!--'"),
+ ("en kommentar skrivs in i den publicerade stilen",
+  text("fall/styles.css", ".oa__folds{", "/* intern not */\n.oa__folds{"),
+  "bar '/*'"),
+ ("strippern slutar skydda en regexliteral",
+  text("verktyg/strippa.py",
+       "            if ar_regex:",
+       "            if False and ar_regex:"),
+  "strippa: falsifieringen"),
+
+ # ---- RADERNA LINJERAR ---------------------------------------------------
+ # Kravet mats pa GLYFKANTEN: .oa__head:s text-align:center arvs in i radens
+ # textblock om raderna inte stalls vanster, och da vandrar texten inne i en
+ # box som linjerar. Bada mutationerna kraver den FULLA korningen.
+ ("radernas text centreras igen (arvet fran .oa__head)",
+  # FILEN BYTT FRAN styles.css TILL fall/styles.css, 31 OKTOBER, och det var
+  # ett HAL och inte en stadning. Sedan stilen publiceras som en STRIPPAD
+  # KOPIA i fall/ laser de byggda sidorna inte langre kallan, sa en mutation
+  # i styles.css traffade sitt ankare och gjorde INGENTING. Fem mutationer
+  # blev tysta samtidigt (exit=0, prov.py gront) - alltsa fem kontroller som
+  # sag ut att vara bevisade och inte var det. Ankaret finns, men mutationen
+  # maste na det provet LASER.
+  text("fall/styles.css", "flex-direction:column; text-align:left; }",
+       "flex-direction:column; }"),
+  "sprider", "radgeom"),
+ # MUTATIONEN "priset slutar vara hogerstallt" AR AVVECKLAD 31 OKTOBER, och
+ # avvecklad ar ratt ord: den SLAPPTE FORBI, och skalet var att deklarationen
+ # den vaktade inte gjorde nagot. .oa__rad-pris ar flex:0 0 auto med nowrap,
+ # alltsa exakt sa bred som talet - text-align inne i den har ingen yta att
+ # verka pa. Prisen linjerar av flexlayouten (uppmatt 0,00 px spridning pa
+ # bade box och glyf). text-align:right ar borttagen ur styles.css, och
+ # mutationen med den: ett prov som inte kan bli rott ar inget prov.
  ("produktraden aterinford pa en sida",
   text("fall/elcentral.html", '<ul class="oa__rader" id="oaRader">',
        '<p class="oa__prod" id="oaProd"><b id="oaProdRubrik">Elcentral + installation</b>'
@@ -352,27 +391,48 @@ FALL = [
  # byggs om star en gammal korthojd kvar. Bada mutationerna kraver den FULLA
  # korningen, for grinden mater i webblasaren och ligger bakom --snabb.
  ("korthojden driftar: designen andras utan att sidan byggs om",
-  text("styles.css", ".oa__card{\n  position:relative;",
+  # FILEN BYTT FRAN styles.css TILL fall/styles.css, 31 OKTOBER, och det var
+  # ett HAL och inte en stadning. Sedan stilen publiceras som en STRIPPAD
+  # KOPIA i fall/ laser de byggda sidorna inte langre kallan, sa en mutation
+  # i styles.css traffade sitt ankare och gjorde INGENTING. Fem mutationer
+  # blev tysta samtidigt (exit=0, prov.py gront) - alltsa fem kontroller som
+  # sag ut att vara bevisade och inte var det. Ankaret finns, men mutationen
+  # maste na det provet LASER.
+  text("fall/styles.css", ".oa__card{\n  position:relative;",
        ".oa__card{\n  padding-top:40px;\n  position:relative;"),
-  "har andrats utan att sidan byggts om", True),
+  "har andrats utan att sidan byggts om", "korthojd"),
  ("korthojden driftar pa EN sida: innehall laggs till i den byggda filen",
   text("fall/service.html", "  </main>",
        '  <div style="height:60px"></div>\n  </main>'),
-  "bar --oa-kort", True),
+  "bar --oa-kort", "korthojd"),
 
  # ---- RORELSEN: BADA RIKTNINGARNA ----------------------------------------
  # Reglerna for prefers-reduced-motion fanns redan i styles.css. Provet som
  # vaktar dem ar nytt, och dessa tva visar att det faller bada vagarna.
  ("reduced-motion slutar bita (!important-blocket tas bort)",
-  text("styles.css",
+  # FILEN BYTT FRAN styles.css TILL fall/styles.css, 31 OKTOBER, och det var
+  # ett HAL och inte en stadning. Sedan stilen publiceras som en STRIPPAD
+  # KOPIA i fall/ laser de byggda sidorna inte langre kallan, sa en mutation
+  # i styles.css traffade sitt ankare och gjorde INGENTING. Fem mutationer
+  # blev tysta samtidigt (exit=0, prov.py gront) - alltsa fem kontroller som
+  # sag ut att vara bevisade och inte var det. Ankaret finns, men mutationen
+  # maste na det provet LASER.
+  text("fall/styles.css",
        ".oa__disc,.oa__tick,.oa__halo{ animation:none !important; }",
        ".oa__disc,.oa__tick,.oa__halo{ /* animation:none !important; */ }"),
-  "biter inte", True),
+  "biter inte", "rorelse"),
  ("nagon stanger av bockens animation for ALLA",
-  text("styles.css",
+  # FILEN BYTT FRAN styles.css TILL fall/styles.css, 31 OKTOBER, och det var
+  # ett HAL och inte en stadning. Sedan stilen publiceras som en STRIPPAD
+  # KOPIA i fall/ laser de byggda sidorna inte langre kallan, sa en mutation
+  # i styles.css traffade sitt ankare och gjorde INGENTING. Fem mutationer
+  # blev tysta samtidigt (exit=0, prov.py gront) - alltsa fem kontroller som
+  # sag ut att vara bevisade och inte var det. Ankaret finns, men mutationen
+  # maste na det provet LASER.
+  text("fall/styles.css",
        ".oa__disc{ transform-origin:center; animation:oa-disc 640ms var(--ease) both; }",
        ".oa__disc{ transform-origin:center; }"),
-  "Nagon har stangt av den for alla", True),
+  "Nagon har stangt av den for alla", "rorelse"),
 
  # ---- OCH SKARMJAMFORELSEN, SOM VAR ROD UTAN ATT NAGON SAG DET ------------
  ("skarmen glider utan en post i AVSIKT",
@@ -389,15 +449,21 @@ for _post in FALL:
     # --snabb; en mutation som bara kor --snabb hade rapporterat MISS om ett
     # prov som ar helt i ordning, alltsa ett matfel och inte ett fynd.
     namn, (filer, muter), vantat = _post[0], _post[1], _post[2]
+    # FJARDE POSTEN: True = hela prov.py, en STRANG = bara det namngivna
+    # tunga blocket (OA_BARA). En mutation som vaktar ETT orakel behover bara
+    # DET oraklet, och en full korning startar ett tjugotal Chrome - uppmatt
+    # 31 oktober timeoutade samma mutation tre korningar i rad medan den
+    # enskilt blev ROD pa forsta forsoket. En timeout ar inget svar.
     full = len(_post) > 3 and _post[3]
     for i, fil in enumerate(filer):
         shutil.copy2(HAR / fil, pathlib.Path(sak) / ("backup%d" % i))
     try:
         muter()
         rensa_bytekod()
+        _m = dict(MILJO, OA_BARA=full) if isinstance(full, str) else MILJO
         r = subprocess.run([sys.executable, "-B", "prov.py"]
                            + ([] if full else ["--snabb"]), cwd=HAR,
-                           capture_output=True, text=True, env=MILJO)
+                           capture_output=True, text=True, env=_m)
         rader = [x.strip(" *") for x in r.stdout.split("\n") if vantat in x]
         ok = r.returncode != 0 and rader
         # EN MISS SOM INTE SAGER VARFOR AR SJALV ETT MATFEL.

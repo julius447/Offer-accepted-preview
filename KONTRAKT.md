@@ -603,6 +603,37 @@ offertrepots laddboxmotor.
    Villkoret står nu EN gång, i kvittorutans not, vilket är hedging-direktivet 2026-08-15 —
    men just den satsen finns inte längre på sidan. Den ligger kvar i `pottrad()` i
    `script.js` och kan läggas i noten. `[GAP]`
+7d. **KOMMENTARERNA ÄR BORTA UR DET PUBLICERADE — OCH DET TÄCKER BARA EN FEMTEDEL
+   AV PROBLEMET.** Ägarbeslut 31 oktober, ordagrant: *"Kund ska inte se interna
+   kommenterar."* `bygg.py` har nu EN väg ut (`lagg_ut`), `verktyg/strippa.py` är
+   **kopierad** ur offertrepot (inte omskriven) med sina tio falsifieringar, och
+   grinden vägrar skriva en publicerad fil som bär en kommentar. Uppmätt på
+   **precis det en bekräftelse laddar** (de sju sidorna + stilen de länkar):
+   **59 005 byte kommentar bort ur 135 363, alltså 44 %.** `styles.css`,
+   `script.js` och `index.html` i reporoten behåller varje kommentar — de är
+   källan, och `script.js` laddas inte av en byggd sida (den har ingen
+   JavaScript). `verktyg/ekvivalens.py` visar 10 av 10 IDENTISK: strippningen
+   flyttade inte en pixel.
+   *(En tidigare version av den här raden sa "85 202 byte ur 178 518 (48 %)".
+   Det talet vägde in `script.js` och `index.html`, som INTE strippas — de är
+   källa. Rättat innan det hann bli en sanning någon citerar.)*
+   **MEN REPOT ÄR PUBLIKT OCH PAGES SERVERAR ALLT.** Uppmätt 31 oktober, alla
+   `http=200` på `julius447.github.io/Offer-accepted-preview/`:
+
+   | grupp | byte | intern | interna ord |
+   |---|---|---|---|
+   | det kunden laddar (html+css) | 134 836 | 58 460 (43 %) | 40 |
+   | `script.js` + `index.html` (serveras, länkas inte) | 43 682 | 26 742 (61 %) | 25 |
+   | **`KONTRAKT.md`, `README.md`, `prov.py`, `bygg.py`, `exempel/*.json`** | **204 593** | **204 593 (100 %)** | **153** |
+   | `verktyg/*.py` (14 filer) | 144 944 | — | 43 |
+
+   Den här filen, med varje citerat ägarbeslut och varje `[GAP]`, ligger alltså
+   publikt på en förutsägbar adress — och den är större än alla kommentarer
+   tillsammans. **Strippningen tar 85 kB av ~435 kB intern text, alltså ungefär
+   en femtedel.** `[GAP]` Ägarbeslut behövs: antingen publiceras Pages från en
+   egen katalog som bara innehåller sidorna, den strippade stilen och fonterna,
+   eller görs repot privat. Det är den ändringen som stänger hålet; strippningen
+   gör bara det kunden FAKTISKT öppnar rent.
 8. **Ö-driftens pott.** Byggd som grön teknik efter principen i ägarbeslut 11 (15 okt). Är
    den brutto utan avdrag ändras en rad i `exempel/batteri.json`.
 9. **Servicepriset 7 400 kr är ett exempel**, inte ett Ampy-pris
